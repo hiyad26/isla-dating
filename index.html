@@ -902,43 +902,323 @@ button{cursor:pointer}
 
 .form .primary{border-radius:9px}
 
-.photos{
+
+/* =========================================================
+   TINDER STYLE PROFILE PHOTO EDITOR
+========================================================= */
+
+.profile-editor-intro{
+ color:#999;
+ font-size:13px;
+ line-height:1.5;
+ margin:-8px 0 14px
+}
+
+.profile-photo-editor{
  display:grid;
- grid-template-columns:repeat(5,1fr);
- gap:6px
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+ margin-top:4px
 }
 
-.photos div{
+.profile-photo-slot{
+ position:relative;
  aspect-ratio:1;
- border:1px dashed #555;
- border-radius:8px;
- overflow:hidden
+ border-radius:13px;
+ overflow:hidden;
+ background:#202125;
+ border:1px solid #34353a;
+ min-width:0
 }
 
-.photos img{
+.profile-photo-slot img{
  width:100%;
  height:100%;
- object-fit:cover
+ object-fit:cover;
+ display:block
 }
 
-.pillrow{
+.profile-photo-slot.add-photo{
+ border:1px dashed #555;
+ background:#1a1b1e;
  display:flex;
- gap:7px;
- flex-wrap:wrap
+ align-items:center;
+ justify-content:center;
+ color:#aaa;
+ flex-direction:column;
+ gap:4px;
+ transition:.15s ease
 }
 
-.pill{
- padding:8px 11px;
- border-radius:20px;
- background:#25262a;
- color:#ddd;
- border:1px solid #38393e
+.profile-photo-slot.add-photo:active{
+ transform:scale(.96);
+ background:#242529
 }
 
-.pill.selected{
- background:rgba(255,68,88,.18);
- border-color:var(--pink);
+.profile-photo-slot.add-photo .plus{
+ font-size:28px;
+ line-height:1;
  color:#fff
+}
+
+.profile-photo-slot.add-photo .add-text{
+ font-size:10px;
+ color:#999
+}
+
+.photo-main-badge{
+ position:absolute;
+ top:7px;
+ left:7px;
+ background:rgba(0,0,0,.78);
+ color:#fff;
+ border:1px solid rgba(255,255,255,.45);
+ border-radius:6px;
+ padding:4px 6px;
+ font-size:8px;
+ font-weight:800;
+ letter-spacing:.7px;
+ z-index:3
+}
+
+.photo-remove{
+ position:absolute;
+ top:6px;
+ right:6px;
+ width:28px;
+ height:28px;
+ border:0;
+ border-radius:50%;
+ background:rgba(0,0,0,.78);
+ color:#fff;
+ font-size:19px;
+ line-height:28px;
+ padding:0;
+ z-index:4
+}
+
+.photo-tools{
+ position:absolute;
+ left:5px;
+ right:5px;
+ bottom:5px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:4px;
+ z-index:4
+}
+
+.photo-tool{
+ min-width:29px;
+ height:29px;
+ border:0;
+ border-radius:50%;
+ background:rgba(0,0,0,.78);
+ color:#fff;
+ padding:0;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:13px
+}
+
+.photo-tool.main{
+ background:var(--pink)
+}
+
+.photo-main-text{
+ font-size:9px;
+ font-weight:700;
+ color:#fff;
+ padding:0 5px
+}
+
+.profile-photo-help{
+ color:#777;
+ font-size:11px;
+ line-height:1.45;
+ margin:8px 2px 0
+}
+
+
+/* =========================================================
+   TINDER STYLE PROFILE PAGE
+========================================================= */
+
+.profile-page-wrap{
+ max-width:600px;
+ margin:auto;
+ padding-bottom:30px
+}
+
+.profile-page-photos{
+ display:grid;
+ grid-template-columns:2fr 1fr;
+ grid-template-rows:210px 210px;
+ gap:5px;
+ padding:0 0 12px
+}
+
+.profile-page-photo{
+ position:relative;
+ overflow:hidden;
+ background:#202125;
+ min-height:0
+}
+
+.profile-page-photo:first-child{
+ grid-row:1 / 3;
+ border-radius:0 0 0 16px
+}
+
+.profile-page-photo:nth-child(2){
+ border-radius:0 0 5px 0
+}
+
+.profile-page-photo:nth-child(3){
+ border-radius:0 0 5px 0
+}
+
+.profile-page-photo img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ display:block
+}
+
+.profile-page-photo-placeholder{
+ width:100%;
+ height:100%;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:55px;
+ color:#555
+}
+
+.profile-photo-count{
+ position:absolute;
+ right:10px;
+ top:10px;
+ padding:6px 9px;
+ border-radius:15px;
+ background:rgba(0,0,0,.68);
+ color:#fff;
+ font-size:10px;
+ font-weight:700
+}
+
+.profile-page-info{
+ padding:0 16px
+}
+
+.profile-page-name-row{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:10px;
+ margin-top:4px
+}
+
+.profile-page-name{
+ font:400 30px/1.15 Georgia,serif;
+ word-break:break-word
+}
+
+.profile-page-edit{
+ width:45px;
+ height:45px;
+ border-radius:50%;
+ background:#25262a;
+ color:#fff;
+ border:1px solid #393a3f;
+ flex:0 0 45px;
+ font-size:18px
+}
+
+.profile-page-meta{
+ color:#aaa;
+ font-size:13px;
+ margin-top:7px
+}
+
+.profile-page-section{
+ margin-top:23px
+}
+
+.profile-page-section-title{
+ font-size:12px;
+ font-weight:700;
+ letter-spacing:1.4px;
+ color:#999;
+ text-transform:uppercase;
+ margin-bottom:9px
+}
+
+.profile-page-bio{
+ color:#ddd;
+ font-size:14px;
+ line-height:1.6;
+ white-space:pre-wrap;
+ word-break:break-word
+}
+
+.profile-interest-chips{
+ display:flex;
+ flex-wrap:wrap;
+ gap:7px
+}
+
+.profile-interest-chip{
+ border:1px solid #36373b;
+ background:#202125;
+ color:#ddd;
+ border-radius:20px;
+ padding:8px 11px;
+ font-size:12px
+}
+
+.profile-empty-note{
+ color:#777;
+ background:#17181b;
+ border:1px solid #292a2e;
+ border-radius:12px;
+ padding:13px;
+ font-size:12px;
+ line-height:1.5
+}
+
+.profile-edit-full{
+ width:100%;
+ margin-top:22px;
+ border-radius:12px;
+ padding:14px
+}
+
+@media(max-width:380px){
+
+ .tab{
+  font-size:8px
+ }
+
+ .tab b{
+  font-size:17px
+ }
+
+ .explore-grid{
+  gap:9px
+ }
+
+ .explore-card{
+  padding:14px;
+  min-height:145px
+ }
+
+ .profile-page-photos{
+  grid-template-rows:180px 180px
+ }
+
 }
 
 
@@ -1252,27 +1532,6 @@ button{cursor:pointer}
 
 .match button{margin:6px}
 
-@media(max-width:380px){
-
- .tab{
-  font-size:8px
- }
-
- .tab b{
-  font-size:17px
- }
-
- .explore-grid{
-  gap:9px
- }
-
- .explore-card{
-  padding:14px;
-  min-height:145px
- }
-
-}
-
 @media(min-width:700px){
 
  .bottom{
@@ -1296,6 +1555,11 @@ button{cursor:pointer}
 
  .explore-card:nth-child(4){
   grid-column:auto
+ }
+
+ .profile-page-photos{
+  border-radius:16px;
+  overflow:hidden
  }
 
 }
@@ -1839,7 +2103,29 @@ YOUR PROFILE
 Create your profile
 </h2>
 
+<div class="profile-editor-intro">
+Add your best photos first. Your first photo is your main profile photo.
+You can change the order anytime.
+</div>
+
 <form id="profileForm" class="form">
+
+<label>Photos</label>
+
+<div id="photoGrid" class="profile-photo-editor"></div>
+
+<p class="profile-photo-help">
+Tap ★ on a photo to make it your main photo. Use the arrows to reorder photos.
+You can add up to 9 photos.
+</p>
+
+<input
+ id="photos"
+ type="file"
+ accept="image/*"
+ multiple
+ style="display:none"
+>
 
 <label>Full name</label>
 
@@ -1917,17 +2203,6 @@ Date of birth — 18+ only
  maxlength="300"
  placeholder="Travel, music, diving..."
 >
-
-<label>Photos — up to 5</label>
-
-<input
- id="photos"
- type="file"
- accept="image/*"
- multiple
->
-
-<div id="photoGrid" class="photos"></div>
 
 <button class="primary">
 Save profile
@@ -2432,6 +2707,9 @@ let user=null;
 let me=null;
 let profiles=[];
 let index=0;
+
+const MAX_PROFILE_PHOTOS=9;
+
 let photos=[];
 let editing=false;
 let currentChat=null;
@@ -2443,6 +2721,33 @@ let knownMessageIds=new Set();
 
 let photoIndex=0;
 let currentProfilePhotos=[];
+
+
+/* =========================================================
+   TEMPORARY PHOTO PREVIEW CACHE
+========================================================= */
+
+const previewUrls=new WeakMap();
+
+
+function getPhotoSrc(item){
+
+ if(typeof item==="string"){
+  return item;
+ }
+
+ if(!previewUrls.has(item)){
+
+  previewUrls.set(
+   item,
+   URL.createObjectURL(item)
+  );
+
+ }
+
+ return previewUrls.get(item);
+
+}
 
 
 /* =========================================================
@@ -3441,18 +3746,173 @@ $("locationBtn").onclick=()=>{
 
 
 /* =========================================================
-   PHOTOS
+   PHOTO MANAGEMENT
+========================================================= */
+
+function getStoredPhotos(p){
+
+ if(
+  Array.isArray(p?.photo_urls)
+ ){
+
+  return p.photo_urls
+   .filter(Boolean)
+   .slice(0,MAX_PROFILE_PHOTOS);
+
+ }
+
+ if(p?.photo_url){
+
+  return [
+   p.photo_url
+  ];
+
+ }
+
+ return [];
+
+}
+
+
+function removePhoto(i){
+
+ if(
+  i<0||
+  i>=photos.length
+ ){
+  return;
+ }
+
+ const removed=photos[i];
+
+ if(
+  typeof removed!=="string" &&
+  previewUrls.has(removed)
+ ){
+
+  try{
+   URL.revokeObjectURL(
+    previewUrls.get(removed)
+   );
+  }catch(e){}
+
+ }
+
+ photos.splice(i,1);
+
+ renderPhotoGrid();
+
+}
+
+
+function makePrimary(i){
+
+ if(
+  i<0||
+  i>=photos.length||
+  i===0
+ ){
+  return;
+ }
+
+ const item=
+  photos.splice(i,1)[0];
+
+ photos.unshift(item);
+
+ renderPhotoGrid();
+
+ toast("Main photo changed");
+
+}
+
+
+function movePhoto(i,dir){
+
+ const j=i+dir;
+
+ if(
+  i<0||
+  j<0||
+  i>=photos.length||
+  j>=photos.length
+ ){
+  return;
+ }
+
+ [
+  photos[i],
+  photos[j]
+ ]=[
+  photos[j],
+  photos[i]
+ ];
+
+ renderPhotoGrid();
+
+}
+
+
+function triggerPhotoPicker(){
+
+ $("photos").click();
+
+}
+
+
+/* =========================================================
+   SELECT PHOTOS
 ========================================================= */
 
 $("photos").onchange=e=>{
 
  const selected=
-  Array.from(e.target.files||[]);
+  Array.from(
+   e.target.files||[]
+  );
+
+ if(!selected.length){
+  return;
+ }
+
+ const remaining=
+  MAX_PROFILE_PHOTOS-
+  photos.length;
+
+ if(remaining<=0){
+
+  toast(
+   `You can add up to ${MAX_PROFILE_PHOTOS} photos`
+  );
+
+  e.target.value="";
+
+  return;
+
+ }
+
+ const valid=
+  selected
+   .filter(
+    f=>
+     f.type.startsWith("image/")
+   )
+   .slice(0,remaining);
 
  photos=[
   ...photos,
-  ...selected
- ].slice(0,5);
+  ...valid
+ ];
+
+ if(
+  selected.length>remaining
+ ){
+
+  toast(
+   `Only ${MAX_PROFILE_PHOTOS} photos can be used`
+  );
+
+ }
 
  renderPhotoGrid();
 
@@ -3461,23 +3921,235 @@ $("photos").onchange=e=>{
 };
 
 
+/* =========================================================
+   RENDER PHOTO EDITOR
+========================================================= */
+
 function renderPhotoGrid(){
 
- $("photoGrid").innerHTML=
-  photos.map((f,i)=>`
+ const box=$("photoGrid");
 
-   <div>
-    <img
-     src="${
-      typeof f==="string"
-       ? f
-       : URL.createObjectURL(f)
-     }"
-     alt="Photo ${i+1}"
+ if(!box)return;
+
+ let html="";
+
+ for(
+  let i=0;
+  i<MAX_PROFILE_PHOTOS;
+  i++
+ ){
+
+  const item=photos[i];
+
+  if(item){
+
+   const src=
+    getPhotoSrc(item);
+
+   html+=`
+
+    <div
+     class="profile-photo-slot"
     >
-   </div>
 
-  `).join("");
+     <img
+      src="${esc(src)}"
+      alt="Profile photo ${i+1}"
+     >
+
+     ${
+      i===0
+       ? `
+        <span class="photo-main-badge">
+         MAIN
+        </span>
+       `
+       : ""
+     }
+
+     <button
+      type="button"
+      class="photo-remove"
+      data-remove-photo="${i}"
+      aria-label="Remove photo"
+     >
+      ×
+     </button>
+
+     <div class="photo-tools">
+
+      ${
+       i>0
+        ? `
+         <button
+          type="button"
+          class="photo-tool"
+          data-photo-left="${i}"
+          aria-label="Move photo left"
+         >
+          ‹
+         </button>
+        `
+        : ""
+      }
+
+      ${
+       i>0
+        ? `
+         <button
+          type="button"
+          class="photo-tool main"
+          data-photo-main="${i}"
+          aria-label="Make main photo"
+         >
+          ★
+         </button>
+        `
+        : `
+         <span class="photo-main-text">
+          MAIN PHOTO
+         </span>
+        `
+      }
+
+      ${
+       i<photos.length-1
+        ? `
+         <button
+          type="button"
+          class="photo-tool"
+          data-photo-right="${i}"
+          aria-label="Move photo right"
+         >
+          ›
+         </button>
+        `
+        : ""
+      }
+
+     </div>
+
+    </div>
+
+   `;
+
+  }else{
+
+   html+=`
+
+    <button
+     type="button"
+     class="profile-photo-slot add-photo"
+     data-add-photo
+    >
+
+     <span class="plus">
+      +
+     </span>
+
+     <span class="add-text">
+      Add photo
+     </span>
+
+    </button>
+
+   `;
+
+  }
+
+ }
+
+ box.innerHTML=html;
+
+
+ box
+  .querySelectorAll(
+   "[data-add-photo]"
+  )
+  .forEach(btn=>{
+
+   btn.onclick=
+    triggerPhotoPicker;
+
+  });
+
+
+ box
+  .querySelectorAll(
+   "[data-remove-photo]"
+  )
+  .forEach(btn=>{
+
+   btn.onclick=()=>{
+
+    removePhoto(
+     Number(
+      btn.dataset.removePhoto
+     )
+    );
+
+   };
+
+  });
+
+
+ box
+  .querySelectorAll(
+   "[data-photo-main]"
+  )
+  .forEach(btn=>{
+
+   btn.onclick=()=>{
+
+    makePrimary(
+     Number(
+      btn.dataset.photoMain
+     )
+    );
+
+   };
+
+  });
+
+
+ box
+  .querySelectorAll(
+   "[data-photo-left]"
+  )
+  .forEach(btn=>{
+
+   btn.onclick=()=>{
+
+    movePhoto(
+     Number(
+      btn.dataset.photoLeft
+     ),
+     -1
+    );
+
+   };
+
+  });
+
+
+ box
+  .querySelectorAll(
+   "[data-photo-right]"
+  )
+  .forEach(btn=>{
+
+   btn.onclick=()=>{
+
+    movePhoto(
+     Number(
+      btn.dataset.photoRight
+     ),
+     1
+    );
+
+   };
+
+  });
 
 }
 
@@ -3513,18 +4185,16 @@ async function loadMyProfile(){
 }
 
 
+/* =========================================================
+   OPEN PROFILE EDITOR
+========================================================= */
+
 async function openProfile(p=null){
 
  editing=!!p;
 
  photos=
-  Array.isArray(p?.photo_urls)
-   ? p.photo_urls
-   : (
-      p?.photo_url
-       ? [p.photo_url]
-       : []
-     );
+  getStoredPhotos(p);
 
  $("profileTitle").textContent=
   p
@@ -3541,6 +4211,7 @@ async function openProfile(p=null){
   p?.gender||"";
 
  $("looking").value=
+  p?.looking_for||
   "Everyone";
 
  $("island").value=
@@ -3553,6 +4224,8 @@ async function openProfile(p=null){
   p?.interests||"";
 
  $("profileMsg").textContent="";
+
+ $("locationMsg").textContent="";
 
  renderPhotoGrid();
 
@@ -3569,10 +4242,21 @@ $("profileForm").onsubmit=async e=>{
 
  e.preventDefault();
 
- if(age($("dob").value)<18){
+ if(
+  !$("dob").value||
+  age($("dob").value)<18
+ ){
 
   return toast(
    "ISLA is 18+ only"
+  );
+
+ }
+
+ if(!user){
+
+  return toast(
+   "Please log in again"
   );
 
  }
@@ -3585,10 +4269,18 @@ $("profileForm").onsubmit=async e=>{
 
  try{
 
+  /*
+   * Keep existing Supabase URLs in their current order.
+   * New File objects are uploaded after them.
+   */
+
   let urls=
-   photos.filter(
-    x=>typeof x==="string"
-   );
+   photos
+    .filter(
+     x=>typeof x==="string"
+    )
+    .slice(0,MAX_PROFILE_PHOTOS);
+
 
   for(
    const f of photos.filter(
@@ -3596,11 +4288,22 @@ $("profileForm").onsubmit=async e=>{
    )
   ){
 
+   if(
+    urls.length>=MAX_PROFILE_PHOTOS
+   ){
+    break;
+   }
+
    const ext=
     (
      f.name.split(".").pop()||
      "jpg"
-    ).toLowerCase();
+    ).toLowerCase()
+     .replace(
+      /[^a-z0-9]/g,
+      ""
+     )||
+     "jpg";
 
    const path=
     `${user.id}/${crypto.randomUUID()}.${ext}`;
@@ -3619,31 +4322,74 @@ $("profileForm").onsubmit=async e=>{
 
    if(u.error)throw u.error;
 
-   urls.push(
+   const publicUrl=
     client
      .storage
      .from("profile-photos")
      .getPublicUrl(path)
      .data
-     .publicUrl
+     .publicUrl;
+
+   urls.push(
+    publicUrl
    );
 
   }
 
-  urls=urls.slice(0,5);
+
+  urls=
+   urls.slice(
+    0,
+    MAX_PROFILE_PHOTOS
+   );
+
 
   const payload={
+
    id:user.id,
-   full_name:$("name").value.trim(),
-   date_of_birth:$("dob").value,
-   gender:$("gender").value,
-   island:$("island").value.trim(),
-   bio:$("bio").value.trim(),
-   interests:$("interests").value.trim(),
-   photo_url:urls[0]||null,
-   photo_urls:urls,
-   updated_at:new Date().toISOString()
+
+   full_name:
+    $("name")
+     .value
+     .trim(),
+
+   date_of_birth:
+    $("dob").value,
+
+   gender:
+    $("gender").value,
+
+   looking_for:
+    $("looking").value,
+
+   island:
+    $("island")
+     .value
+     .trim(),
+
+   bio:
+    $("bio")
+     .value
+     .trim(),
+
+   interests:
+    $("interests")
+     .value
+     .trim(),
+
+   photo_url:
+    urls[0]||
+    null,
+
+   photo_urls:
+    urls,
+
+   updated_at:
+    new Date()
+     .toISOString()
+
   };
+
 
   const r=
    await client
@@ -3657,16 +4403,42 @@ $("profileForm").onsubmit=async e=>{
 
   if(r.error)throw r.error;
 
-  me=payload;
+
+  me={
+   ...(me||{}),
+   ...payload
+  };
+
 
   modal(
    "profileModal",
    false
   );
 
-  toast("Profile saved");
 
-  await start();
+  toast(
+   "Profile saved ❤️"
+  );
+
+
+  renderProfilePage();
+
+
+  /*
+   * Refresh Discover so other users see
+   * the current profile state.
+   */
+
+  if(
+   $("pageDiscover")
+    .classList
+    .contains("active")
+  ){
+
+   await loadDiscover();
+
+  }
+
 
  }catch(err){
 
@@ -3874,7 +4646,7 @@ function render(){
 
  currentProfilePhotos=
   Array.isArray(p.photo_urls)
-   ? p.photo_urls.filter(Boolean).slice(0,5)
+   ? p.photo_urls.filter(Boolean).slice(0,MAX_PROFILE_PHOTOS)
    : [];
 
  if(
@@ -5881,88 +6653,270 @@ $("chatForm").onsubmit=async e=>{
 
 
 /* =========================================================
-   PROFILE PAGE
+   PROFILE PAGE — TINDER STYLE
 ========================================================= */
+
+function parseInterests(value){
+
+ if(!value){
+  return [];
+ }
+
+ return String(value)
+  .split(/[,]+/)
+  .map(x=>x.trim())
+  .filter(Boolean)
+  .slice(0,20);
+
+}
+
 
 function renderProfilePage(){
 
- if(!me)return;
+ if(!me){
+
+  $("profileContent").innerHTML=`
+
+   <div class="profile-empty-note">
+    Create your profile to start using ISLA.
+   </div>
+
+  `;
+
+  return;
+
+ }
+
+ const profilePhotos=
+  getStoredPhotos(me);
+
+ const a=
+  age(me.date_of_birth);
+
+ const interestList=
+  parseInterests(
+   me.interests
+  );
+
+
+ let galleryHTML="";
+
+
+ if(profilePhotos.length){
+
+  const display=
+   profilePhotos.slice(0,3);
+
+  galleryHTML=
+   display
+    .map((src,i)=>`
+
+     <div class="profile-page-photo">
+
+      <img
+       src="${esc(src)}"
+       alt="Profile photo ${i+1}"
+      >
+
+      ${
+       i===2 &&
+       profilePhotos.length>3
+        ? `
+         <div
+          style="
+           position:absolute;
+           inset:0;
+           display:flex;
+           align-items:center;
+           justify-content:center;
+           background:rgba(0,0,0,.45);
+           font-size:24px;
+           font-weight:700;
+          "
+         >
+          +${profilePhotos.length-3}
+         </div>
+        `
+        : ""
+      }
+
+     </div>
+
+    `)
+    .join("");
+
+ }else{
+
+  galleryHTML=`
+
+   <div
+    class="profile-page-photo"
+    style="
+     grid-row:1 / 3;
+     grid-column:1 / 3;
+     border-radius:0;
+    "
+   >
+
+    <div class="profile-page-photo-placeholder">
+     ◉
+    </div>
+
+   </div>
+
+  `;
+
+ }
+
 
  $("profileContent").innerHTML=`
 
-  <div
-   style="
-    text-align:center;
-    padding:15px
-   "
-  >
+  <div class="profile-page-wrap">
 
-   <img
-    class="avatar"
-    style="
-     width:110px;
-     height:110px;
-     border:2px solid var(--pink)
-    "
-    src="${esc(me.photo_url||"")}"
-    alt=""
-   >
+   <div class="profile-page-photos">
 
-   <h2
-    style="
-     font:400 28px Georgia,serif
-    "
-   >
-    ${esc(
-     me.full_name||
-     "ISLA Member"
-    )}
-   </h2>
+    ${galleryHTML}
 
-   <p style="color:#999">
+    ${
+     profilePhotos.length
+      ? `
+       <div class="profile-photo-count">
+        ${profilePhotos.length} photo${profilePhotos.length===1?"":"s"}
+       </div>
+      `
+      : ""
+    }
 
-    ${age(me.date_of_birth)||""}
+   </div>
 
-    ·
 
-    ${esc(me.gender||"")}
+   <div class="profile-page-info">
 
-    ·
+    <div class="profile-page-name-row">
 
-    ${esc(me.island||"")}
+     <div>
 
-   </p>
+      <div class="profile-page-name">
 
-   <p
-    style="
-     color:#ccc;
-     line-height:1.6
-    "
-   >
-    ${esc(me.bio||"")}
-   </p>
+       ${esc(
+        me.full_name||
+        "ISLA Member"
+       )}
 
-   <p
-    style="
-     color:#ffd88e
-    "
-   >
-    ${esc(me.interests||"")}
-   </p>
+       ${
+        a!=null
+         ? `, ${a}`
+         : ""
+       }
 
-   <button
-    class="primary"
-    id="editMe"
-    style="width:100%"
-   >
-    Edit profile
-   </button>
+      </div>
+
+      <div class="profile-page-meta">
+
+       ${
+        [
+         me.gender,
+         me.island
+        ]
+        .filter(Boolean)
+        .map(esc)
+        .join(" · ")
+       }
+
+      </div>
+
+     </div>
+
+
+     <button
+      class="profile-page-edit"
+      id="editMe"
+      title="Edit profile"
+     >
+      ✎
+     </button>
+
+    </div>
+
+
+    <div class="profile-page-section">
+
+     <div class="profile-page-section-title">
+      About me
+     </div>
+
+     ${
+      me.bio
+       ? `
+        <div class="profile-page-bio">
+         ${esc(me.bio)}
+        </div>
+       `
+       : `
+        <div class="profile-empty-note">
+         Add something about yourself.
+        </div>
+       `
+     }
+
+    </div>
+
+
+    <div class="profile-page-section">
+
+     <div class="profile-page-section-title">
+      Interests
+     </div>
+
+     ${
+      interestList.length
+       ? `
+        <div class="profile-interest-chips">
+
+         ${
+          interestList
+           .map(x=>`
+            <span class="profile-interest-chip">
+             ${esc(x)}
+            </span>
+           `)
+           .join("")
+         }
+
+        </div>
+       `
+       : `
+        <div class="profile-empty-note">
+         Add your interests so people can get to know you.
+        </div>
+       `
+     }
+
+    </div>
+
+
+    <button
+     class="primary profile-edit-full"
+     id="editMeFull"
+    >
+     Edit profile
+    </button>
+
+   </div>
 
   </div>
 
  `;
 
+
  $("editMe").onclick=()=>{
+
+  openProfile(me);
+
+ };
+
+
+ $("editMeFull").onclick=()=>{
 
   openProfile(me);
 
