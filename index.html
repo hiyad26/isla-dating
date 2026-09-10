@@ -336,6 +336,7 @@ button{cursor:pointer}
 }
 
 .tab{
+ position:relative;
  border:0;
  background:none;
  color:#73757b;
@@ -350,13 +351,56 @@ button{cursor:pointer}
 
 .tab.active{color:#fff}
 
+.notification-badge{
+ position:absolute;
+ top:3px;
+ left:50%;
+ margin-left:7px;
+ min-width:17px;
+ height:17px;
+ padding:0 5px;
+ border-radius:20px;
+ background:var(--pink);
+ color:#fff;
+ font-size:10px;
+ font-weight:700;
+ line-height:17px;
+ text-align:center;
+ display:none;
+ box-shadow:0 0 0 2px #08090a
+}
+
+.notification-badge.show{
+ display:block
+}
+
 .pagehead{
  height:60px;
  display:flex;
  align-items:center;
  justify-content:center;
  border-bottom:1px solid #202125;
- font:600 22px Georgia,serif
+ font:600 22px Georgia,serif;
+ position:relative
+}
+
+.pagehead-badge{
+ position:absolute;
+ margin-left:115px;
+ min-width:19px;
+ height:19px;
+ padding:0 5px;
+ border-radius:20px;
+ background:var(--pink);
+ color:#fff;
+ font:700 11px Arial,sans-serif;
+ line-height:19px;
+ text-align:center;
+ display:none
+}
+
+.pagehead-badge.show{
+ display:block
 }
 
 .content{
@@ -378,6 +422,15 @@ button{cursor:pointer}
  display:flex;
  gap:12px;
  align-items:center
+}
+
+.item.unread{
+ border-color:rgba(255,68,88,.65);
+ background:linear-gradient(
+  90deg,
+  rgba(255,68,88,.10),
+  var(--panel)
+ )
 }
 
 .avatar{
@@ -406,6 +459,21 @@ button{cursor:pointer}
 }
 
 .chatlist .item{cursor:pointer}
+
+.unread-count{
+ margin-left:auto;
+ min-width:22px;
+ height:22px;
+ padding:0 6px;
+ border-radius:20px;
+ background:var(--pink);
+ color:#fff;
+ font-size:11px;
+ font-weight:700;
+ display:flex;
+ align-items:center;
+ justify-content:center
+}
 
 .chat{
  position:absolute;
@@ -641,7 +709,76 @@ button{cursor:pointer}
  display:none;
  font-size:13px;
  max-width:90%;
- text-align:center
+ text-align:center;
+ box-shadow:0 8px 30px rgba(0,0,0,.5)
+}
+
+.notification-popup{
+ position:fixed;
+ top:68px;
+ left:50%;
+ transform:translateX(-50%) translateY(-20px);
+ width:min(390px,calc(100% - 24px));
+ background:#191a1e;
+ border:1px solid #34353a;
+ border-radius:16px;
+ padding:13px 14px;
+ z-index:400;
+ display:none;
+ box-shadow:0 12px 35px rgba(0,0,0,.65);
+ opacity:0;
+ transition:.25s ease
+}
+
+.notification-popup.show{
+ display:flex;
+ opacity:1;
+ transform:translateX(-50%) translateY(0)
+}
+
+.notification-popup-inner{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ width:100%
+}
+
+.notification-popup-avatar{
+ width:44px;
+ height:44px;
+ border-radius:50%;
+ object-fit:cover;
+ background:#292a2e;
+ flex:0 0 44px
+}
+
+.notification-popup-copy{
+ min-width:0;
+ flex:1
+}
+
+.notification-popup-title{
+ font-weight:700;
+ font-size:14px;
+ margin-bottom:3px
+}
+
+.notification-popup-message{
+ color:#aaa;
+ font-size:13px;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis
+}
+
+.notification-popup-close{
+ width:30px;
+ height:30px;
+ border:0;
+ border-radius:50%;
+ background:#292a2e;
+ color:#fff;
+ flex:0 0 30px
 }
 
 .match{
@@ -849,6 +986,7 @@ Matches
 
 <div class="pagehead">
 Messages
+<span id="messagesHeadBadge" class="pagehead-badge"></span>
 </div>
 
 <div class="content">
@@ -928,6 +1066,7 @@ Matches
 <button class="tab" data-page="pageMessages">
 <b>♡</b>
 Messages
+<span id="messagesBadge" class="notification-badge"></span>
 </button>
 
 <button class="tab" data-page="pageProfile">
@@ -1215,11 +1354,13 @@ Open
 
 <div>
 <b>Notifications</b>
-<small>Match and message alerts</small>
+<small id="notificationStatus">
+Enable ISLA message notifications
+</small>
 </div>
 
-<button>
-On
+<button id="notificationBtn">
+Enable
 </button>
 
 </div>
@@ -1546,6 +1687,46 @@ Keep swiping
 </div>
 
 
+<div id="notificationPopup" class="notification-popup">
+
+<div class="notification-popup-inner">
+
+<img
+ id="notificationAvatar"
+ class="notification-popup-avatar"
+ alt=""
+>
+
+<div class="notification-popup-copy">
+
+<div
+ id="notificationTitle"
+ class="notification-popup-title"
+>
+New message
+</div>
+
+<div
+ id="notificationMessage"
+ class="notification-popup-message"
+>
+You received a new message.
+</div>
+
+</div>
+
+<button
+ id="notificationClose"
+ class="notification-popup-close"
+>
+×
+</button>
+
+</div>
+
+</div>
+
+
 <div id="toast" class="toast"></div>
 
 
@@ -1582,6 +1763,16 @@ let photos=[];
 let editing=false;
 
 let currentChat=null;
+
+let messageChannel=null;
+
+let notificationPopupTimer=null;
+
+let notificationReady=false;
+
+let fallbackTimer=null;
+
+let knownMessageIds=new Set();
 
 
 const islands=[
@@ -1681,6 +1872,764 @@ function esc(s=""){
    "'":"&#039;"
   }[c])
  );
+
+}
+
+
+/* =========================================================
+   NOTIFICATION STORAGE
+========================================================= */
+
+function getUnread(){
+
+ if(!user)return {};
+
+ try{
+
+  return JSON.parse(
+   localStorage.getItem(
+    `isla_unread_${user.id}`
+   )||"{}"
+  );
+
+ }catch(e){
+
+  return {};
+
+ }
+
+}
+
+
+function saveUnread(data){
+
+ if(!user)return;
+
+ localStorage.setItem(
+  `isla_unread_${user.id}`,
+  JSON.stringify(data)
+ );
+
+}
+
+
+function getUnreadCount(matchId){
+
+ const data=getUnread();
+
+ return Number(
+  data[String(matchId)]||0
+ );
+
+}
+
+
+function addUnread(matchId){
+
+ if(!matchId)return;
+
+ const data=getUnread();
+
+ const key=String(matchId);
+
+ data[key]=
+  Number(data[key]||0)+1;
+
+ saveUnread(data);
+
+ updateNotificationBadges();
+
+}
+
+
+function clearUnread(matchId){
+
+ if(!matchId)return;
+
+ const data=getUnread();
+
+ delete data[String(matchId)];
+
+ saveUnread(data);
+
+ localStorage.setItem(
+  `isla_read_${user.id}_${matchId}`,
+  new Date().toISOString()
+ );
+
+ updateNotificationBadges();
+
+}
+
+
+function totalUnread(){
+
+ const data=getUnread();
+
+ return Object
+  .values(data)
+  .reduce(
+   (sum,x)=>sum+Number(x||0),
+   0
+  );
+
+}
+
+
+function updateNotificationBadges(){
+
+ const total=totalUnread();
+
+ const badge=$("messagesBadge");
+
+ const head=$("messagesHeadBadge");
+
+ if(total>0){
+
+  badge.textContent=
+   total>99
+    ? "99+"
+    : total;
+
+  badge.classList.add("show");
+
+  head.textContent=
+   total>99
+    ? "99+"
+    : total;
+
+  head.classList.add("show");
+
+ }else{
+
+  badge.textContent="";
+
+  badge.classList.remove("show");
+
+  head.textContent="";
+
+  head.classList.remove("show");
+
+ }
+
+}
+
+
+/* =========================================================
+   BROWSER NOTIFICATIONS
+========================================================= */
+
+function notificationSupported(){
+
+ return (
+  "Notification" in window
+ );
+
+}
+
+
+function updateNotificationUI(){
+
+ const btn=$("notificationBtn");
+
+ const status=$("notificationStatus");
+
+ if(!btn||!status)return;
+
+
+ if(!notificationSupported()){
+
+  btn.textContent="Unavailable";
+
+  btn.disabled=true;
+
+  status.textContent=
+   "Browser notifications are not supported here.";
+
+  return;
+
+ }
+
+
+ if(Notification.permission==="granted"){
+
+  btn.textContent="Enabled";
+
+  status.textContent=
+   "ISLA message notifications are enabled.";
+
+  notificationReady=true;
+
+  return;
+
+ }
+
+
+ if(Notification.permission==="denied"){
+
+  btn.textContent="Blocked";
+
+  status.textContent=
+   "Notifications are blocked in your browser settings.";
+
+  return;
+
+ }
+
+
+ btn.textContent="Enable";
+
+ status.textContent=
+  "Enable ISLA message notifications";
+
+}
+
+
+async function enableNotifications(){
+
+ if(!notificationSupported()){
+
+  toast(
+   "Your browser does not support notifications"
+  );
+
+  return;
+
+ }
+
+
+ try{
+
+  const permission=
+   await Notification.requestPermission();
+
+  updateNotificationUI();
+
+
+  if(permission==="granted"){
+
+   notificationReady=true;
+
+   toast(
+    "Notifications enabled 🔔"
+   );
+
+  }else if(permission==="denied"){
+
+   toast(
+    "Notifications were blocked"
+   );
+
+  }
+
+ }catch(e){
+
+  console.error(
+   "Notification permission error:",
+   e
+  );
+
+  toast(
+   "Could not enable notifications"
+  );
+
+ }
+
+}
+
+
+function showBrowserNotification(
+ title,
+ body,
+ icon
+){
+
+ if(
+  !notificationSupported()||
+  Notification.permission!=="granted"
+ ){
+  return;
+ }
+
+
+ try{
+
+  const n=
+   new Notification(
+    title,
+    {
+     body:body,
+     icon:icon||undefined,
+     badge:icon||undefined,
+     tag:"isla-message"
+    }
+   );
+
+
+  n.onclick=()=>{
+
+   window.focus();
+
+   if(
+    currentChat
+   ){
+    openChat(currentChat);
+   }else{
+
+    const tab=
+     document.querySelector(
+      '.tab[data-page="pageMessages"]'
+     );
+
+    if(tab)tab.click();
+
+   }
+
+   n.close();
+
+  };
+
+ }catch(e){
+
+  console.error(
+   "Browser notification error:",
+   e
+  );
+
+ }
+
+}
+
+
+$("notificationBtn").onclick=
+ enableNotifications;
+
+
+$("notificationClose").onclick=()=>{
+
+ hideNotificationPopup();
+
+};
+
+
+function hideNotificationPopup(){
+
+ const p=$("notificationPopup");
+
+ p.classList.remove("show");
+
+ clearTimeout(
+  notificationPopupTimer
+ );
+
+ notificationPopupTimer=
+  setTimeout(()=>{
+   p.style.display="none";
+  },300);
+
+}
+
+
+async function showMessageNotification(message){
+
+ if(!message||!user)return;
+
+ if(
+  message.sender_id===user.id
+ ){
+  return;
+ }
+
+
+ const matchId=
+  Number(message.match_id);
+
+
+ if(!matchId)return;
+
+
+ if(
+  currentChat?.match_id===matchId &&
+  $("chat").classList.contains("active")
+ ){
+
+  await loadChatMessages();
+
+  return;
+
+ }
+
+
+ addUnread(matchId);
+
+
+ let senderName=
+  "Someone";
+
+ let senderPhoto="";
+
+
+ try{
+
+  const match=
+   await client
+    .from("matches")
+    .select(
+     "id,user_one,user_two"
+    )
+    .eq(
+     "id",
+     matchId
+    )
+    .maybeSingle();
+
+
+  if(
+   !match.error&&
+   match.data
+  ){
+
+   const senderId=
+    match.data.user_one===message.sender_id
+     ? match.data.user_one
+     : match.data.user_two;
+
+
+   const p=
+    await client
+     .from("profiles")
+     .select(
+      "full_name,photo_url"
+     )
+     .eq(
+      "id",
+      senderId
+     )
+     .maybeSingle();
+
+
+   if(!p.error&&p.data){
+
+    senderName=
+     p.data.full_name||
+     "Someone";
+
+    senderPhoto=
+     p.data.photo_url||
+     "";
+
+   }
+
+  }
+
+ }catch(e){
+
+  console.error(
+   "Notification profile lookup:",
+   e
+  );
+
+ }
+
+
+ $("notificationAvatar").src=
+  senderPhoto||"";
+
+ $("notificationTitle").textContent=
+  `💬 ${senderName}`;
+
+ $("notificationMessage").textContent=
+  message.message||
+  "You received a new message.";
+
+
+ const popup=
+  $("notificationPopup");
+
+
+ popup.style.display="flex";
+
+
+ requestAnimationFrame(()=>{
+  popup.classList.add("show");
+ });
+
+
+ clearTimeout(
+  notificationPopupTimer
+ );
+
+
+ notificationPopupTimer=
+  setTimeout(
+   hideNotificationPopup,
+   5000
+  );
+
+
+ const appVisible=
+  document.visibilityState==="visible";
+
+
+ if(
+  !appVisible||
+  !document.hasFocus()
+ ){
+
+  showBrowserNotification(
+   `ISLA · ${senderName}`,
+   message.message||
+    "You received a new message.",
+   senderPhoto
+  );
+
+ }else{
+
+  toast(
+   `💬 New message from ${senderName}`
+  );
+
+ }
+
+}
+
+
+/* =========================================================
+   SUPABASE REALTIME
+========================================================= */
+
+async function setupMessageRealtime(){
+
+ if(!user)return;
+
+
+ if(messageChannel){
+
+  try{
+
+   await client.removeChannel(
+    messageChannel
+   );
+
+  }catch(e){
+
+   console.error(e);
+
+  }
+
+  messageChannel=null;
+
+ }
+
+
+ messageChannel=
+  client
+   .channel(
+    `isla-messages-${user.id}-${Date.now()}`
+   )
+   .on(
+    "postgres_changes",
+    {
+     event:"INSERT",
+     schema:"public",
+     table:"messages"
+    },
+    async payload=>{
+
+     const message=
+      payload.new;
+
+     if(!message)return;
+
+
+     if(
+      message.sender_id===user.id
+     ){
+      return;
+     }
+
+
+     const id=
+      String(message.id);
+
+
+     if(
+      knownMessageIds.has(id)
+     ){
+      return;
+     }
+
+
+     knownMessageIds.add(id);
+
+
+     await showMessageNotification(
+      message
+     );
+
+    }
+   )
+   .subscribe(
+    status=>{
+
+     console.log(
+      "ISLA message realtime:",
+      status
+     );
+
+     if(status==="SUBSCRIBED"){
+
+      console.log(
+       "ISLA realtime notifications connected"
+      );
+
+     }
+
+    }
+   );
+
+}
+
+
+async function fallbackMessageCheck(){
+
+ if(!user)return;
+
+
+ try{
+
+  const mr=
+   await client
+    .from("matches")
+    .select(
+     "id,user_one,user_two"
+    )
+    .or(
+     `user_one.eq.${user.id},user_two.eq.${user.id}`
+    );
+
+
+  if(
+   mr.error||
+   !mr.data?.length
+  ){
+   return;
+  }
+
+
+  const matchIds=
+   mr.data.map(
+    x=>Number(x.id)
+   );
+
+
+  const r=
+   await client
+    .from("messages")
+    .select(
+     "id,match_id,sender_id,message,created_at"
+    )
+    .in(
+     "match_id",
+     matchIds
+    )
+    .order(
+     "created_at",
+     {
+      ascending:false
+     }
+    )
+    .limit(50);
+
+
+  if(r.error){
+
+   console.error(
+    "Fallback message check:",
+    r.error
+   );
+
+   return;
+
+  }
+
+
+  for(
+   const message of
+   (r.data||[]).reverse()
+  ){
+
+   if(
+    message.sender_id===user.id
+   ){
+    knownMessageIds.add(
+     String(message.id)
+    );
+    continue;
+   }
+
+
+   const id=
+    String(message.id);
+
+
+   if(
+    knownMessageIds.has(id)
+   ){
+    continue;
+   }
+
+
+   knownMessageIds.add(id);
+
+
+   const readKey=
+    `isla_read_${user.id}_${message.match_id}`;
+
+   const readAt=
+    localStorage.getItem(
+     readKey
+    );
+
+
+   if(
+    !readAt||
+    new Date(message.created_at)>
+     new Date(readAt)
+   ){
+
+    await showMessageNotification(
+     message
+    );
+
+   }
+
+  }
+
+ }catch(e){
+
+  console.error(
+   "Fallback notification check:",
+   e
+  );
+
+ }
+
+}
+
+
+function startFallbackTimer(){
+
+ clearInterval(
+  fallbackTimer
+ );
+
+
+ fallbackTimer=
+  setInterval(
+   fallbackMessageCheck,
+   10000
+  );
 
 }
 
@@ -1942,7 +2891,10 @@ async function loadMyProfile(){
 
  if(r.error){
 
-  console.error("Profile error:",r.error);
+  console.error(
+   "Profile error:",
+   r.error
+  );
 
  }
 
@@ -2153,6 +3105,22 @@ async function start(){
 
   $("app").classList.remove("active");
 
+  clearInterval(
+   fallbackTimer
+  );
+
+  if(messageChannel){
+
+   try{
+    await client.removeChannel(
+     messageChannel
+    );
+   }catch(e){}
+
+   messageChannel=null;
+
+  }
+
   return;
 
  }
@@ -2166,6 +3134,11 @@ async function start(){
  $("app").classList.add("active");
 
 
+ updateNotificationUI();
+
+ updateNotificationBadges();
+
+
  if(!me){
 
   await openProfile();
@@ -2176,6 +3149,15 @@ async function start(){
 
 
  await loadDiscover();
+
+ setupMessageRealtime();
+
+ startFallbackTimer();
+
+ setTimeout(
+  fallbackMessageCheck,
+  1500
+ );
 
 }
 
@@ -2514,12 +3496,32 @@ $("topProfile").onclick=()=>{
 
 $("topSettings").onclick=()=>{
 
+ updateNotificationUI();
+
  modal("settingsModal",true);
 
 };
 
 
 $("logout").onclick=async()=>{
+
+ if(messageChannel){
+
+  try{
+
+   await client.removeChannel(
+    messageChannel
+   );
+
+  }catch(e){}
+
+  messageChannel=null;
+
+ }
+
+ clearInterval(
+  fallbackTimer
+ );
 
  await client.auth.signOut();
 
@@ -2584,7 +3586,9 @@ function setupIslandPills(){
 
   saved=
    JSON.parse(
-    localStorage.getItem("isla_islands")||"[]"
+    localStorage.getItem(
+     "isla_islands"
+    )||"[]"
    );
 
  }catch(e){
@@ -3036,6 +4040,8 @@ async function loadChats(){
 
    `;
 
+   updateNotificationBadges();
+
    return;
 
   }
@@ -3112,10 +4118,18 @@ async function loadChats(){
     if(!x)return "";
 
 
+    const unread=
+     getUnreadCount(m.id);
+
+
     return `
 
      <div
-      class="item"
+      class="item ${
+       unread>0
+        ? "unread"
+        : ""
+      }"
       onclick='openChatById("${esc(x.id)}",${Number(m.id)})'
      >
 
@@ -3125,7 +4139,7 @@ async function loadChats(){
        alt=""
       >
 
-      <div>
+      <div style="min-width:0">
 
        <strong>
         ${esc(
@@ -3143,11 +4157,28 @@ async function loadChats(){
 
       </div>
 
+      ${
+       unread>0
+        ? `
+         <span class="unread-count">
+          ${
+           unread>99
+            ? "99+"
+            : unread
+          }
+         </span>
+        `
+        : ""
+      }
+
      </div>
 
     `;
 
    }).join("");
+
+
+  updateNotificationBadges();
 
 
  }catch(e){
@@ -3233,6 +4264,11 @@ async function openChat(p){
  currentChat=p;
 
 
+ clearUnread(
+  p.match_id
+ );
+
+
  $("chat").classList.add("active");
 
 
@@ -3247,6 +4283,9 @@ async function openChat(p){
 
 
  $("chatInput").value="";
+
+
+ hideNotificationPopup();
 
 
  await loadChatMessages();
@@ -3370,6 +4409,11 @@ async function loadChatMessages(){
 
  (r.data||[]).forEach(m=>{
 
+  knownMessageIds.add(
+   String(m.id)
+  );
+
+
   const d=
    document.createElement("div");
 
@@ -3443,7 +4487,9 @@ $("chatForm").onsubmit=async e=>{
 
      message:
       text
-    });
+    })
+    .select()
+    .single();
 
 
   if(r.error){
@@ -3460,6 +4506,15 @@ $("chatForm").onsubmit=async e=>{
    );
 
    return;
+
+  }
+
+
+  if(r.data?.id){
+
+   knownMessageIds.add(
+    String(r.data.id)
+   );
 
   }
 
