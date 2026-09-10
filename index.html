@@ -887,6 +887,27 @@ button{cursor:pointer}
  font-size:13px
 }
 
+.payment-bank{
+ width:100%;
+ padding:15px;
+ border-radius:12px;
+ font-weight:700;
+ font-size:14px;
+ border:1px solid #3b3c40;
+ background:#25262a;
+ color:#fff;
+}
+
+.payment-bank.bml{
+ background:var(--pink);
+ border-color:var(--pink);
+}
+
+.payment-bank.mib{
+ background:#25262a;
+ border-color:#555;
+}
+
 .toast{
  position:fixed;
  left:50%;
@@ -1649,7 +1670,7 @@ More freedom
 
 <div class="plan-price">
 
-<strong>MVR 99</strong>
+<strong>MVR 199</strong>
 <span>/ month</span>
 
 </div>
@@ -1696,7 +1717,7 @@ Our most popular plan
 
 <div class="plan-price">
 
-<strong>MVR 199</strong>
+<strong>MVR 299</strong>
 <span>/ month</span>
 
 </div>
@@ -1743,7 +1764,7 @@ VIP dating experience
 
 <div class="plan-price">
 
-<strong>MVR 299</strong>
+<strong>MVR 399</strong>
 <span>/ month</span>
 
 </div>
@@ -1773,8 +1794,7 @@ Get Platinum
 
 
 <div class="premium-note">
-Prices shown are proposed ISLA launch pricing and can be changed before payment integration.
-Payment checkout will be securely connected to a Maldives payment provider.
+Choose your Premium plan and payment method. Actual bank checkout will be connected after ISLA receives the required merchant gateway credentials.
 </div>
 
 </div>
@@ -4860,6 +4880,10 @@ document
  });
 
 
+/* =========================================================
+   PREMIUM CHECKOUT
+========================================================= */
+
 function showPremiumCheckout(plan){
 
  const sheet=
@@ -4868,6 +4892,16 @@ function showPremiumCheckout(plan){
   );
 
  if(!sheet)return;
+
+ const prices={
+  "ISLA Plus":"MVR 199",
+  "ISLA Gold":"MVR 299",
+  "ISLA Platinum":"MVR 399"
+ };
+
+ const price=
+  prices[plan]||
+  "MVR 199";
 
  sheet.innerHTML=`
 
@@ -4892,26 +4926,64 @@ function showPremiumCheckout(plan){
     ${esc(plan)}
    </h3>
 
-   <p>
-    Your ${esc(plan)} subscription is ready for checkout.
-   </p>
+   <div style="
+    font-size:28px;
+    font-weight:700;
+    margin:10px 0 18px;
+   ">
+    ${price}
+    <span style="
+     font-size:12px;
+     color:#999;
+     font-weight:400;
+    ">
+     / month
+    </span>
+   </div>
 
    <p>
-    We will connect this button to a secure Maldives payment gateway next.
+    Choose your secure payment method.
    </p>
 
-   <button
-    class="primary"
-    id="paymentComingSoon"
-    style="width:100%;margin-top:10px"
-   >
-    Continue to payment
-   </button>
+   <div style="
+    display:grid;
+    gap:10px;
+    margin-top:18px;
+   ">
+
+    <button
+     class="payment-bank bml"
+     id="bmlPayment"
+    >
+     🏦 Pay with Bank of Maldives
+    </button>
+
+    <button
+     class="payment-bank mib"
+     id="mibPayment"
+    >
+     🏦 Pay with Maldives Islamic Bank
+    </button>
+
+   </div>
+
+   <p style="
+    font-size:11px;
+    color:#777;
+    margin-top:16px;
+   ">
+    Your payment will be processed through the
+    selected bank's secure payment gateway once
+    ISLA's merchant integration is connected.
+   </p>
 
    <button
     class="secondary"
     id="checkoutChoose"
-    style="width:100%;margin-top:8px"
+    style="
+     width:100%;
+     margin-top:8px;
+    "
    >
     Choose another plan
    </button>
@@ -4935,16 +5007,179 @@ function showPremiumCheckout(plan){
 
  };
 
- $("paymentComingSoon").onclick=()=>{
+ $("bmlPayment").onclick=()=>{
 
-  toast(
-   "Secure payment integration is the next step 💳"
+  showPaymentGatewayMessage(
+   plan,
+   price,
+   "BML"
+  );
+
+ };
+
+ $("mibPayment").onclick=()=>{
+
+  showPaymentGatewayMessage(
+   plan,
+   price,
+   "MIB"
   );
 
  };
 
 }
 
+
+/* =========================================================
+   PAYMENT PROVIDER SCREEN
+========================================================= */
+
+function showPaymentGatewayMessage(
+ plan,
+ price,
+ provider
+){
+
+ const sheet=
+  document.querySelector(
+   "#premiumModal .sheet"
+  );
+
+ if(!sheet)return;
+
+ const bankName=
+  provider==="BML"
+   ? "Bank of Maldives"
+   : "Maldives Islamic Bank";
+
+ const bankShort=
+  provider==="BML"
+   ? "BML"
+   : "MIB";
+
+ sheet.innerHTML=`
+
+  <button
+   class="close"
+   id="paymentBack"
+  >
+   ×
+  </button>
+
+  <div class="checkout-message">
+
+   <div class="eyebrow">
+    ISLA PREMIUM
+   </div>
+
+   <div class="checkout-icon">
+    🔐
+   </div>
+
+   <h3>
+    ${esc(bankName)}
+   </h3>
+
+   <p style="
+    font-size:18px;
+    color:#fff;
+    font-weight:700;
+   ">
+    ${esc(plan)}
+   </p>
+
+   <p>
+    Amount:
+    <strong style="color:#fff">
+     ${esc(price)}
+    </strong>
+    / month
+   </p>
+
+   <div style="
+    background:#202125;
+    border:1px solid #34353a;
+    border-radius:13px;
+    padding:15px;
+    margin:18px 0;
+    text-align:left;
+   ">
+
+    <div style="
+     color:#7ee787;
+     font-weight:700;
+     margin-bottom:6px;
+    ">
+     🔒 Secure payment
+    </div>
+
+    <div style="
+     color:#999;
+     font-size:12px;
+     line-height:1.6;
+    ">
+     ISLA will use the official
+     ${esc(bankName)} payment gateway.
+     Your card details will not be stored by ISLA.
+    </div>
+
+   </div>
+
+   <button
+    class="primary"
+    id="gatewayContinue"
+    style="
+     width:100%;
+     margin-top:5px;
+    "
+   >
+    Continue with ${esc(bankShort)}
+   </button>
+
+   <button
+    class="secondary"
+    id="gatewayBack"
+    style="
+     width:100%;
+     margin-top:8px;
+    "
+   >
+    Choose another payment method
+   </button>
+
+  </div>
+
+ `;
+
+ $("paymentBack").onclick=()=>{
+
+  modal(
+   "premiumModal",
+   false
+  );
+
+ };
+
+ $("gatewayBack").onclick=()=>{
+
+  showPremiumCheckout(plan);
+
+ };
+
+ $("gatewayContinue").onclick=()=>{
+
+  toast(
+   `${bankName} payment gateway will be connected here 💳`
+  );
+
+ };
+
+}
+
+
+/* =========================================================
+   RESTORE PREMIUM PLANS
+========================================================= */
 
 function restorePremiumPlans(){
 
@@ -4997,7 +5232,7 @@ function restorePremiumPlans(){
     </div>
 
     <div class="plan-price">
-     <strong>MVR 99</strong>
+     <strong>MVR 199</strong>
      <span>/ month</span>
     </div>
 
@@ -5025,7 +5260,7 @@ function restorePremiumPlans(){
     </div>
 
     <div class="plan-price">
-     <strong>MVR 199</strong>
+     <strong>MVR 299</strong>
      <span>/ month</span>
     </div>
 
@@ -5053,7 +5288,7 @@ function restorePremiumPlans(){
     </div>
 
     <div class="plan-price">
-     <strong>MVR 299</strong>
+     <strong>MVR 399</strong>
      <span>/ month</span>
     </div>
 
@@ -5074,8 +5309,7 @@ function restorePremiumPlans(){
   </div>
 
   <div class="premium-note">
-   Prices shown are proposed ISLA launch pricing and can be changed before payment integration.
-   Payment checkout will be securely connected to a Maldives payment provider.
+   Choose your Premium plan and payment method. Actual bank checkout will be connected after ISLA receives the required merchant gateway credentials.
   </div>
 
  `;
@@ -5103,9 +5337,14 @@ function restorePremiumPlans(){
 
   });
 
- sheet
-  .querySelector("[data-close]")
-  .onclick=()=>{
+ const closeButton=
+  sheet.querySelector(
+   "[data-close]"
+  );
+
+ if(closeButton){
+
+  closeButton.onclick=()=>{
 
    modal(
     "premiumModal",
@@ -5113,6 +5352,8 @@ function restorePremiumPlans(){
    );
 
   };
+
+ }
 
 }
 
