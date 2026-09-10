@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ISLA — Where Exceptional Connections Begin</title>
+
+<meta name="description"
+content="ISLA — a private space for meaningful connections in the Maldives.">
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --gold: #d6ad5c;
+    --gold-light: #f1d58b;
+    --cream: #f7f0df;
+    --black: #080909;
+    --dark: #0d1112;
+    --muted: #aaa79e;
+}
+
+body {
+    font-family: Georgia, "Times New Roman", serif;
+    background: var(--black);
+    color: var(--cream);
+    overflow-x: hidden;
+}
+
+/* NAVIGATION */
+
+nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 28px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+.logo {
+    color: var(--gold-light);
+    font-size: 38px;
+    letter-spacing: 8px;
+    font-weight: normal;
+}
+
+.logo small {
+    display: block;
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+    letter-spacing: 5px;
+    margin-top: 5px;
+    text-align: center;
+    color: var(--gold);
+}
+
+.nav-links {
+    display: flex;
+    gap: 35px;
+    align-items: center;
+}
+
+.nav-links a {
+    color: #eee;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.login {
+    border: 1px solid var(--gold);
+    padding: 12px 25px;
+    border-radius: 30px;
+    color: var(--gold-light) !important;
+}
+
+/* HERO */
+
+.hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 130px 7% 80px;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(4,8,9,.97) 0%,
+            rgba(4,8,9,.85) 42%,
+            rgba(4,8,9,.38) 75%,
+            rgba(4,8,9,.7) 100%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,.1),
+            rgba(0,0,0,.75)
+        ),
+        url("https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=2000&q=85");
+
+    background-size: cover;
+    background-position: center;
+}
+
+.hero-content {
+    max-width: 650px;
+    position: relative;
+    z-index: 2;
+}
+
+.eyebrow {
+    color: var(--gold);
+    letter-spacing: 7px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    margin-bottom: 25px;
+}
+
+h1 {
+    font-size: clamp(55px, 7vw, 92px);
+    line-height: .98;
+    font-weight: normal;
+    color: var(--cream);
+    margin-bottom: 30px;
+}
+
+.hero-text {
+    font-family: Arial, sans-serif;
+    color: #ddd9cf;
+    font-size: 18px;
+    line-height: 1.7;
+    max-width: 500px;
+    margin-bottom: 38px;
+}
+
+.buttons {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-block;
+    text-decoration: none;
+    padding: 16px 30px;
+    border-radius: 40px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    transition: .3s;
+}
+
+.primary {
+    background: linear-gradient(
+        135deg,
+        var(--gold-light),
+        var(--gold)
+    );
+    color: #17130b;
+}
+
+.secondary {
+    border: 1px solid var(--gold);
+    color: var(--gold-light);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(214,173,92,.2);
+}
+
+/* GOLD LINE */
+
+.gold-line {
+    width: 100px;
+    height: 1px;
+    background: var(--gold);
+    margin: 35px 0;
+}
+
+/* FEATURES */
+
+.features {
+    display: flex;
+    gap: 50px;
+    margin-top: 55px;
+    font-family: Arial, sans-serif;
+}
+
+.feature {
+    max-width: 150px;
+}
+
+.feature-icon {
+    color: var(--gold);
+    font-size: 25px;
+    margin-bottom: 12px;
+}
+
+.feature-title {
+    color: #eee;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.feature-text {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* WHY ISLA */
+
+.section {
+    padding: 110px 7%;
+    background: var(--black);
+}
+
+.section-inner {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.section-label {
+    color: var(--gold);
+    font-family: Arial, sans-serif;
+    letter-spacing: 6px;
+    font-size: 11px;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: clamp(38px, 5vw, 62px);
+    font-weight: normal;
+    line-height: 1.1;
+    max-width: 700px;
+    margin-bottom: 25px;
+}
+
+.section-text {
+    color: var(--muted);
+    font-family: Arial, sans-serif;
+    line-height: 1.8;
+    max-width: 600px;
+}
+
+/* HOW IT WORKS */
+
+.steps-section {
+    background: #0d1112;
+    border-top: 1px solid rgba(214,173,92,.25);
+    border-bottom: 1px solid rgba(214,173,92,.25);
+}
+
+.steps-title {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 35px;
+    margin-top: 70px;
+}
+
+.step {
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.step-number {
+    width: 55px;
+    height: 55px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    margin: 0 auto 20px;
+}
+
+.step h3 {
+    font-family: Georgia, serif;
+    color: var(--cream);
+    font-size: 20px;
+    font-weight: normal;
+    margin-bottom: 10px;
+}
+
+.step p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* CTA */
+
+.cta {
+    text-align: center;
+    padding: 130px 20px;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(214,173,92,.09),
+            transparent 60%
+        ),
+        var(--black);
+}
+
+.cta h2 {
+    font-size: clamp(42px, 6vw, 70px);
+    font-weight: normal;
+    margin-bottom: 20px;
+}
+
+.cta p {
+    color: var(--muted);
+    font-family: Arial, sans-serif;
+    margin-bottom: 35px;
+}
+
+/* FOOTER */
+
+footer {
+    border-top: 1px solid rgba(214,173,92,.2);
+    padding: 35px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    color: #777;
+    font-size: 12px;
+}
+
+.footer-logo {
+    color: var(--gold);
+    letter-spacing: 5px;
+}
+
+/* MOBILE */
+
+@media(max-width: 800px) {
+
+    nav {
+        padding: 22px 6%;
+    }
+
+    .logo {
+        font-size: 30px;
+    }
+
+    .nav-links a:not(.login) {
+        display: none;
+    }
+
+    .hero {
+        min-height: 100vh;
+        padding: 140px 7% 70px;
+        background-position: 62% center;
+    }
+
+    .hero-content {
+        max-width: 100%;
+    }
+
+    h1 {
+        font-size: 56px;
+    }
+
+    .hero-text {
+        font-size: 16px;
+    }
+
+    .features {
+        gap: 20px;
+        margin-top: 40px;
+    }
+
+    .feature {
+        max-width: 105px;
+    }
+
+    .steps {
+        grid-template-columns: 1fr 1fr;
+        gap: 50px 20px;
+    }
+
+    .section {
+        padding: 80px 7%;
+    }
+
+    footer {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+}
+
+@media(max-width: 480px) {
+
+    h1 {
+        font-size: 49px;
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        text-align: center;
+    }
+
+    .steps {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+
+<nav>
+
+    <div class="logo">
+        ISLA
+        <small>DATING • MALDIVES</small>
+    </div>
+
+    <div class="nav-links">
+        <a href="#why">About</a>
+        <a href="#how">How It Works</a>
+        <a href="#" class="login">Log In</a>
+    </div>
+
+</nav>
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <div class="eyebrow">
+            ISLA
+        </div>
+
+        <h1>
+            Meet someone extraordinary.
+        </h1>
+
+        <p class="hero-text">
+            A private space for meaningful connections
+            in the Maldives. Discover people who value
+            genuine relationships, privacy and quality.
+        </p>
+
+        <div class="buttons">
+
+            <a href="#" class="btn primary">
+                Create an Account&nbsp; →
+            </a>
+
+            <a href="#" class="btn secondary">
+                Log In
+            </a>
+
+        </div>
+
+        <div class="features">
+
+            <div class="feature">
+                <div class="feature-icon">♡</div>
+                <div class="feature-title">
+                    Curated Connections
+                </div>
+                <div class="feature-text">
+                    Meet people looking for something meaningful.
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">♙</div>
+                <div class="feature-title">
+                    Private Profiles
+                </div>
+                <div class="feature-text">
+                    Your personal information stays under your control.
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">≈</div>
+                <div class="feature-title">
+                    Meaningful Relationships
+                </div>
+                <div class="feature-text">
+                    Focus on quality connections, not endless swiping.
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- WHY ISLA -->
+
+<section class="section" id="why">
+
+    <div class="section-inner">
+
+        <div class="section-label">
+            WHY ISLA
+        </div>
+
+        <h2 class="section-title">
+            More than a dating app.
+            It's a community.
+        </h2>
+
+        <div class="gold-line"></div>
+
+        <p class="section-text">
+            ISLA is designed for people who value genuine
+            connections, privacy and quality. Whether you're
+            looking for friendship, romance or something more,
+            ISLA is a place to start.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- HOW IT WORKS -->
+
+<section class="section steps-section" id="how">
+
+    <div class="section-inner">
+
+        <div class="section-label" style="text-align:center;">
+            HOW IT WORKS
+        </div>
+
+        <h2 class="section-title steps-title">
+            Simple. Safe. Meaningful.
+        </h2>
+
+        <div class="steps">
+
+            <div class="step">
+
+                <div class="step-number">01</div>
+
+                <h3>
+                    Create Your Profile
+                </h3>
+
+                <p>
+                    Tell us a little about yourself
+                    and what you're looking for.
+                </p>
+
+            </div>
+
+            <div class="step">
+
+                <div class="step-number">02</div>
+
+                <h3>
+                    Discover People
+                </h3>
+
+                <p>
+                    Browse profiles and discover
+                    people who interest you.
+                </p>
+
+            </div>
+
+            <div class="step">
+
+                <div class="step-number">03</div>
+
+                <h3>
+                    Like & Match
+                </h3>
+
+                <p>
+                    When two people like each other,
+                    it's a match.
+                </p>
+
+            </div>
+
+            <div class="step">
+
+                <div class="step-number">04</div>
+
+                <h3>
+                    Start Talking
+                </h3>
+
+                <p>
+                    Get to know each other and
+                    see where it goes.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CTA -->
+
+<section class="cta">
+
+    <div class="section-label">
+        YOUR STORY STARTS HERE
+    </div>
+
+    <h2>
+        Ready to meet someone?
+    </h2>
+
+    <p>
+        Join ISLA and discover meaningful connections.
+    </p>
+
+    <a href="#" class="btn primary">
+        Join ISLA&nbsp; →
+    </a>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <div class="footer-logo">
+        ISLA
+    </div>
+
+    <div>
+        © 2026 ISLA Dating Maldives
+    </div>
+
+    <div>
+        Privacy &nbsp; • &nbsp; Safety &nbsp; • &nbsp; Terms
+    </div>
+
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+.auth-overlay{
+    position:fixed; inset:0; z-index:100;
+    display:none; align-items:center; justify-content:center;
+    padding:20px; background:rgba(0,0,0,.82); backdrop-filter:blur(10px);
+}
+.auth-card{
+    width:min(430px,100%); background:#0d1112;
+    border:1px solid rgba(214,173,92,.45); border-radius:22px;
+    padding:38px; box-shadow:0 25px 80px rgba(0,0,0,.55);
+}
+.auth-card h2{font-size:34px;font-weight:normal;margin-bottom:8px}
+.auth-sub{font-family:Arial,sans-serif;color:#aaa79e;font-size:14px;line-height:1.6;margin-bottom:25px}
+.auth-form{display:grid;gap:14px}
+.auth-form input{
+    width:100%; padding:15px 16px; border-radius:10px;
+    border:1px solid rgba(214,173,92,.3); background:#080909;
+    color:#f7f0df; outline:none; font-family:Arial,sans-serif;
+}
+.auth-form input:focus{border-color:#d6ad5c}
+.auth-submit{
+    border:0; cursor:pointer; padding:15px; border-radius:30px;
+    background:linear-gradient(135deg,#f1d58b,#d6ad5c);
+    color:#17130b; font-weight:bold; font-family:Arial,sans-serif;
+}
+.auth-close{
+    float:right; background:none; border:0; color:#aaa79e;
+    font-size:25px; cursor:pointer;
+}
+.auth-switch{
+    margin-top:18px; text-align:center; font:13px Arial,sans-serif; color:#aaa79e;
+}
+.auth-switch button{
+    background:none;border:0;color:#f1d58b;cursor:pointer;font:inherit;
+}
+.auth-message{
+    display:none; margin-top:14px; padding:11px 13px; border-radius:9px;
+    background:rgba(214,173,92,.08); border:1px solid rgba(214,173,92,.2);
+    color:#f1d58b; font:13px Arial,sans-serif; line-height:1.5;
+}
+.account-bar{
+    display:none; align-items:center; gap:12px; font:13px Arial,sans-serif;
+    color:#ddd9cf;
+}
+.account-bar button{
+    border:1px solid #d6ad5c; background:none; color:#f1d58b;
+    border-radius:25px; padding:9px 15px; cursor:pointer;
+}
+@media(max-width:800px){
+    .account-bar{display:none}
+    .auth-card{padding:28px}
+}
+</style>
+
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-card">
+    <button class="auth-close" id="authClose" aria-label="Close">×</button>
+    <div class="section-label" id="authEyebrow">JOIN ISLA</div>
+    <h2 id="authTitle">Create your account.</h2>
+    <p class="auth-sub" id="authSub">Start your journey toward a meaningful connection.</p>
+
+    <form class="auth-form" id="authForm">
+      <input id="authEmail" type="email" placeholder="Email address" autocomplete="email" required>
+      <input id="authPassword" type="password" placeholder="Password (6+ characters)" minlength="6" autocomplete="new-password" required>
+      <button class="auth-submit" id="authSubmit" type="submit">Create Account →</button>
+    </form>
+
+    <div class="auth-message" id="authMessage"></div>
+
+    <div class="auth-switch">
+      <span id="authSwitchText">Already have an account?</span>
+      <button type="button" id="authSwitch">Log In</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const SUPABASE_URL = "https://dywvricsofabhkzaljuk.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_Ue1LpB7aGUyIWRi42mZtXQ_qCyxr5xT";
+  const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const overlay = document.getElementById("authOverlay");
+  const close = document.getElementById("authClose");
+  const form = document.getElementById("authForm");
+  const email = document.getElementById("authEmail");
+  const password = document.getElementById("authPassword");
+  const title = document.getElementById("authTitle");
+  const eyebrow = document.getElementById("authEyebrow");
+  const sub = document.getElementById("authSub");
+  const submit = document.getElementById("authSubmit");
+  const switchBtn = document.getElementById("authSwitch");
+  const switchText = document.getElementById("authSwitchText");
+  const message = document.getElementById("authMessage");
+
+  let mode = "signup";
+
+  function openAuth(newMode) {
+    mode = newMode;
+    message.style.display = "none";
+    form.reset();
+
+    if (mode === "signup") {
+      eyebrow.textContent = "JOIN ISLA";
+      title.textContent = "Create your account.";
+      sub.textContent = "Start your journey toward a meaningful connection.";
+      submit.textContent = "Create Account →";
+      switchText.textContent = "Already have an account?";
+      switchBtn.textContent = "Log In";
+      password.autocomplete = "new-password";
+    } else {
+      eyebrow.textContent = "WELCOME BACK";
+      title.textContent = "Welcome back.";
+      sub.textContent = "Log in to continue your ISLA journey.";
+      submit.textContent = "Log In →";
+      switchText.textContent = "New to ISLA?";
+      switchBtn.textContent = "Create an Account";
+      password.autocomplete = "current-password";
+    }
+
+    overlay.style.display = "flex";
+    setTimeout(() => email.focus(), 50);
+  }
+
+  function closeAuth() {
+    overlay.style.display = "none";
+  }
+
+  function showMessage(text) {
+    message.textContent = text;
+    message.style.display = "block";
+  }
+
+  document.querySelectorAll('a[href="#"]').forEach(a => {
+    const label = a.textContent.toLowerCase();
+    if (label.includes("create") || label.includes("join isla")) {
+      a.addEventListener("click", e => { e.preventDefault(); openAuth("signup"); });
+    } else if (label.includes("log in")) {
+      a.addEventListener("click", e => { e.preventDefault(); openAuth("login"); });
+    }
+  });
+
+  close.addEventListener("click", closeAuth);
+  overlay.addEventListener("click", e => {
+    if (e.target === overlay) closeAuth();
+  });
+  switchBtn.addEventListener("click", () => {
+    openAuth(mode === "signup" ? "login" : "signup");
+  });
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    submit.disabled = true;
+    submit.textContent = mode === "signup" ? "Creating..." : "Logging in...";
+    message.style.display = "none";
+
+    try {
+      if (mode === "signup") {
+        const { data, error } = await client.auth.signUp({
+          email: email.value.trim(),
+          password: password.value
+        });
+
+        if (error) throw error;
+
+        if (data.session) {
+          showMessage("Account created successfully. Welcome to ISLA.");
+          setTimeout(closeAuth, 1200);
+        } else {
+          showMessage("Account created. Please check your email to confirm your account, then log in.");
+        }
+      } else {
+        const { error } = await client.auth.signInWithPassword({
+          email: email.value.trim(),
+          password: password.value
+        });
+
+        if (error) throw error;
+
+        showMessage("Login successful. Welcome back to ISLA.");
+        setTimeout(closeAuth, 900);
+      }
+    } catch (err) {
+      showMessage(err.message || "Something went wrong. Please try again.");
+    } finally {
+      submit.disabled = false;
+      submit.textContent = mode === "signup" ? "Create Account →" : "Log In →";
+    }
+  });
+
+  client.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      document.querySelectorAll('a[href="#"]').forEach(a => {
+        if (a.textContent.toLowerCase().includes("log in")) {
+          a.textContent = "Account";
+        }
+      });
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
