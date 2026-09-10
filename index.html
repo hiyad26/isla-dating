@@ -368,13 +368,247 @@ button{cursor:pointer}
  line-height:1.6
 }
 
+
+/* =========================================================
+   EXPLORE
+========================================================= */
+
+.explore{
+ max-width:600px;
+ margin:auto;
+ padding:20px 15px 30px
+}
+
+.explore-header{
+ padding:5px 4px 18px
+}
+
+.explore-header h1{
+ font:400 34px Georgia,serif;
+ margin:6px 0 7px
+}
+
+.explore-header p{
+ margin:0;
+ color:#999;
+ font-size:14px;
+ line-height:1.5
+}
+
+.explore-grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px
+}
+
+.explore-card{
+ position:relative;
+ min-height:155px;
+ border:1px solid #292a2e;
+ border-radius:18px;
+ overflow:hidden;
+ background:
+  linear-gradient(
+   145deg,
+   rgba(255,68,88,.18),
+   #151619 65%
+  );
+ padding:18px;
+ cursor:pointer;
+ transition:
+  transform .18s ease,
+  border-color .18s ease
+}
+
+.explore-card:active{
+ transform:scale(.97)
+}
+
+.explore-card:hover{
+ border-color:#555
+}
+
+.explore-card.large{
+ grid-column:1/-1;
+ min-height:190px;
+ background:
+  radial-gradient(
+   circle at 80% 20%,
+   rgba(255,68,88,.35),
+   transparent 35%
+  ),
+  linear-gradient(
+   135deg,
+   #261116,
+   #111214
+  )
+}
+
+.explore-card.blue{
+ background:
+  radial-gradient(
+   circle at 90% 15%,
+   rgba(73,167,255,.30),
+   transparent 40%
+  ),
+  #11161c
+}
+
+.explore-card.gold{
+ background:
+  radial-gradient(
+   circle at 90% 10%,
+   rgba(214,173,92,.30),
+   transparent 40%
+  ),
+  #18150f
+}
+
+.explore-card.purple{
+ background:
+  radial-gradient(
+   circle at 90% 10%,
+   rgba(168,85,247,.30),
+   transparent 40%
+  ),
+  #17121d
+}
+
+.explore-icon{
+ font-size:34px;
+ margin-bottom:12px
+}
+
+.explore-card h3{
+ font:600 19px Georgia,serif;
+ margin:0 0 6px
+}
+
+.explore-card p{
+ color:#999;
+ font-size:12px;
+ line-height:1.45;
+ margin:0;
+ max-width:240px
+}
+
+.explore-arrow{
+ position:absolute;
+ right:15px;
+ bottom:15px;
+ width:30px;
+ height:30px;
+ border-radius:50%;
+ background:rgba(255,255,255,.08);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ color:#fff
+}
+
+.explore-section-title{
+ margin:25px 3px 11px;
+ font:600 18px Georgia,serif
+}
+
+.explore-members{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:10px
+}
+
+.explore-member{
+ position:relative;
+ height:205px;
+ border-radius:15px;
+ overflow:hidden;
+ background:#191a1e;
+ border:1px solid #292a2e;
+ cursor:pointer
+}
+
+.explore-member img{
+ width:100%;
+ height:100%;
+ object-fit:cover
+}
+
+.explore-member:after{
+ content:"";
+ position:absolute;
+ inset:40% 0 0;
+ background:linear-gradient(
+  transparent,
+  rgba(0,0,0,.92)
+ )
+}
+
+.explore-member-info{
+ position:absolute;
+ left:12px;
+ right:12px;
+ bottom:11px;
+ z-index:2
+}
+
+.explore-member-name{
+ font-weight:700;
+ font-size:15px
+}
+
+.explore-member-loc{
+ color:#ddd;
+ font-size:11px;
+ margin-top:3px
+}
+
+.explore-empty{
+ grid-column:1/-1;
+ background:var(--panel);
+ border:1px solid #292a2e;
+ border-radius:15px;
+ padding:25px;
+ text-align:center;
+ color:#888;
+ font-size:13px;
+ line-height:1.5
+}
+
+.explore-back{
+ display:flex;
+ align-items:center;
+ gap:8px;
+ background:none;
+ color:#fff;
+ border:0;
+ padding:0;
+ margin-bottom:10px;
+ font-size:14px
+}
+
+.explore-results-title{
+ font:400 27px Georgia,serif;
+ margin:5px 0 5px
+}
+
+.explore-results-subtitle{
+ color:#888;
+ font-size:13px;
+ margin-bottom:16px
+}
+
+
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
+
 .bottom{
  height:65px;
  flex:0 0 65px;
  background:#08090a;
  border-top:1px solid #1b1c1f;
  display:grid;
- grid-template-columns:repeat(5,1fr)
+ grid-template-columns:repeat(6,1fr)
 }
 
 .tab{
@@ -382,12 +616,13 @@ button{cursor:pointer}
  border:0;
  background:none;
  color:#73757b;
- font-size:10px
+ font-size:9px;
+ padding:0 1px
 }
 
 .tab b{
  display:block;
- font-size:20px;
+ font-size:19px;
  margin-bottom:3px
 }
 
@@ -706,6 +941,7 @@ button{cursor:pointer}
  color:#fff
 }
 
+
 /* =========================================================
    PREMIUM
 ========================================================= */
@@ -1016,9 +1252,31 @@ button{cursor:pointer}
 
 .match button{margin:6px}
 
+@media(max-width:380px){
+
+ .tab{
+  font-size:8px
+ }
+
+ .tab b{
+  font-size:17px
+ }
+
+ .explore-grid{
+  gap:9px
+ }
+
+ .explore-card{
+  padding:14px;
+  min-height:145px
+ }
+
+}
+
 @media(min-width:700px){
+
  .bottom{
-  max-width:540px;
+  max-width:600px;
   margin:auto;
   width:100%;
   border-radius:20px 20px 0 0
@@ -1027,6 +1285,19 @@ button{cursor:pointer}
  .topbar{
   padding:0 calc((100% - 600px)/2 + 10px)
  }
+
+ .explore-grid{
+  grid-template-columns:repeat(3,1fr)
+ }
+
+ .explore-card.large{
+  grid-column:1/-1
+ }
+
+ .explore-card:nth-child(4){
+  grid-column:auto
+ }
+
 }
 </style>
 </head>
@@ -1079,6 +1350,10 @@ Discover, match, chat and build meaningful connections.
 <main class="main">
 
 
+<!-- =====================================================
+     DISCOVER
+===================================================== -->
+
 <section id="pageDiscover" class="tabpage active">
 
 <div class="discover">
@@ -1108,7 +1383,7 @@ LIKE
 PASS
 </div>
 
-<div class="badge superbadge" id="superBadge">
+<div class="badge superb​​adge" id="superBadge">
 SUPER LIKE
 </div>
 
@@ -1173,6 +1448,177 @@ Refresh
 </section>
 
 
+<!-- =====================================================
+     EXPLORE
+===================================================== -->
+
+<section id="pageExplore" class="tabpage">
+
+<div class="explore">
+
+<div class="explore-header">
+
+<div class="eyebrow">
+DISCOVER MORE
+</div>
+
+<h1>Explore</h1>
+
+<p>
+Find new people and connections in your own way.
+</p>
+
+</div>
+
+
+<div class="explore-grid">
+
+
+<div
+ class="explore-card large"
+ data-explore="forYou"
+>
+
+<div class="explore-icon">💕</div>
+
+<h3>For You</h3>
+
+<p>
+Personalized profiles waiting for you.
+Keep swiping and discover someone special.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+
+<div
+ class="explore-card"
+ data-explore="nearby"
+>
+
+<div class="explore-icon">🌴</div>
+
+<h3>Nearby Islands</h3>
+
+<p>
+Discover people around the Maldives.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+
+<div
+ class="explore-card blue"
+ data-explore="new"
+>
+
+<div class="explore-icon">✨</div>
+
+<h3>New Members</h3>
+
+<p>
+Meet people who recently joined ISLA.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+
+<div
+ class="explore-card"
+ data-explore="interests"
+>
+
+<div class="explore-icon">🎯</div>
+
+<h3>Shared Interests</h3>
+
+<p>
+Find people who like the things you like.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+
+<div
+ class="explore-card gold"
+ data-explore="popular"
+>
+
+<div class="explore-icon">🔥</div>
+
+<h3>Popular on ISLA</h3>
+
+<p>
+Profiles getting attention right now.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+
+<div
+ class="explore-card purple"
+ data-explore="premium"
+>
+
+<div class="explore-icon">💎</div>
+
+<h3>Premium Picks</h3>
+
+<p>
+A premium way to discover more people.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+
+<div
+ class="explore-card"
+ data-explore="online"
+>
+
+<div class="explore-icon">🟢</div>
+
+<h3>Online Now</h3>
+
+<p>
+Discover active members on ISLA.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+</div>
+
+
+<div
+ id="exploreResults"
+ class="hidden"
+>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     LIKES
+===================================================== -->
+
 <section id="pageLikes" class="tabpage">
 
 <div class="pagehead">
@@ -1186,6 +1632,10 @@ Likes
 </section>
 
 
+<!-- =====================================================
+     MATCHES
+===================================================== -->
+
 <section id="pageMatches" class="tabpage">
 
 <div class="pagehead">
@@ -1198,6 +1648,10 @@ Matches
 
 </section>
 
+
+<!-- =====================================================
+     MESSAGES
+===================================================== -->
 
 <section id="pageMessages" class="tabpage">
 
@@ -1213,6 +1667,10 @@ Messages
 </section>
 
 
+<!-- =====================================================
+     PROFILE
+===================================================== -->
+
 <section id="pageProfile" class="tabpage">
 
 <div class="pagehead">
@@ -1223,6 +1681,10 @@ Profile
 
 </section>
 
+
+<!-- =====================================================
+     CHAT
+===================================================== -->
 
 <div id="chat" class="chat">
 
@@ -1261,11 +1723,20 @@ Profile
 </main>
 
 
+<!-- =====================================================
+     BOTTOM NAVIGATION
+===================================================== -->
+
 <nav class="bottom">
 
 <button class="tab active" data-page="pageDiscover">
 <b>🔥</b>
 Discover
+</button>
+
+<button class="tab" data-page="pageExplore">
+<b>✦</b>
+Explore
 </button>
 
 <button class="tab" data-page="pageLikes">
@@ -1293,6 +1764,10 @@ Profile
 
 </div>
 
+
+<!-- =====================================================
+     AUTH MODAL
+===================================================== -->
 
 <div id="authModal" class="modal">
 
@@ -1343,6 +1818,10 @@ Forgot password?
 
 </div>
 
+
+<!-- =====================================================
+     PROFILE MODAL
+===================================================== -->
 
 <div id="profileModal" class="modal">
 
@@ -1463,6 +1942,10 @@ Save profile
 </div>
 
 
+<!-- =====================================================
+     SETTINGS
+===================================================== -->
+
 <div id="settingsModal" class="modal">
 
 <div class="sheet">
@@ -1551,6 +2034,10 @@ Log out
 </div>
 
 
+<!-- =====================================================
+     PREFERENCES
+===================================================== -->
+
 <div id="preferencesModal" class="modal">
 
 <div class="sheet">
@@ -1615,7 +2102,7 @@ Save preferences
 
 
 <!-- =====================================================
-     PREMIUM MODAL
+     PREMIUM
 ===================================================== -->
 
 <div id="premiumModal" class="modal">
@@ -1640,16 +2127,11 @@ Get more matches, more visibility and more control over your dating experience.
 
 </div>
 
-
 <div class="premium-benefit">
 ✨ <b>Meet more people.</b> Get the tools designed to help you make meaningful connections faster.
 </div>
 
-
 <div class="plan-grid">
-
-
-<!-- PLUS -->
 
 <div class="plan">
 
@@ -1667,14 +2149,12 @@ More freedom
 
 </div>
 
-
 <div class="plan-price">
 
 <strong>MVR 199</strong>
 <span>/ month</span>
 
 </div>
-
 
 <ul class="plan-features">
 
@@ -1686,17 +2166,12 @@ More freedom
 
 </ul>
 
-
-<button
- data-plan="plus"
->
+<button data-plan="plus">
 Get Plus
 </button>
 
 </div>
 
-
-<!-- GOLD -->
 
 <div class="plan recommended gold">
 
@@ -1714,14 +2189,12 @@ Our most popular plan
 
 </div>
 
-
 <div class="plan-price">
 
 <strong>MVR 299</strong>
 <span>/ month</span>
 
 </div>
-
 
 <ul class="plan-features">
 
@@ -1733,17 +2206,12 @@ Our most popular plan
 
 </ul>
 
-
-<button
- data-plan="gold"
->
+<button data-plan="gold">
 Get Gold
 </button>
 
 </div>
 
-
-<!-- PLATINUM -->
 
 <div class="plan platinum">
 
@@ -1761,14 +2229,12 @@ VIP dating experience
 
 </div>
 
-
 <div class="plan-price">
 
 <strong>MVR 399</strong>
 <span>/ month</span>
 
 </div>
-
 
 <ul class="plan-features">
 
@@ -1780,18 +2246,13 @@ VIP dating experience
 
 </ul>
 
-
-<button
- data-plan="platinum"
->
+<button data-plan="platinum">
 Get Platinum
 </button>
 
 </div>
 
-
 </div>
-
 
 <div class="premium-note">
 Choose your Premium plan and payment method. Actual bank checkout will be connected after ISLA receives the required merchant gateway credentials.
@@ -1801,6 +2262,10 @@ Choose your Premium plan and payment method. Actual bank checkout will be connec
 
 </div>
 
+
+<!-- =====================================================
+     SAFETY
+===================================================== -->
 
 <div id="safetyModal" class="modal">
 
@@ -1861,6 +2326,10 @@ Meet in a public place and report suspicious behaviour.
 </div>
 
 
+<!-- =====================================================
+     MATCH
+===================================================== -->
+
 <div id="matchModal" class="match">
 
 <div>
@@ -1891,6 +2360,10 @@ Keep swiping
 
 </div>
 
+
+<!-- =====================================================
+     NOTIFICATION
+===================================================== -->
 
 <div id="notificationPopup" class="notification-popup">
 
@@ -1971,6 +2444,10 @@ let knownMessageIds=new Set();
 let photoIndex=0;
 let currentProfilePhotos=[];
 
+
+/* =========================================================
+   ISLANDS
+========================================================= */
 
 const islands=[
  "Malé",
@@ -2540,7 +3017,7 @@ async function showMessageNotification(message){
 
 
 /* =========================================================
-   SUPABASE REALTIME
+   REALTIME
 ========================================================= */
 
 async function setupMessageRealtime(){
@@ -3339,11 +3816,13 @@ async function loadDiscover(){
 
  render();
 
+ renderExploreHome();
+
 }
 
 
 /* =========================================================
-   RENDER PROFILE CARD
+   RENDER DISCOVER PROFILE
 ========================================================= */
 
 function render(){
@@ -3679,6 +4158,630 @@ $("sendMessage").onclick=async()=>{
 
 
 /* =========================================================
+   EXPLORE
+========================================================= */
+
+function renderExploreHome(){
+
+ const box=$("exploreResults");
+
+ if(!box)return;
+
+ box.classList.add("hidden");
+
+}
+
+
+function profilePhoto(p){
+
+ if(
+  Array.isArray(p?.photo_urls)&&
+  p.photo_urls.length
+ ){
+
+  return p.photo_urls[0]||"";
+
+ }
+
+ return p?.photo_url||"";
+
+}
+
+
+function renderExploreResults(
+ title,
+ subtitle,
+ list
+){
+
+ const box=$("exploreResults");
+
+ if(!box)return;
+
+ const safeList=
+  Array.isArray(list)
+   ? list
+   : [];
+
+ box.classList.remove("hidden");
+
+ box.innerHTML=`
+
+  <button
+   class="explore-back"
+   id="exploreBack"
+  >
+   ← Back to Explore
+  </button>
+
+  <div class="explore-results-title">
+   ${esc(title)}
+  </div>
+
+  <div class="explore-results-subtitle">
+   ${esc(subtitle)}
+  </div>
+
+  <div class="explore-members">
+
+   ${
+    safeList.length
+     ? safeList.map(p=>{
+
+        const photo=
+         profilePhoto(p);
+
+        const a=
+         age(p.date_of_birth);
+
+        return `
+
+         <div
+          class="explore-member"
+          data-profile-id="${esc(p.id)}"
+         >
+
+          ${
+           photo
+            ? `
+             <img
+              src="${esc(photo)}"
+              alt=""
+             >
+            `
+            : `
+             <div
+              style="
+               width:100%;
+               height:100%;
+               display:flex;
+               align-items:center;
+               justify-content:center;
+               font-size:45px;
+               background:#202125;
+              "
+             >
+              ◉
+             </div>
+            `
+          }
+
+          <div class="explore-member-info">
+
+           <div class="explore-member-name">
+
+            ${esc(
+             p.full_name||
+             "ISLA Member"
+            )}
+
+            ${
+             a!=null
+              ? ` ${a}`
+              : ""
+            }
+
+           </div>
+
+           <div class="explore-member-loc">
+
+            ${
+             [p.island,p.gender]
+              .filter(Boolean)
+              .map(esc)
+              .join(" · ")||
+             "Maldives"
+            }
+
+           </div>
+
+          </div>
+
+         </div>
+
+        `;
+
+       }).join("")
+     : `
+      <div class="explore-empty">
+
+       <div style="font-size:34px;margin-bottom:10px">
+        🌴
+       </div>
+
+       No profiles found in this category yet.
+       Check back soon as more people join ISLA.
+
+      </div>
+     `
+   }
+
+  </div>
+
+ `;
+
+ $("exploreBack").onclick=()=>{
+  box.classList.add("hidden");
+ };
+
+ box
+  .querySelectorAll(".explore-member")
+  .forEach(card=>{
+
+   card.onclick=()=>{
+
+    const id=
+     card.dataset.profileId;
+
+    const p=
+     profiles.find(
+      x=>x.id===id
+     );
+
+    if(p){
+
+     openExploreProfile(p);
+
+    }
+
+   };
+
+  });
+
+ box.scrollIntoView({
+  behavior:"smooth",
+  block:"start"
+ });
+
+}
+
+
+function openExploreProfile(p){
+
+ const photo=
+  profilePhoto(p);
+
+ const a=
+  age(p.date_of_birth);
+
+ const box=$("exploreResults");
+
+ box.classList.remove("hidden");
+
+ box.innerHTML=`
+
+  <button
+   class="explore-back"
+   id="profileExploreBack"
+  >
+   ← Back to Explore
+  </button>
+
+  <div
+   style="
+    background:#151619;
+    border:1px solid #292a2e;
+    border-radius:20px;
+    overflow:hidden;
+   "
+  >
+
+   <div
+    style="
+     height:430px;
+     background:#202125;
+     position:relative;
+    "
+   >
+
+    ${
+     photo
+      ? `
+       <img
+        src="${esc(photo)}"
+        alt=""
+        style="
+         width:100%;
+         height:100%;
+         object-fit:cover;
+        "
+       >
+      `
+      : `
+       <div
+        style="
+         width:100%;
+         height:100%;
+         display:flex;
+         align-items:center;
+         justify-content:center;
+         font-size:70px;
+        "
+       >
+        ◉
+       </div>
+      `
+    }
+
+    <div
+     style="
+      position:absolute;
+      inset:45% 0 0;
+      background:linear-gradient(
+       transparent,
+       rgba(0,0,0,.95)
+      );
+     "
+    ></div>
+
+    <div
+     style="
+      position:absolute;
+      left:18px;
+      right:18px;
+      bottom:18px;
+     "
+    >
+
+     <div
+      style="
+       font:700 30px Georgia,serif;
+      "
+     >
+      ${esc(
+       p.full_name||
+       "ISLA Member"
+      )}
+
+      ${
+       a!=null
+        ? ` ${a}`
+        : ""
+      }
+
+     </div>
+
+     <div
+      style="
+       margin-top:5px;
+       color:#ddd;
+       font-size:14px;
+      "
+     >
+      ${
+       [p.island,p.gender]
+        .filter(Boolean)
+        .map(esc)
+        .join(" · ")
+      }
+     </div>
+
+    </div>
+
+   </div>
+
+   <div style="padding:18px">
+
+    ${
+     p.bio
+      ? `
+       <p
+        style="
+         color:#ccc;
+         line-height:1.6;
+         margin:0 0 12px;
+        "
+       >
+        ${esc(p.bio)}
+       </p>
+      `
+      : ""
+    }
+
+    ${
+     p.interests
+      ? `
+       <div
+        style="
+         color:#ffd88e;
+         font-size:13px;
+         margin-bottom:17px;
+        "
+       >
+        ♡ ${esc(p.interests)}
+       </div>
+      `
+      : ""
+    }
+
+    <div
+     style="
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:9px;
+     "
+    >
+
+     <button
+      class="secondary"
+      id="explorePass"
+     >
+      ✕ Pass
+     </button>
+
+     <button
+      class="primary"
+      id="exploreLike"
+     >
+      ♥ Like
+     </button>
+
+    </div>
+
+   </div>
+
+  </div>
+
+ `;
+
+ $("profileExploreBack").onclick=()=>{
+  box.classList.add("hidden");
+ };
+
+ $("exploreLike").onclick=async()=>{
+
+  const r=
+   await client.rpc(
+    "like_profile",
+    {
+     target_user:p.id
+    }
+   );
+
+  if(r.error){
+
+   toast(
+    r.error.message||
+    "Could not like profile"
+   );
+
+   return;
+
+  }
+
+  if(r.data?.matched){
+
+   currentChat={
+    ...p,
+    match_id:Number(r.data.match_id)
+   };
+
+   $("matchName").textContent=
+    `You matched with ${p.full_name||"someone"}!`;
+
+   modal(
+    "matchModal",
+    true
+   );
+
+  }else{
+
+   toast("Like sent ❤️");
+
+  }
+
+  profiles=
+   profiles.filter(
+    x=>x.id!==p.id
+   );
+
+  box.classList.add("hidden");
+
+ };
+
+ $("explorePass").onclick=()=>{
+
+  profiles=
+   profiles.filter(
+    x=>x.id!==p.id
+   );
+
+  box.classList.add("hidden");
+
+  toast("Profile passed");
+
+ };
+
+}
+
+
+async function runExplore(type){
+
+ if(!profiles.length){
+
+  await loadDiscover();
+
+ }
+
+ let list=
+  [...profiles];
+
+ let title="Explore";
+ let subtitle="Discover people on ISLA.";
+
+ if(type==="forYou"){
+
+  title="For You";
+  subtitle=
+   "Profiles selected from your available Discover pool.";
+
+  list=
+   profiles.slice(0,12);
+
+ }
+
+ if(type==="nearby"){
+
+  title="Nearby Islands";
+  subtitle=
+   "People from islands represented in your discovery pool.";
+
+  const myIsland=
+   me?.island||
+   "";
+
+  list=
+   profiles
+    .filter(
+     p=>
+      myIsland&&
+      p.island&&
+      p.island.toLowerCase()===
+       myIsland.toLowerCase()
+    );
+
+  if(!list.length){
+
+   list=
+    profiles
+     .filter(p=>p.island)
+     .slice(0,12);
+
+  }
+
+ }
+
+ if(type==="new"){
+
+  title="New Members";
+  subtitle=
+   "Recently joined members on ISLA.";
+
+  list=
+   [...profiles]
+    .sort(
+     (a,b)=>
+      new Date(b.created_at||0)-
+      new Date(a.created_at||0)
+    )
+    .slice(0,12);
+
+ }
+
+ if(type==="interests"){
+
+  title="Shared Interests";
+  subtitle=
+   "People whose interests overlap with yours.";
+
+  const mine=
+   (me?.interests||"")
+    .toLowerCase()
+    .split(/[,\s]+/)
+    .filter(Boolean);
+
+  list=
+   profiles
+    .filter(p=>{
+
+     const theirs=
+      (p.interests||"")
+       .toLowerCase();
+
+     return mine.some(
+      word=>
+       word.length>2&&
+       theirs.includes(word)
+     );
+
+    });
+
+ }
+
+ if(type==="popular"){
+
+  title="Popular on ISLA";
+  subtitle=
+   "Profiles currently available to discover.";
+
+  list=
+   [...profiles]
+    .sort(
+     (a,b)=>
+      new Date(a.created_at||0)-
+      new Date(b.created_at||0)
+    )
+    .slice(0,12);
+
+ }
+
+ if(type==="premium"){
+
+  modal(
+   "premiumModal",
+   true
+  );
+
+  return;
+
+ }
+
+ if(type==="online"){
+
+  title="Online Now";
+  subtitle=
+   "Active status will become available when ISLA adds presence tracking.";
+
+  list=
+   profiles.slice(0,12);
+
+ }
+
+ renderExploreResults(
+  title,
+  subtitle,
+  list
+ );
+
+}
+
+
+document
+ .querySelectorAll("[data-explore]")
+ .forEach(card=>{
+
+  card.onclick=()=>{
+
+   runExplore(
+    card.dataset.explore
+   );
+
+  };
+
+ });
+
+
+/* =========================================================
    NAVIGATION
 ========================================================= */
 
@@ -3706,27 +4809,51 @@ document
     .classList.add("active");
 
    if(
+    t.dataset.page==="pageDiscover"
+   ){
+
+    render();
+
+   }
+
+   if(
+    t.dataset.page==="pageExplore"
+   ){
+
+    renderExploreHome();
+
+   }
+
+   if(
     t.dataset.page==="pageLikes"
    ){
+
     await loadLikes();
+
    }
 
    if(
     t.dataset.page==="pageMatches"
    ){
+
     await loadMatches();
+
    }
 
    if(
     t.dataset.page==="pageMessages"
    ){
+
     await loadChats();
+
    }
 
    if(
     t.dataset.page==="pageProfile"
    ){
+
     renderProfilePage();
+
    }
 
   };
@@ -4210,7 +5337,7 @@ async function loadMatches(){
 
 
 /* =========================================================
-   MESSAGES LIST
+   MESSAGES
 ========================================================= */
 
 async function loadChats(){
@@ -5031,7 +6158,7 @@ function showPremiumCheckout(plan){
 
 
 /* =========================================================
-   PAYMENT PROVIDER SCREEN
+   PAYMENT PROVIDER
 ========================================================= */
 
 function showPaymentGatewayMessage(
@@ -5178,7 +6305,7 @@ function showPaymentGatewayMessage(
 
 
 /* =========================================================
-   RESTORE PREMIUM PLANS
+   RESTORE PREMIUM
 ========================================================= */
 
 function restorePremiumPlans(){
