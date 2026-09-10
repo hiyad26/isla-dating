@@ -183,13 +183,61 @@ button{cursor:pointer}
  width:100%;
  height:100%;
  object-fit:cover;
- display:block
+ display:block;
+ transition:opacity .18s ease
+}
+
+/* =========================================================
+   MULTI PHOTO NAVIGATION
+========================================================= */
+
+.photo-progress{
+ position:absolute;
+ top:10px;
+ left:10px;
+ right:10px;
+ display:flex;
+ gap:4px;
+ z-index:7;
+ pointer-events:none
+}
+
+.photo-progress span{
+ height:3px;
+ flex:1;
+ border-radius:5px;
+ background:rgba(255,255,255,.35);
+ overflow:hidden;
+ transition:background .15s ease
+}
+
+.photo-progress span.active{
+ background:#fff
+}
+
+.photo-touch-left,
+.photo-touch-right{
+ position:absolute;
+ top:0;
+ bottom:0;
+ width:50%;
+ z-index:4;
+}
+
+.photo-touch-left{
+ left:0
+}
+
+.photo-touch-right{
+ right:0
 }
 
 .shade{
  position:absolute;
  inset:35% 0 0;
- background:linear-gradient(transparent,rgba(0,0,0,.95))
+ background:linear-gradient(transparent,rgba(0,0,0,.95));
+ z-index:2;
+ pointer-events:none
 }
 
 .copy{
@@ -197,7 +245,8 @@ button{cursor:pointer}
  left:20px;
  right:20px;
  bottom:22px;
- z-index:3
+ z-index:3;
+ pointer-events:none
 }
 
 .name{
@@ -234,7 +283,7 @@ button{cursor:pointer}
  font-weight:800;
  letter-spacing:1px;
  opacity:0;
- z-index:5
+ z-index:9
 }
 
 .likebadge{
@@ -266,7 +315,7 @@ button{cursor:pointer}
  display:flex;
  align-items:center;
  gap:13px;
- z-index:8
+ z-index:10
 }
 
 .action{
@@ -876,6 +925,13 @@ Discover, match, chat and build meaningful connections.
 <div class="profile-card" id="swipeCard">
 
 <img id="pPhoto" alt="Profile">
+
+<!-- PHOTO PROGRESS BARS -->
+<div id="photoProgress" class="photo-progress"></div>
+
+<!-- PHOTO TAP AREAS -->
+<div class="photo-touch-left" id="photoLeft"></div>
+<div class="photo-touch-right" id="photoRight"></div>
 
 <div id="pPlaceholder" class="empty hidden">
 No photo
@@ -1774,6 +1830,14 @@ let fallbackTimer=null;
 
 let knownMessageIds=new Set();
 
+/* =========================================================
+   MULTI PHOTO STATE
+========================================================= */
+
+let photoIndex=0;
+
+let currentProfilePhotos=[];
+
 
 const islands=[
  "Malé",
@@ -2197,6 +2261,7 @@ function showBrowserNotification(
   );
 
  }
+
 
 }
 
@@ -2846,12 +2911,18 @@ $("locationBtn").onclick=()=>{
 
 $("photos").onchange=e=>{
 
+ const selected=
+  Array.from(e.target.files||[]);
+
  photos=[
   ...photos,
-  ...Array.from(e.target.files)
+  ...selected
  ].slice(0,5);
 
  renderPhotoGrid();
+
+ /* Allow selecting the same files again */
+ e.target.value="";
 
 };
 
@@ -2859,14 +2930,14 @@ $("photos").onchange=e=>{
 function renderPhotoGrid(){
 
  $("photoGrid").innerHTML=
-  photos.map(f=>`
+  photos.map((f,i)=>`
 
    <div>
     <img src="${
      typeof f==="string"
       ? f
       : URL.createObjectURL(f)
-    }">
+    }" alt="Photo ${i+1}">
    </div>
 
   `).join("");
@@ -3219,10 +3290,18 @@ async function loadDiscover(){
 
  index=0;
 
+ photoIndex=0;
+
+ currentProfilePhotos=[];
+
  render();
 
 }
 
+
+/* =========================================================
+   RENDER PROFILE CARD
+========================================================= */
 
 function render(){
 
@@ -3236,6 +3315,12 @@ function render(){
   card.classList.add("hidden");
 
   empty.classList.remove("hidden");
+
+  currentProfilePhotos=[];
+
+  photoIndex=0;
+
+  $("photoProgress").innerHTML="";
 
   return;
 
@@ -3273,24 +3358,182 @@ function render(){
    : "";
 
 
- if(p.photo_url){
+ /* =======================================================
+    BUILD PHOTO ARRAY
+ ======================================================= */
 
-  $("pPhoto").src=p.photo_url;
+ currentProfilePhotos=
+  Array.isArray(p.photo_urls)
+   ? p.photo_urls.filter(Boolean)
+   : [];
 
-  $("pPhoto").classList.remove("hidden");
 
- }else{
+ /* Fallback for older profiles */
+ if(
+  !currentProfilePhotos.length &&
+  p.photo_url
+ ){
+  currentProfilePhotos=[
+   p.photo_url
+  ];
+ }
 
-  $("pPhoto").classList.add("hidden");
+
+ photoIndex=0;
+
+ renderProfilePhoto();
+
+}
+
+
+/* =========================================================
+   RENDER CURRENT PROFILE PHOTO
+========================================================= */
+
+function renderProfilePhoto(){
+
+ const img=$("pPhoto");
+
+ const progress=$("photoProgress");
+
+ if(
+  !currentProfilePhotos.length
+ ){
+
+  img.src="";
+
+  img.classList.add("hidden");
+
+  progress.innerHTML="";
+
+  return;
 
  }
 
+
+ img.classList.remove("hidden");
+
+
+ const src=
+  currentProfilePhotos[
+   photoIndex
+  ];
+
+
+ img.style.opacity="0";
+
+
+ setTimeout(()=>{
+
+  img.src=src;
+
+  img.onload=()=>{
+
+   img.style.opacity="1";
+
+  };
+
+ },50);
+
+
+ progress.innerHTML=
+  currentProfilePhotos
+   .map(
+    (_,i)=>`
+     <span
+      class="${
+       i===photoIndex
+        ? "active"
+        : ""
+      }"
+     ></span>
+    `
+   )
+   .join("");
+
 }
+
+
+/* =========================================================
+   NEXT PHOTO
+========================================================= */
+
+function nextPhoto(){
+
+ if(
+  currentProfilePhotos.length<=1
+ ){
+  return;
+ }
+
+
+ photoIndex=
+  (
+   photoIndex+1
+  )%
+  currentProfilePhotos.length;
+
+
+ renderProfilePhoto();
+
+}
+
+
+/* =========================================================
+   PREVIOUS PHOTO
+========================================================= */
+
+function previousPhoto(){
+
+ if(
+  currentProfilePhotos.length<=1
+ ){
+  return;
+ }
+
+
+ photoIndex=
+  (
+   photoIndex-1+
+   currentProfilePhotos.length
+  )%
+  currentProfilePhotos.length;
+
+
+ renderProfilePhoto();
+
+}
+
+
+/* =========================================================
+   PHOTO TAP CONTROLS
+========================================================= */
+
+$("photoLeft").onclick=e=>{
+
+ e.stopPropagation();
+
+ previousPhoto();
+
+};
+
+
+$("photoRight").onclick=e=>{
+
+ e.stopPropagation();
+
+ nextPhoto();
+
+};
 
 
 function next(){
 
  index++;
+
+ photoIndex=0;
+
+ currentProfilePhotos=[];
 
  render();
 
@@ -4670,8 +4913,12 @@ document
   "pointerdown",
   e=>{
 
+   /* Don't start swipe when using buttons
+      or photo navigation */
    if(
-    e.target.closest(".actions")
+    e.target.closest(".actions") ||
+    e.target.closest(".photo-touch-left") ||
+    e.target.closest(".photo-touch-right")
    ){
     return;
    }
