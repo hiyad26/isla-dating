@@ -1,0 +1,9300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#d96b86">
+<meta name="isla-ui-version" content="Tinder Refresh + Conversation Delete">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ISLA">
+<title>ISLA — Dating Maldives</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+ --pink:#ff4458;
+ --pink2:#fd5061;
+ --gold:#d6ad5c;
+ --white:#fff;
+ --muted:#9b9b9f;
+ --bg:#000;
+ --panel:#111214;
+ --panel2:#191a1e;
+ --line:#292a2e;
+ --blue:#49a7ff;
+ --purple:#a855f7;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+ margin:0;
+ background:var(--bg);
+ color:#fff;
+ font-family:Arial,sans-serif
+}
+
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+
+.hidden{display:none!important}
+.screen{min-height:100vh}
+
+.landing{
+ min-height:100vh;
+ background:radial-gradient(circle at 50% 20%,#2a1017,transparent 45%),#000
+}
+
+.landing nav{
+ height:72px;
+ padding:0 6%;
+ display:flex;
+ justify-content:space-between;
+ align-items:center
+}
+
+.brand{
+ font:700 25px Georgia,serif;
+ letter-spacing:6px;
+ color:var(--pink)
+}
+
+.landing .hero{
+ text-align:center;
+ max-width:850px;
+ margin:0 auto;
+ padding:12vh 20px 80px
+}
+
+.eyebrow{
+ font-size:12px;
+ letter-spacing:4px;
+ color:#bbb
+}
+
+.landing h1{
+ font:400 clamp(48px,9vw,90px)/.95 Georgia,serif;
+ margin:22px 0
+}
+
+.landing p{
+ color:#aaa;
+ line-height:1.7;
+ max-width:620px;
+ margin:0 auto 30px
+}
+
+.primary{
+ background:var(--pink);
+ color:#fff;
+ border:0;
+ border-radius:28px;
+ padding:15px 28px;
+ font-weight:700
+}
+
+.secondary{
+ background:transparent;
+ color:#fff;
+ border:1px solid #555;
+ border-radius:28px;
+ padding:14px 25px
+}
+
+.landing .buttons{
+ display:flex;
+ justify-content:center;
+ gap:12px;
+ flex-wrap:wrap
+}
+
+#app{
+ display:none;
+ height:100dvh;
+ overflow:hidden;
+ background:#000
+}
+
+#app.active{
+ display:flex;
+ flex-direction:column
+}
+
+.topbar{
+ height:58px;
+ flex:0 0 58px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 15px;
+ background:#000;
+ border-bottom:1px solid #18191b
+}
+
+.topbar .brand{font-size:22px}
+
+.icon{
+ width:40px;
+ height:40px;
+ border-radius:50%;
+ border:0;
+ background:#17181b;
+ color:#fff
+}
+
+.main{
+ position:relative;
+ flex:1;
+ min-height:0;
+ overflow:hidden
+}
+
+.tabpage{
+ position:absolute;
+ inset:0;
+ display:none;
+ overflow:auto
+}
+
+.tabpage.active{display:block}
+
+.discover{
+ height:100%;
+ max-width:540px;
+ margin:auto;
+ padding:8px 8px 5px;
+ display:flex;
+ flex-direction:column
+}
+
+.card-area{
+ position:relative;
+ flex:1;
+ min-height:0
+}
+
+.profile-card{
+ position:absolute;
+ inset:0;
+ border-radius:18px;
+ overflow:hidden;
+ background:#18191b;
+ touch-action:none;
+ box-shadow:0 10px 40px #000
+}
+
+.profile-card img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ display:block;
+ transition:opacity .18s ease
+}
+
+.photo-progress{
+ position:absolute;
+ top:10px;
+ left:10px;
+ right:10px;
+ display:flex;
+ gap:4px;
+ z-index:7;
+ pointer-events:none
+}
+
+.photo-progress span{
+ height:3px;
+ flex:1;
+ border-radius:5px;
+ background:rgba(255,255,255,.35);
+ overflow:hidden;
+ transition:background .15s ease
+}
+
+.photo-progress span.active{
+ background:#fff
+}
+
+.photo-touch-left,
+.photo-touch-right{
+ position:absolute;
+ top:0;
+ bottom:0;
+ width:50%;
+ z-index:4;
+}
+
+.photo-touch-left{left:0}
+.photo-touch-right{right:0}
+
+.shade{
+ position:absolute;
+ inset:35% 0 0;
+ background:linear-gradient(transparent,rgba(0,0,0,.95));
+ z-index:2;
+ pointer-events:none
+}
+
+.copy{
+ position:absolute;
+ left:20px;
+ right:20px;
+ bottom:22px;
+ z-index:3;
+ pointer-events:none
+}
+
+.name{
+ font:700 30px/1.1 Georgia,serif
+}
+
+.loc{
+ font-size:14px;
+ margin-top:6px;
+ color:#eee
+}
+
+.bio{
+ font-size:14px;
+ line-height:1.45;
+ color:#eee;
+ margin-top:10px;
+ max-height:62px;
+ overflow:hidden
+}
+
+.interests{
+ font-size:13px;
+ color:#ffd88e;
+ margin-top:7px
+}
+
+.badge{
+ position:absolute;
+ top:28px;
+ padding:8px 13px;
+ border:2px solid;
+ border-radius:8px;
+ font-weight:800;
+ letter-spacing:1px;
+ opacity:0;
+ z-index:9
+}
+
+.likebadge{
+ right:20px;
+ color:var(--pink);
+ border-color:var(--pink);
+ transform:rotate(12deg)
+}
+
+.passbadge{
+ left:20px;
+ color:#fff;
+ border-color:#fff;
+ transform:rotate(-12deg)
+}
+
+.superbadge{
+ left:50%;
+ transform:translateX(-50%);
+ color:#49a7ff;
+ border-color:#49a7ff
+}
+
+.actions{
+ position:absolute;
+ bottom:13px;
+ left:50%;
+ transform:translateX(-50%);
+ display:flex;
+ align-items:center;
+ gap:13px;
+ z-index:10
+}
+
+.action{
+ border-radius:50%;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:#17181b;
+ color:#fff;
+ border:1px solid #333;
+ box-shadow:0 6px 20px #000
+}
+
+.action.pass{
+ width:57px;
+ height:57px;
+ font-size:23px
+}
+
+.action.super{
+ width:50px;
+ height:50px;
+ color:#49a7ff;
+ font-size:19px
+}
+
+.action.like{
+ width:66px;
+ height:66px;
+ background:var(--pink);
+ border-color:var(--pink);
+ font-size:27px
+}
+
+.action.boost{
+ width:50px;
+ height:50px;
+ color:#a855f7;
+ font-size:18px
+}
+
+.empty{
+ height:100%;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ padding:35px
+}
+
+.empty h2{
+ font:400 28px Georgia,serif
+}
+
+.empty p{
+ color:#999;
+ line-height:1.6
+}
+
+
+/* =========================================================
+   EXPLORE
+========================================================= */
+
+.explore{
+ max-width:600px;
+ margin:auto;
+ padding:20px 15px 30px
+}
+
+.explore-header{
+ padding:5px 4px 18px
+}
+
+.explore-header h1{
+ font:400 34px Georgia,serif;
+ margin:6px 0 7px
+}
+
+.explore-header p{
+ margin:0;
+ color:#999;
+ font-size:14px;
+ line-height:1.5
+}
+
+.explore-grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px
+}
+
+.explore-card{
+ position:relative;
+ min-height:155px;
+ border:1px solid #292a2e;
+ border-radius:18px;
+ overflow:hidden;
+ background:
+  linear-gradient(
+   145deg,
+   rgba(255,68,88,.18),
+   #151619 65%
+  );
+ padding:18px;
+ cursor:pointer;
+ transition:
+  transform .18s ease,
+  border-color .18s ease
+}
+
+.explore-card:active{
+ transform:scale(.97)
+}
+
+.explore-card:hover{
+ border-color:#555
+}
+
+.explore-card.large{
+ grid-column:1/-1;
+ min-height:190px;
+ background:
+  radial-gradient(
+   circle at 80% 20%,
+   rgba(255,68,88,.35),
+   transparent 35%
+  ),
+  linear-gradient(
+   135deg,
+   #261116,
+   #111214
+  )
+}
+
+.explore-card.blue{
+ background:
+  radial-gradient(
+   circle at 90% 15%,
+   rgba(73,167,255,.30),
+   transparent 40%
+  ),
+  #11161c
+}
+
+.explore-card.gold{
+ background:
+  radial-gradient(
+   circle at 90% 10%,
+   rgba(214,173,92,.30),
+   transparent 40%
+  ),
+  #18150f
+}
+
+.explore-card.purple{
+ background:
+  radial-gradient(
+   circle at 90% 10%,
+   rgba(168,85,247,.30),
+   transparent 40%
+  ),
+  #17121d
+}
+
+.explore-icon{
+ font-size:34px;
+ margin-bottom:12px
+}
+
+.explore-card h3{
+ font:600 19px Georgia,serif;
+ margin:0 0 6px
+}
+
+.explore-card p{
+ color:#999;
+ font-size:12px;
+ line-height:1.45;
+ margin:0;
+ max-width:240px
+}
+
+.explore-arrow{
+ position:absolute;
+ right:15px;
+ bottom:15px;
+ width:30px;
+ height:30px;
+ border-radius:50%;
+ background:rgba(255,255,255,.08);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ color:#fff
+}
+
+.explore-section-title{
+ margin:25px 3px 11px;
+ font:600 18px Georgia,serif
+}
+
+.explore-members{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:10px
+}
+
+.explore-member{
+ position:relative;
+ height:205px;
+ border-radius:15px;
+ overflow:hidden;
+ background:#191a1e;
+ border:1px solid #292a2e;
+ cursor:pointer
+}
+
+.explore-member img{
+ width:100%;
+ height:100%;
+ object-fit:cover
+}
+
+.explore-member:after{
+ content:"";
+ position:absolute;
+ inset:40% 0 0;
+ background:linear-gradient(
+  transparent,
+  rgba(0,0,0,.92)
+ )
+}
+
+.explore-member-info{
+ position:absolute;
+ left:12px;
+ right:12px;
+ bottom:11px;
+ z-index:2
+}
+
+.explore-member-name{
+ font-weight:700;
+ font-size:15px
+}
+
+.explore-member-loc{
+ color:#ddd;
+ font-size:11px;
+ margin-top:3px
+}
+
+.explore-empty{
+ grid-column:1/-1;
+ background:var(--panel);
+ border:1px solid #292a2e;
+ border-radius:15px;
+ padding:25px;
+ text-align:center;
+ color:#888;
+ font-size:13px;
+ line-height:1.5
+}
+
+.explore-back{
+ display:flex;
+ align-items:center;
+ gap:8px;
+ background:none;
+ color:#fff;
+ border:0;
+ padding:0;
+ margin-bottom:10px;
+ font-size:14px
+}
+
+.explore-results-title{
+ font:400 27px Georgia,serif;
+ margin:5px 0 5px
+}
+
+.explore-results-subtitle{
+ color:#888;
+ font-size:13px;
+ margin-bottom:16px
+}
+
+
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
+
+.bottom{
+ height:65px;
+ flex:0 0 65px;
+ background:#08090a;
+ border-top:1px solid #1b1c1f;
+ display:grid;
+ grid-template-columns:repeat(6,1fr)
+}
+
+.tab{
+ position:relative;
+ border:0;
+ background:none;
+ color:#73757b;
+ font-size:9px;
+ padding:0 1px
+}
+
+.tab b{
+ display:block;
+ font-size:19px;
+ margin-bottom:3px
+}
+
+.tab.active{color:#fff}
+
+.notification-badge{
+ position:absolute;
+ top:3px;
+ left:50%;
+ margin-left:7px;
+ min-width:17px;
+ height:17px;
+ padding:0 5px;
+ border-radius:20px;
+ background:var(--pink);
+ color:#fff;
+ font-size:10px;
+ font-weight:700;
+ line-height:17px;
+ text-align:center;
+ display:none;
+ box-shadow:0 0 0 2px #08090a
+}
+
+.notification-badge.show{
+ display:block
+}
+
+.pagehead{
+ height:60px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ border-bottom:1px solid #202125;
+ font:600 22px Georgia,serif;
+ position:relative
+}
+
+.pagehead-badge{
+ position:absolute;
+ margin-left:115px;
+ min-width:19px;
+ height:19px;
+ padding:0 5px;
+ border-radius:20px;
+ background:var(--pink);
+ color:#fff;
+ font:700 11px Arial,sans-serif;
+ line-height:19px;
+ text-align:center;
+ display:none
+}
+
+.pagehead-badge.show{
+ display:block
+}
+
+.content{
+ padding:16px;
+ max-width:600px;
+ margin:auto
+}
+
+.list{
+ display:grid;
+ gap:10px
+}
+
+.item{
+ background:var(--panel);
+ border:1px solid #242529;
+ border-radius:14px;
+ padding:13px;
+ display:flex;
+ gap:12px;
+ align-items:center
+}
+
+.item.unread{
+ border-color:rgba(255,68,88,.65);
+ background:linear-gradient(
+  90deg,
+  rgba(255,68,88,.10),
+  var(--panel)
+ )
+}
+
+.avatar{
+ width:58px;
+ height:58px;
+ border-radius:50%;
+ object-fit:cover;
+ background:#25262a
+}
+
+.item strong{font-size:15px}
+
+.item small{
+ display:block;
+ color:#999;
+ margin-top:5px
+}
+
+.item button{
+ margin-left:auto;
+ border:0;
+ border-radius:20px;
+ padding:9px 13px;
+ background:#25262a;
+ color:#fff
+}
+
+.chatlist .item{cursor:pointer}
+
+.unread-count{
+ margin-left:auto;
+ min-width:22px;
+ height:22px;
+ padding:0 6px;
+ border-radius:20px;
+ background:var(--pink);
+ color:#fff;
+ font-size:11px;
+ font-weight:700;
+ display:flex;
+ align-items:center;
+ justify-content:center
+}
+
+.chat{
+ position:absolute;
+ inset:0;
+ background:#08090a;
+ display:none;
+ flex-direction:column;
+ z-index:30
+}
+
+.chat.active{display:flex}
+
+.chathead{
+ height:58px;
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:0 12px;
+ border-bottom:1px solid #222
+}
+
+.chat-menu-btn{
+ margin-left:auto;
+ width:40px;
+ height:40px;
+ border:0;
+ border-radius:50%;
+ background:transparent;
+ color:#fff;
+ font-size:27px;
+ line-height:1;
+ display:flex;
+ align-items:center;
+ justify-content:center
+}
+.chat-menu-btn:active{background:#242529}
+
+.chat-menu-btn{
+  flex:0 0 40px;
+}
+.chat-options-close{
+  width:100%;
+  border:0;
+  background:#242529;
+  color:#fff;
+  padding:14px 12px;
+  border-radius:13px;
+  font-size:16px;
+  margin-top:4px;
+}
+.chat-option.danger{
+  color:#ff5d6c!important;
+}
+.isla-conversation-row{
+  transition:opacity .18s ease,transform .18s ease;
+}
+.isla-conversation-row.isla-removing{
+  opacity:0;
+  transform:translateX(18px);
+}
+.chat-options{position:fixed;inset:0;z-index:120;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.72)}
+.chat-options.active{display:flex}
+.chat-options-sheet{width:min(600px,100%);background:#151619;border-radius:22px 22px 0 0;padding:10px 12px 20px}
+.chat-options-title{padding:14px 12px 10px;color:#999;font-size:13px}
+.chat-option{width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:16px 12px;border-radius:13px;font-size:16px}
+.chat-option:hover{background:#222328}
+.chat-option.danger{color:#ff5d6c!important}
+.chat-option small{display:block;color:#888;margin-top:3px;font-size:12px}
+
+.chatbody{
+ flex:1;
+ overflow:auto;
+ padding:15px
+}
+
+.bubble{
+ max-width:75%;
+ padding:10px 13px;
+ border-radius:18px;
+ margin:7px 0;
+ background:#242529;
+ word-break:break-word
+}
+
+.bubble.mine{
+ margin-left:auto;
+ background:var(--pink)
+}
+
+.composer{
+ display:flex;
+ gap:8px;
+ padding:10px;
+ border-top:1px solid #222
+}
+
+.composer input{
+ flex:1;
+ border:0;
+ background:#191a1e;
+ color:#fff;
+ border-radius:22px;
+ padding:12px 15px
+}
+
+.composer button{
+ width:45px;
+ border:0;
+ border-radius:50%;
+ background:var(--pink);
+ color:#fff
+}
+
+.settings-section{
+ background:var(--panel);
+ border-radius:14px;
+ margin-bottom:12px;
+ overflow:hidden
+}
+
+.setting{
+ padding:15px;
+ border-bottom:1px solid #292a2e;
+ display:flex;
+ justify-content:space-between;
+ align-items:center
+}
+
+.setting:last-child{border-bottom:0}
+
+.setting small{
+ display:block;
+ color:#888;
+ margin-top:4px
+}
+
+.danger{color:#ff5d6c!important}
+
+.modal{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.82);
+ z-index:100;
+ display:none;
+ align-items:flex-end;
+ justify-content:center
+}
+
+.modal.active{display:flex}
+
+.sheet{
+ width:min(600px,100%);
+ max-height:92dvh;
+ overflow:auto;
+ background:#151619;
+ border-radius:22px 22px 0 0;
+ padding:20px
+}
+
+.sheet h2{
+ font:400 27px Georgia,serif;
+ margin:5px 0 18px
+}
+
+.close{
+ float:right;
+ background:#292a2e;
+ color:#fff;
+ border:0;
+ width:35px;
+ height:35px;
+ border-radius:50%
+}
+
+.form{
+ display:grid;
+ gap:11px
+}
+
+.form label{
+ font-size:12px;
+ color:#aaa
+}
+
+.form input,
+.form select,
+.form textarea{
+ width:100%;
+ padding:13px;
+ border-radius:9px;
+ border:1px solid #36373b;
+ background:#090a0b;
+ color:#fff
+}
+
+.form textarea{min-height:90px}
+
+.form .primary{border-radius:9px}
+
+
+/* =========================================================
+   TINDER STYLE PROFILE PHOTO EDITOR
+========================================================= */
+
+.profile-editor-intro{
+ color:#999;
+ font-size:13px;
+ line-height:1.5;
+ margin:-8px 0 14px
+}
+
+.profile-photo-editor{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+ margin-top:4px
+}
+
+.profile-photo-slot{
+ position:relative;
+ aspect-ratio:1;
+ border-radius:13px;
+ overflow:hidden;
+ background:#202125;
+ border:1px solid #34353a;
+ min-width:0
+}
+
+.profile-photo-slot img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ display:block
+}
+
+.profile-photo-slot.add-photo{
+ border:1px dashed #555;
+ background:#1a1b1e;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ color:#aaa;
+ flex-direction:column;
+ gap:4px;
+ transition:.15s ease
+}
+
+.profile-photo-slot.add-photo:active{
+ transform:scale(.96);
+ background:#242529
+}
+
+.profile-photo-slot.add-photo .plus{
+ font-size:28px;
+ line-height:1;
+ color:#fff
+}
+
+.profile-photo-slot.add-photo .add-text{
+ font-size:10px;
+ color:#999
+}
+
+.photo-main-badge{
+ position:absolute;
+ top:7px;
+ left:7px;
+ background:rgba(0,0,0,.78);
+ color:#fff;
+ border:1px solid rgba(255,255,255,.45);
+ border-radius:6px;
+ padding:4px 6px;
+ font-size:8px;
+ font-weight:800;
+ letter-spacing:.7px;
+ z-index:3
+}
+
+.photo-remove{
+ position:absolute;
+ top:6px;
+ right:6px;
+ width:28px;
+ height:28px;
+ border:0;
+ border-radius:50%;
+ background:rgba(0,0,0,.78);
+ color:#fff;
+ font-size:19px;
+ line-height:28px;
+ padding:0;
+ z-index:4
+}
+
+.photo-tools{
+ position:absolute;
+ left:5px;
+ right:5px;
+ bottom:5px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:4px;
+ z-index:4
+}
+
+.photo-tool{
+ min-width:29px;
+ height:29px;
+ border:0;
+ border-radius:50%;
+ background:rgba(0,0,0,.78);
+ color:#fff;
+ padding:0;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:13px
+}
+
+.photo-tool.main{
+ background:var(--pink)
+}
+
+.photo-main-text{
+ font-size:9px;
+ font-weight:700;
+ color:#fff;
+ padding:0 5px
+}
+
+.profile-photo-help{
+ color:#777;
+ font-size:11px;
+ line-height:1.45;
+ margin:8px 2px 0
+}
+
+
+/* =========================================================
+   TINDER STYLE PROFILE PAGE
+========================================================= */
+
+.profile-page-wrap{
+ max-width:600px;
+ margin:auto;
+ padding-bottom:30px
+}
+
+.profile-page-photos{
+ display:grid;
+ grid-template-columns:2fr 1fr;
+ grid-template-rows:210px 210px;
+ gap:5px;
+ padding:0 0 12px
+}
+
+.profile-page-photo{
+ position:relative;
+ overflow:hidden;
+ background:#202125;
+ min-height:0
+}
+
+.profile-page-photo:first-child{
+ grid-row:1 / 3;
+ border-radius:0 0 0 16px
+}
+
+.profile-page-photo:nth-child(2){
+ border-radius:0 0 5px 0
+}
+
+.profile-page-photo:nth-child(3){
+ border-radius:0 0 5px 0
+}
+
+.profile-page-photo img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ display:block
+}
+
+.profile-page-photo-placeholder{
+ width:100%;
+ height:100%;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:55px;
+ color:#555
+}
+
+.profile-photo-count{
+ position:absolute;
+ right:10px;
+ top:10px;
+ padding:6px 9px;
+ border-radius:15px;
+ background:rgba(0,0,0,.68);
+ color:#fff;
+ font-size:10px;
+ font-weight:700
+}
+
+.profile-page-info{
+ padding:0 16px
+}
+
+.profile-page-name-row{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:10px;
+ margin-top:4px
+}
+
+.profile-page-name{
+ font:400 30px/1.15 Georgia,serif;
+ word-break:break-word
+}
+
+.profile-page-edit{
+ width:45px;
+ height:45px;
+ border-radius:50%;
+ background:#25262a;
+ color:#fff;
+ border:1px solid #393a3f;
+ flex:0 0 45px;
+ font-size:18px
+}
+
+.profile-page-meta{
+ color:#aaa;
+ font-size:13px;
+ margin-top:7px
+}
+
+.profile-page-section{
+ margin-top:23px
+}
+
+.profile-page-section-title{
+ font-size:12px;
+ font-weight:700;
+ letter-spacing:1.4px;
+ color:#999;
+ text-transform:uppercase;
+ margin-bottom:9px
+}
+
+.profile-page-bio{
+ color:#ddd;
+ font-size:14px;
+ line-height:1.6;
+ white-space:pre-wrap;
+ word-break:break-word
+}
+
+.profile-interest-chips{
+ display:flex;
+ flex-wrap:wrap;
+ gap:7px
+}
+
+.profile-interest-chip{
+ border:1px solid #36373b;
+ background:#202125;
+ color:#ddd;
+ border-radius:20px;
+ padding:8px 11px;
+ font-size:12px
+}
+
+.profile-empty-note{
+ color:#777;
+ background:#17181b;
+ border:1px solid #292a2e;
+ border-radius:12px;
+ padding:13px;
+ font-size:12px;
+ line-height:1.5
+}
+
+.profile-edit-full{
+ width:100%;
+ margin-top:22px;
+ border-radius:12px;
+ padding:14px
+}
+
+@media(max-width:380px){
+
+ .tab{
+  font-size:8px
+ }
+
+ .tab b{
+  font-size:17px
+ }
+
+ .explore-grid{
+  gap:9px
+ }
+
+ .explore-card{
+  padding:14px;
+  min-height:145px
+ }
+
+ .profile-page-photos{
+  grid-template-rows:180px 180px
+ }
+
+}
+
+
+/* =========================================================
+   PREMIUM
+========================================================= */
+
+.premium-intro{
+ text-align:center;
+ padding:4px 4px 16px
+}
+
+.premium-intro h2{
+ margin:5px 0 8px;
+ font:400 30px Georgia,serif
+}
+
+.premium-intro p{
+ margin:0;
+ color:#999;
+ line-height:1.55;
+ font-size:14px
+}
+
+.plan-grid{
+ display:grid;
+ gap:12px
+}
+
+.plan{
+ position:relative;
+ border:1px solid #303136;
+ background:linear-gradient(
+  145deg,
+  #191a1e,
+  #111214
+ );
+ border-radius:17px;
+ padding:20px;
+ overflow:hidden
+}
+
+.plan.recommended{
+ border-color:var(--gold);
+ box-shadow:0 0 0 1px rgba(214,173,92,.15);
+}
+
+.plan.recommended:before{
+ content:"MOST POPULAR";
+ position:absolute;
+ top:0;
+ right:0;
+ background:var(--gold);
+ color:#000;
+ padding:6px 12px;
+ border-radius:0 0 0 12px;
+ font-size:9px;
+ font-weight:800;
+ letter-spacing:1px
+}
+
+.plan-head{
+ display:flex;
+ justify-content:space-between;
+ align-items:flex-start;
+ gap:10px;
+ padding-right:65px
+}
+
+.plan h3{
+ margin:0;
+ font:600 21px Georgia,serif
+}
+
+.plan-tag{
+ color:#999;
+ font-size:11px;
+ margin-top:4px
+}
+
+.plan-price{
+ margin:16px 0 12px
+}
+
+.plan-price strong{
+ font-size:31px
+}
+
+.plan-price span{
+ color:#999;
+ font-size:12px
+}
+
+.plan-features{
+ list-style:none;
+ padding:0;
+ margin:0;
+ display:grid;
+ gap:9px
+}
+
+.plan-features li{
+ color:#ccc;
+ font-size:13px;
+ display:flex;
+ gap:8px;
+ line-height:1.35
+}
+
+.plan-features li:before{
+ content:"✓";
+ color:#7ee787;
+ font-weight:700
+}
+
+.plan button{
+ margin-top:17px;
+ width:100%;
+ padding:13px;
+ border-radius:25px;
+ border:0;
+ background:var(--pink);
+ color:#fff;
+ font-weight:700
+}
+
+.plan.gold button{
+ background:var(--gold);
+ color:#000
+}
+
+.plan.platinum{
+ border-color:#686a73
+}
+
+.plan.platinum button{
+ background:#fff;
+ color:#000
+}
+
+.premium-note{
+ text-align:center;
+ color:#777;
+ font-size:11px;
+ line-height:1.5;
+ margin:15px 5px 4px
+}
+
+.premium-benefit{
+ margin:13px 0 17px;
+ padding:13px;
+ border-radius:12px;
+ background:rgba(255,68,88,.07);
+ border:1px solid rgba(255,68,88,.15);
+ text-align:center;
+ color:#ccc;
+ font-size:12px
+}
+
+.premium-benefit b{
+ color:#fff
+}
+
+.checkout-message{
+ text-align:center;
+ padding:15px 5px 5px
+}
+
+.checkout-message .checkout-icon{
+ font-size:38px;
+ margin-bottom:8px
+}
+
+.checkout-message h3{
+ font:400 24px Georgia,serif;
+ margin:5px 0 8px
+}
+
+.checkout-message p{
+ color:#999;
+ line-height:1.6;
+ font-size:13px
+}
+
+.payment-bank{
+ width:100%;
+ padding:15px;
+ border-radius:12px;
+ font-weight:700;
+ font-size:14px;
+ border:1px solid #3b3c40;
+ background:#25262a;
+ color:#fff;
+}
+
+.payment-bank.bml{
+ background:var(--pink);
+ border-color:var(--pink);
+}
+
+.payment-bank.mib{
+ background:#25262a;
+ border-color:#555;
+}
+
+.toast{
+ position:fixed;
+ left:50%;
+ bottom:85px;
+ transform:translateX(-50%);
+ background:#242529;
+ color:#fff;
+ padding:12px 17px;
+ border-radius:22px;
+ z-index:300;
+ display:none;
+ font-size:13px;
+ max-width:90%;
+ text-align:center;
+ box-shadow:0 8px 30px rgba(0,0,0,.5)
+}
+
+.notification-popup{
+ position:fixed;
+ top:76px;
+ right:12px;
+ left:auto;
+ transform:translateX(120%);
+ width:min(360px,calc(100% - 24px));
+ background:#191a1e;
+ border:1px solid #34353a;
+ border-radius:18px;
+ padding:11px 12px;
+ z-index:400;
+ display:none;
+ box-shadow:0 10px 28px rgba(0,0,0,.55);
+ opacity:0;
+ transition:transform .22s ease,opacity .22s ease;
+ cursor:pointer
+}
+
+.notification-popup.show{
+ display:flex;
+ opacity:1;
+ transform:translateX(0)
+}
+
+.notification-popup-inner{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ width:100%
+}
+
+.notification-popup-avatar{
+ width:44px;
+ height:44px;
+ border-radius:50%;
+ object-fit:cover;
+ background:#292a2e;
+ flex:0 0 44px
+}
+
+.notification-popup-copy{
+ min-width:0;
+ flex:1
+}
+
+.notification-popup-title{
+ font-weight:700;
+ font-size:14px;
+ margin-bottom:3px
+}
+
+.notification-popup-message{
+ color:#aaa;
+ font-size:13px;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis
+}
+
+.notification-popup-close{
+ width:30px;
+ height:30px;
+ border:0;
+ border-radius:50%;
+ background:#292a2e;
+ color:#fff;
+ flex:0 0 30px
+}
+
+.match{
+ position:fixed;
+ inset:0;
+ z-index:250;
+ background:radial-gradient(circle at center,#40151e,#000 60%);
+ display:none;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ padding:30px
+}
+
+.match.active{display:flex}
+
+.match h1{
+ font:400 58px Georgia,serif;
+ color:#fff
+}
+
+.match p{color:#ccc}
+
+.match button{margin:6px}
+
+@media(min-width:700px){
+
+ .bottom{
+  max-width:600px;
+  margin:auto;
+  width:100%;
+  border-radius:20px 20px 0 0
+ }
+
+ .topbar{
+  padding:0 calc((100% - 600px)/2 + 10px)
+ }
+
+ .explore-grid{
+  grid-template-columns:repeat(3,1fr)
+ }
+
+ .explore-card.large{
+  grid-column:1/-1
+ }
+
+ .explore-card:nth-child(4){
+  grid-column:auto
+ }
+
+ .profile-page-photos{
+  border-radius:16px;
+  overflow:hidden
+ }
+
+}
+
+/* =========================================================
+   ROMANTIC MALDIVES BANNERS
+========================================================= */
+.romantic-banner{
+  position:relative;
+  min-height:175px;
+  margin:0 0 16px;
+  padding:22px 20px;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:22px;
+  overflow:hidden;
+  display:flex;
+  align-items:flex-end;
+  background:
+    radial-gradient(circle at 85% 18%,rgba(255,182,193,.30),transparent 28%),
+    radial-gradient(circle at 18% 100%,rgba(73,167,255,.22),transparent 38%),
+    linear-gradient(135deg,#35131e 0%,#17111a 52%,#091a24 100%);
+  box-shadow:0 12px 38px rgba(0,0,0,.38);
+}
+.romantic-banner:before{
+  content:"";
+  position:absolute;
+  width:150px;
+  height:150px;
+  right:-35px;
+  top:-50px;
+  border-radius:50%;
+  background:rgba(255,214,224,.12);
+  filter:blur(2px);
+}
+.romantic-banner:after{
+  content:"";
+  position:absolute;
+  inset:auto -10% -55% -10%;
+  height:110px;
+  background:radial-gradient(ellipse,rgba(255,68,88,.18),transparent 68%);
+  animation:romanticGlow 4s ease-in-out infinite;
+}
+.romantic-banner-content{
+  position:relative;
+  z-index:2;
+  max-width:390px;
+}
+.romantic-banner-eyebrow{
+  color:#ffd9df;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.romantic-banner h3{
+  margin:0 0 7px;
+  font:400 25px/1.15 Georgia,serif;
+}
+.romantic-banner p{
+  margin:0;
+  color:#ddd;
+  font-size:12px;
+  line-height:1.5;
+  max-width:330px;
+}
+.romantic-banner-button{
+  position:relative;
+  z-index:3;
+  display:inline-flex;
+  margin-top:13px;
+  padding:9px 14px;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:20px;
+  background:rgba(255,255,255,.10);
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  backdrop-filter:blur(8px);
+}
+.romantic-banner.small{
+  min-height:145px;
+  margin-top:12px;
+}
+.romantic-banner.ocean{
+  background:
+    radial-gradient(circle at 90% 20%,rgba(73,167,255,.34),transparent 31%),
+    linear-gradient(135deg,#101d2a,#10141b 55%,#132d3a);
+}
+.romantic-banner.sunset{
+  background:
+    radial-gradient(circle at 82% 10%,rgba(255,184,119,.36),transparent 32%),
+    linear-gradient(135deg,#3a1420,#21131d 48%,#10202a);
+}
+.romantic-banner.gold{
+  background:
+    radial-gradient(circle at 88% 12%,rgba(214,173,92,.35),transparent 32%),
+    linear-gradient(135deg,#2b2113,#171519 55%,#111214);
+}
+.romantic-float{
+  position:absolute;
+  right:24px;
+  top:24px;
+  font-size:38px;
+  opacity:.86;
+  filter:drop-shadow(0 8px 18px rgba(0,0,0,.35));
+  animation:romanticFloat 3.8s ease-in-out infinite;
+  z-index:2;
+}
+@keyframes romanticFloat{
+  0%,100%{transform:translateY(0) rotate(-3deg)}
+  50%{transform:translateY(-7px) rotate(3deg)}
+}
+@keyframes romanticGlow{
+  0%,100%{opacity:.55;transform:scaleX(1)}
+  50%{opacity:1;transform:scaleX(1.08)}
+}
+@media(max-width:380px){
+  .romantic-banner{min-height:165px;padding:19px 17px}
+  .romantic-banner h3{font-size:22px}
+  .romantic-float{right:16px;top:18px;font-size:32px}
+}
+
+
+/* ISLA ROMANTIC RELATIONSHIP INTENTIONS */
+.isla-goals{display:grid;gap:8px;margin:5px 0 2px}
+.isla-goal{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #39313a;border-radius:14px;background:linear-gradient(135deg,rgba(143,63,86,.12),rgba(255,255,255,.025));cursor:pointer}
+.isla-goal:has(input:checked){border-color:#c97b91;background:linear-gradient(135deg,rgba(143,63,86,.32),rgba(232,201,155,.08))}
+.isla-goal input{accent-color:#c97b91;width:17px;height:17px}
+.isla-goal b{display:block;font-size:13px;color:#fff}
+.isla-goal small{display:block;color:#888;font-size:11px;margin-top:3px}
+.isla-goal-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.isla-goal-chip{padding:6px 9px;border-radius:18px;border:1px solid rgba(201,123,145,.4);background:rgba(143,63,86,.16);color:#f3c6d3;font-size:11px}
+.isla-goal-chip.gold{border-color:rgba(232,201,155,.4);background:rgba(232,201,155,.08);color:#f2d9ae}
+.isla-goal-filters{display:flex;flex-wrap:wrap;gap:7px;margin:5px 0 8px}
+.isla-goal-filter{border:1px solid #36313a;background:#17131a;color:#bbb;border-radius:20px;padding:8px 10px;font-size:11px}
+.isla-goal-filter.active{border-color:#c97b91;background:rgba(143,63,86,.22);color:#fff}
+
+/* =========================================================
+   ISLA ROMANTIC LUXURY THEME — FINAL POLISH
+   Visual-only overrides; existing application logic preserved.
+========================================================= */
+:root{
+  --pink:#d96b86;
+  --pink2:#ef9bad;
+  --gold:#e8c99b;
+  --white:#fffaf8;
+  --muted:#b8aeb1;
+  --bg:#0b080a;
+  --panel:#171114;
+  --panel2:#21171b;
+  --line:#3a292f;
+  --blue:#76bcd8;
+  --purple:#b58bd4;
+  --rose:#8f3f56;
+  --cream:#f6e8e2;
+}
+
+html,body{
+  background:
+    radial-gradient(circle at 15% 0%,rgba(143,63,86,.18),transparent 32%),
+    radial-gradient(circle at 90% 20%,rgba(232,201,155,.09),transparent 28%),
+    #0b080a;
+  color:var(--white);
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background-attachment:fixed;
+}
+
+button{
+  -webkit-tap-highlight-color:transparent;
+}
+
+.landing{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 10%,rgba(217,107,134,.26),transparent 34%),
+    radial-gradient(circle at 15% 75%,rgba(232,201,155,.10),transparent 28%),
+    linear-gradient(145deg,#0b080a 0%,#1a0c12 48%,#090d12 100%);
+}
+
+.landing:before{
+  content:"";
+  position:absolute;
+  inset:-25%;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 25% 30%,rgba(255,190,205,.08),transparent 12%),
+    radial-gradient(circle at 78% 68%,rgba(118,188,216,.07),transparent 15%);
+  animation:islaBreath 8s ease-in-out infinite;
+}
+
+@keyframes islaBreath{
+  0%,100%{transform:scale(1);opacity:.7}
+  50%{transform:scale(1.06);opacity:1}
+}
+
+.landing nav{
+  position:relative;
+  z-index:2;
+  height:76px;
+}
+
+.brand{
+  color:#f0a2b3;
+  text-shadow:0 4px 22px rgba(217,107,134,.28);
+  letter-spacing:7px;
+}
+
+.landing .hero{
+  position:relative;
+  z-index:2;
+  padding-top:8vh;
+}
+
+.eyebrow{
+  color:#e7c5cb;
+  letter-spacing:4px;
+}
+
+.landing h1{
+  color:#fff9f7;
+  text-shadow:0 12px 45px rgba(0,0,0,.45);
+  letter-spacing:-1px;
+}
+
+.landing p{
+  color:#c7b9bd;
+}
+
+.primary{
+  background:linear-gradient(135deg,#d96b86,#a84d68);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 10px 30px rgba(143,63,86,.34);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+
+.primary:active{
+  transform:translateY(1px) scale(.98);
+}
+
+.secondary{
+  border-color:rgba(232,201,155,.38);
+  background:rgba(255,255,255,.045);
+  color:#fff7f4;
+  backdrop-filter:blur(10px);
+}
+
+.romantic-banner{
+  border-color:rgba(232,201,155,.22);
+  background:
+    radial-gradient(circle at 82% 12%,rgba(255,190,205,.22),transparent 25%),
+    radial-gradient(circle at 12% 100%,rgba(118,188,216,.15),transparent 38%),
+    linear-gradient(135deg,#32131e,#171015 52%,#0b151d);
+  box-shadow:0 16px 45px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.07);
+}
+
+.romantic-banner h3{
+  color:#fff5f3;
+}
+
+.romantic-banner-eyebrow{
+  color:#edc6cf;
+}
+
+.romantic-banner-button{
+  border-color:rgba(232,201,155,.38);
+  background:rgba(255,255,255,.08);
+}
+
+#app{
+  background:
+    radial-gradient(circle at 50% -10%,rgba(143,63,86,.16),transparent 35%),
+    #0b080a;
+}
+
+.topbar{
+  background:rgba(11,8,10,.90);
+  border-bottom-color:rgba(232,201,155,.12);
+  backdrop-filter:blur(18px);
+}
+
+.icon{
+  background:rgba(255,255,255,.065);
+  border:1px solid rgba(232,201,155,.12);
+}
+
+.discover{
+  padding-top:10px;
+}
+
+.profile-card{
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:24px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.58),
+    0 0 0 1px rgba(217,107,134,.05);
+}
+
+.profile-card:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius:24px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);
+  z-index:8;
+}
+
+.shade{
+  background:
+    linear-gradient(180deg,transparent 35%,rgba(7,4,6,.10) 50%,rgba(7,4,6,.94) 100%);
+}
+
+.copy{
+  left:22px;
+  right:22px;
+  bottom:27px;
+}
+
+.name{
+  font-size:32px;
+  text-shadow:0 4px 20px rgba(0,0,0,.5);
+}
+
+.loc{
+  color:#f0dce0;
+}
+
+.bio{
+  color:#f0e8e8;
+}
+
+.interests{
+  color:#efd5a8;
+}
+
+.actions{
+  bottom:16px;
+  gap:15px;
+}
+
+.action{
+  background:rgba(24,15,19,.90);
+  border-color:rgba(255,255,255,.15);
+  box-shadow:0 9px 28px rgba(0,0,0,.48);
+  backdrop-filter:blur(10px);
+}
+
+.action.like{
+  background:linear-gradient(145deg,#e27b94,#b75270);
+  border-color:#e27b94;
+  box-shadow:0 9px 30px rgba(183,82,112,.34);
+}
+
+.action.super{
+  color:#e8c99b;
+}
+
+.action.boost{
+  color:#caa2df;
+}
+
+.likebadge{
+  color:#ff9fb2;
+  border-color:#ff9fb2;
+}
+
+.superbadge{
+  color:#e8c99b;
+  border-color:#e8c99b;
+}
+
+.bottom{
+  background:rgba(12,8,10,.94);
+  border-top-color:rgba(232,201,155,.12);
+  backdrop-filter:blur(18px);
+}
+
+.tab{
+  color:#81757a;
+}
+
+.tab.active{
+  color:#f2c4ce;
+}
+
+.notification-badge,.pagehead-badge{
+  background:#c95e79;
+  box-shadow:0 0 0 2px #0c080a;
+}
+
+.pagehead{
+  background:rgba(11,8,10,.72);
+  border-bottom-color:rgba(232,201,155,.10);
+  backdrop-filter:blur(14px);
+}
+
+.content,.explore{
+  position:relative;
+}
+
+.explore-header h1,
+.explore-results-title,
+.pagehead,
+.profile-page-name,
+.sheet h2,
+.premium-intro h2,
+.plan h3{
+  color:#fff5f2;
+}
+
+.explore-card,
+.item,
+.settings-section,
+.plan{
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.018)),
+    #171114;
+  border-color:rgba(232,201,155,.13);
+  box-shadow:0 8px 25px rgba(0,0,0,.20);
+}
+
+.explore-card{
+  transition:transform .18s ease,border-color .18s ease;
+}
+
+.explore-card:hover{
+  border-color:rgba(217,107,134,.42);
+}
+
+.explore-card.large{
+  background:
+    radial-gradient(circle at 82% 18%,rgba(217,107,134,.34),transparent 34%),
+    linear-gradient(135deg,#351522,#171015 62%,#101218);
+}
+
+.explore-card.blue{
+  background:
+    radial-gradient(circle at 90% 15%,rgba(118,188,216,.25),transparent 38%),
+    #11171c;
+}
+
+.explore-card.gold{
+  background:
+    radial-gradient(circle at 90% 10%,rgba(232,201,155,.25),transparent 38%),
+    #18140f;
+}
+
+.explore-card.purple{
+  background:
+    radial-gradient(circle at 90% 10%,rgba(181,139,212,.25),transparent 38%),
+    #17111a;
+}
+
+.explore-icon{
+  filter:drop-shadow(0 5px 14px rgba(0,0,0,.25));
+}
+
+.explore-member{
+  border-color:rgba(232,201,155,.13);
+  box-shadow:0 7px 22px rgba(0,0,0,.25);
+}
+
+.explore-empty{
+  background:#171114;
+  border-color:rgba(232,201,155,.13);
+}
+
+.chat{
+  background:#0d090b;
+}
+
+.chathead{
+  background:rgba(13,9,11,.92);
+  border-bottom-color:rgba(232,201,155,.10);
+  backdrop-filter:blur(16px);
+}
+
+.bubble{
+  background:#24191e;
+  border:1px solid rgba(255,255,255,.045);
+}
+
+.bubble.mine{
+  background:linear-gradient(135deg,#d96b86,#a94d67);
+}
+
+.composer{
+  background:rgba(13,9,11,.94);
+  border-top-color:rgba(232,201,155,.10);
+}
+
+.composer input{
+  background:#1b1216;
+  border:1px solid rgba(232,201,155,.10);
+}
+
+.composer button{
+  background:linear-gradient(135deg,#d96b86,#a94d67);
+}
+
+.modal{
+  background:rgba(5,3,5,.80);
+  backdrop-filter:blur(5px);
+}
+
+.sheet{
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.015)),
+    #171114;
+  border:1px solid rgba(232,201,155,.13);
+  box-shadow:0 -20px 70px rgba(0,0,0,.45);
+}
+
+.close{
+  background:#281b20;
+  border:1px solid rgba(232,201,155,.12);
+}
+
+.form input,
+.form select,
+.form textarea{
+  background:#0f0a0d;
+  border-color:#3d2b32;
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus{
+  outline:none;
+  border-color:#b85d76;
+  box-shadow:0 0 0 3px rgba(184,93,118,.12);
+}
+
+.profile-photo-slot{
+  background:#1b1216;
+  border-color:#3d2b32;
+}
+
+.profile-photo-slot.add-photo{
+  background:#181015;
+  border-color:#6a4653;
+}
+
+.photo-tool.main{
+  background:#c95e79;
+}
+
+.profile-page-photo{
+  background:#1b1216;
+}
+
+.profile-page-edit{
+  background:#24191e;
+  border-color:rgba(232,201,155,.18);
+}
+
+.profile-interest-chip{
+  background:#21161b;
+  border-color:#49323a;
+  color:#f0dfe2;
+}
+
+.profile-empty-note{
+  background:#1b1216;
+  border-color:#3d2b32;
+}
+
+.plan{
+  border-radius:20px;
+}
+
+.plan.recommended{
+  border-color:rgba(232,201,155,.65);
+  box-shadow:0 0 30px rgba(232,201,155,.07);
+}
+
+.plan.recommended:before{
+  background:linear-gradient(135deg,#e8c99b,#c89d5b);
+}
+
+.plan button{
+  background:linear-gradient(135deg,#d96b86,#a94d67);
+}
+
+.plan.gold button{
+  background:linear-gradient(135deg,#e8c99b,#c99d5d);
+}
+
+.payment-bank.bml{
+  background:linear-gradient(135deg,#d96b86,#a94d67);
+  border-color:#d96b86;
+}
+
+.match{
+  background:
+    radial-gradient(circle at 50% 35%,rgba(217,107,134,.30),transparent 28%),
+    radial-gradient(circle at 20% 80%,rgba(232,201,155,.10),transparent 25%),
+    linear-gradient(145deg,#32111d,#090608 65%);
+}
+
+.match h1{
+  color:#fff5f2;
+  text-shadow:0 10px 40px rgba(217,107,134,.24);
+}
+
+.toast{
+  background:#24171d;
+  border:1px solid rgba(232,201,155,.16);
+}
+
+.notification-popup{
+  background:#1b1216;
+  border-color:rgba(232,201,155,.16);
+}
+
+.notification-popup-close{
+  background:#2a1b21;
+}
+
+.isla-goal{
+  background:linear-gradient(135deg,rgba(143,63,86,.15),rgba(255,255,255,.025));
+  border-color:#49313a;
+}
+
+.isla-goal:has(input:checked){
+  border-color:#c97b91;
+  background:linear-gradient(135deg,rgba(143,63,86,.34),rgba(232,201,155,.09));
+}
+
+.isla-goal input{
+  accent-color:#c97b91;
+}
+
+.isla-goal-chip{
+  background:rgba(143,63,86,.18);
+  color:#f3c6d3;
+}
+
+@media(max-width:600px){
+  .landing .hero{
+    padding-top:5vh;
+  }
+  .landing h1{
+    font-size:clamp(45px,13vw,72px);
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .landing:before,
+  .romantic-banner:after,
+  .romantic-float{
+    animation:none!important;
+  }
+}
+
+
+/* ISLA LUXURY ROMANTIC PROFILE THEME */
+:root{--lux-rose:#d96b86;--lux-gold:#e8c99b}
+.lux-profile-overlay{position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;padding:12px;background:rgba(5,3,5,.88);backdrop-filter:blur(16px)}
+.lux-profile-overlay.active{display:flex}.lux-profile-modal{width:min(560px,100%);max-height:94vh;overflow:auto;border:1px solid rgba(232,201,155,.28);border-radius:28px;background:linear-gradient(155deg,#211116,#0c080a 72%);box-shadow:0 30px 100px rgba(0,0,0,.7),0 0 60px rgba(217,107,134,.12);position:relative;color:#fff}
+.lux-close{position:absolute;right:14px;top:14px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.42);color:#fff;font-size:21px;z-index:5}.lux-hero{position:relative;height:min(68vh,520px);min-height:360px;overflow:hidden;background:#160d11}.lux-hero img{width:100%;height:100%;object-fit:cover;display:block}.lux-hero:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(transparent,rgba(7,4,6,.96))}
+.lux-dots{position:absolute;top:16px;left:18px;right:64px;display:flex;gap:5px;z-index:3}.lux-dots span{height:3px;flex:1;border-radius:9px;background:rgba(255,255,255,.3)}.lux-dots span.active{background:#fff}.lux-photo-left,.lux-photo-right{position:absolute;top:0;bottom:0;width:50%;z-index:2}.lux-photo-left{left:0}.lux-photo-right{right:0}.lux-hero-copy{position:absolute;left:22px;right:22px;bottom:20px;z-index:3}.lux-eyebrow{font-size:10px;letter-spacing:2.2px;text-transform:uppercase;color:var(--lux-gold);margin-bottom:7px}.lux-name{font:400 clamp(31px,8vw,46px)/1.05 Georgia,serif;text-shadow:0 8px 28px #000}.lux-location{color:#eadde0;font-size:13px;margin-top:7px}.lux-body{padding:22px}.lux-section{padding:16px 0;border-top:1px solid rgba(232,201,155,.13)}.lux-section:first-child{border-top:0;padding-top:0}.lux-label{font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--lux-gold);margin-bottom:9px}.lux-bio{font-size:15px;line-height:1.7;color:#ddd0d4;white-space:pre-wrap}.lux-chips{display:flex;flex-wrap:wrap;gap:7px}.lux-chip{padding:8px 11px;border-radius:20px;border:1px solid rgba(217,107,134,.35);background:rgba(143,63,86,.18);color:#f5d9df;font-size:12px}.lux-goal{display:inline-flex;align-items:center;gap:7px;padding:10px 13px;border-radius:18px;border:1px solid rgba(232,201,155,.28);background:rgba(232,201,155,.07);color:#f4dfba;font-size:13px}.lux-gallery{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:10px 22px 0}.lux-gallery img{width:100%;height:150px;object-fit:cover;border-radius:14px;border:1px solid rgba(255,255,255,.08)}.lux-actions{display:flex;gap:9px;padding:0 22px 22px}.lux-actions button{flex:1;min-height:46px;border-radius:15px}.lux-profile-trigger{cursor:pointer}
+#swipeCard{box-shadow:0 24px 70px rgba(0,0,0,.58),0 0 45px rgba(217,107,134,.10);border:1px solid rgba(232,201,155,.20)}#swipeCard .copy{padding-bottom:92px}#swipeCard .bio{max-height:72px;overflow:hidden}.swipe-detail-line{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.swipe-detail-pill{padding:5px 8px;border-radius:13px;background:rgba(12,7,9,.48);border:1px solid rgba(232,201,155,.22);font-size:10px;color:#f2e4e6;backdrop-filter:blur(8px)}
+@media(max-width:600px){.lux-profile-modal{border-radius:24px}.lux-hero{height:62vh;min-height:350px}.lux-gallery img{height:120px}.lux-body{padding:18px}.lux-gallery{padding:8px 18px 0}.lux-actions{padding:0 18px 18px}}
+
+
+/* =========================================================
+   ISLA COMPLETE TINDER-INSPIRED UI ENHANCEMENT
+========================================================= */
+
+.isla-explore-marquee{
+  overflow:hidden;
+  margin:10px 0 18px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;
+  background:linear-gradient(90deg,rgba(255,80,130,.10),rgba(255,190,80,.08),rgba(90,180,255,.08));
+  white-space:nowrap;
+}
+.isla-marquee-track{
+  display:inline-flex;
+  gap:12px;
+  padding:10px 12px;
+  min-width:max-content;
+  animation:islaMarquee 24s linear infinite;
+}
+.isla-marquee-track span{
+  display:inline-flex;
+  align-items:center;
+  padding:8px 13px;
+  border-radius:999px;
+  background:rgba(255,255,255,.07);
+  font-size:12px;
+  color:#f5f5f7;
+}
+@keyframes islaMarquee{
+  from{transform:translateX(0)}
+  to{transform:translateX(-35%)}
+}
+
+.isla-messages-head,.isla-matches-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:18px 16px 8px;
+}
+.isla-messages-head h2,.isla-matches-head h2{
+  margin:2px 0 5px;
+  font-size:28px;
+  letter-spacing:-.6px;
+}
+.isla-messages-head p,.isla-matches-head p{
+  margin:0;
+  color:#9b9ca3;
+  font-size:13px;
+}
+.isla-section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px 9px;
+}
+.isla-section-title strong{
+  font-size:15px;
+}
+.isla-text-btn{
+  border:0;
+  background:transparent;
+  color:#ff5b8f;
+  font-weight:700;
+  cursor:pointer;
+}
+.recent-matches-strip{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  padding:2px 16px 14px;
+  scrollbar-width:none;
+}
+.recent-matches-strip::-webkit-scrollbar{display:none}
+.isla-match-card{
+  flex:0 0 76px;
+  text-align:center;
+  cursor:pointer;
+}
+.isla-match-photo{
+  width:68px;
+  height:68px;
+  margin:auto;
+  border-radius:50%;
+  object-fit:cover;
+  display:block;
+  border:2px solid rgba(255,91,143,.85);
+  padding:2px;
+  background:#191a1e;
+}
+.isla-match-name{
+  display:block;
+  margin-top:6px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:11px;
+  color:#e9e9ed;
+}
+.isla-match-empty{
+  width:100%;
+  padding:13px 14px;
+  border-radius:16px;
+  background:#17181c;
+  color:#909199;
+  font-size:13px;
+}
+.isla-message-search{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:4px 16px 4px;
+  padding:0 13px;
+  height:44px;
+  border-radius:14px;
+  background:#18191d;
+  border:1px solid #2b2c31;
+}
+.isla-message-search span{
+  color:#898a91;
+  font-size:20px;
+}
+.isla-message-search input{
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#fff;
+  font-size:14px;
+}
+.messages-title-row{
+  padding-top:10px;
+}
+.isla-muted{
+  color:#777982;
+  font-size:12px;
+}
+.chatlist .item{
+  border-radius:16px;
+  margin:5px 12px;
+  border:1px solid rgba(255,255,255,.05);
+  background:#17181c;
+  transition:transform .15s ease,background .15s ease;
+}
+.chatlist .item:hover{
+  background:#1c1d22;
+}
+.chatlist .item.unread{
+  border-color:rgba(255,91,143,.24);
+  background:linear-gradient(90deg,rgba(255,91,143,.10),#17181c);
+}
+.isla-matches-list .item{
+  border-radius:17px;
+  margin:6px 12px;
+  background:#17181c;
+  border:1px solid rgba(255,255,255,.05);
+}
+.isla-match-heart{
+  width:46px;
+  height:46px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:rgba(255,91,143,.12);
+  color:#ff5b8f;
+  font-size:23px;
+}
+.isla-settings-card{
+  padding:14px;
+  margin:0 0 9px;
+  border-radius:18px;
+  background:linear-gradient(135deg,rgba(255,91,143,.10),rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.07);
+}
+.isla-settings-card h3{margin:3px 0 4px}
+.isla-settings-card p{margin:0;color:#999aa2;font-size:12px;line-height:1.45}
+.isla-danger-setting{
+  border-color:rgba(255,75,100,.16)!important;
+}
+.isla-danger-outline,.isla-danger{
+  min-width:82px;
+  border-radius:11px!important;
+  font-weight:700;
+  cursor:pointer;
+}
+.isla-danger-outline{
+  color:#ff7c92!important;
+  background:transparent!important;
+  border:1px solid rgba(255,91,120,.4)!important;
+}
+.isla-danger{
+  color:#fff!important;
+  background:#d94b68!important;
+  border:1px solid #d94b68!important;
+}
+.isla-confirm-copy{
+  padding:4px 0 12px;
+  color:#a1a2a9;
+  font-size:13px;
+  line-height:1.5;
+}
+@media(max-width:520px){
+  .isla-messages-head h2,.isla-matches-head h2{font-size:24px}
+  .recent-matches-strip{padding-left:12px;padding-right:12px}
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="landing" class="landing">
+
+<nav>
+<div class="brand">ISLA</div>
+<button class="secondary" id="landingLogin">Log in</button>
+</nav>
+
+<div class="hero">
+
+<div class="romantic-banner sunset" style="margin:0 auto 24px;max-width:760px;text-align:left;min-height:190px;">
+  <div class="romantic-float">🌴</div>
+  <div class="romantic-banner-content">
+    <div class="romantic-banner-eyebrow">ISLA • MALDIVES</div>
+    <h3>A little romance, island style. ❤️</h3>
+    <p>Discover genuine connections, share beautiful moments and see where your next story takes you.</p>
+  </div>
+</div>
+
+<div class="eyebrow">DATING • MALDIVES</div>
+
+<h1>
+Meet someone<br>
+extraordinary.
+</h1>
+
+<p>
+A modern dating experience built for the Maldives.
+Discover, match, chat and build meaningful connections.
+</p>
+
+<div class="buttons">
+<button class="primary" id="landingSignup">Create account</button>
+<button class="secondary" id="landingLogin2">Log in</button>
+</div>
+
+</div>
+</div>
+
+
+<div id="app">
+
+<header class="topbar">
+
+<button class="icon" id="topProfile">◉</button>
+
+<div class="brand">ISLA</div>
+
+<button class="icon" id="topSettings">⚙</button>
+
+</header>
+
+
+<main class="main">
+
+
+<!-- =====================================================
+     DISCOVER
+===================================================== -->
+
+<section id="pageDiscover" class="tabpage active">
+
+<div class="discover">
+
+<div class="card-area" id="cardArea">
+
+<div class="profile-card" id="swipeCard">
+
+<img id="pPhoto" alt="Profile">
+
+<div id="photoProgress" class="photo-progress"></div>
+
+<div class="photo-touch-left" id="photoLeft"></div>
+<div class="photo-touch-right" id="photoRight"></div>
+
+<div id="pPlaceholder" class="empty hidden">
+No photo
+</div>
+
+<div class="shade"></div>
+
+<div class="badge likebadge" id="likeBadge">
+LIKE
+</div>
+
+<div class="badge passbadge" id="passBadge">
+PASS
+</div>
+
+<div class="badge superb​​adge" id="superBadge">
+SUPER LIKE
+</div>
+
+<div class="copy">
+
+<div class="name" id="pName"></div>
+
+<div class="loc" id="pLoc"></div>
+
+<div class="bio" id="pBio"></div>
+
+<div class="interests" id="pInterests"></div>
+<div class="swipe-detail-line" id="pDetails"></div>
+
+</div>
+
+<div class="actions">
+
+<button class="action boost" id="boostBtn">
+⚡
+</button>
+
+<button class="action pass" id="passBtn">
+✕
+</button>
+
+<button class="action super" id="superBtn">
+★
+</button>
+
+<button class="action like" id="likeBtn">
+♥
+</button>
+
+</div>
+
+</div>
+
+
+<div id="empty" class="empty hidden">
+
+<div>
+
+<h2>No more people nearby</h2>
+
+<p>
+Try widening your age or distance preferences,
+or check back later.
+</p>
+
+<button class="primary" id="reloadDiscover">
+Refresh
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     EXPLORE
+===================================================== -->
+
+<section id="pageExplore" class="tabpage">
+
+<div class="explore">
+
+<div class="explore-header">
+
+<div class="eyebrow">
+DISCOVER MORE
+</div>
+
+<h1>Explore</h1>
+
+<p>
+Find new people and connections in your own way.
+</p>
+
+</div>
+<div class="isla-explore-marquee" aria-label="ISLA Explore highlights">
+  <div class="isla-marquee-track">
+    <span>💕 Maybe your person is closer than you think</span>
+    <span>🌴 Island hearts, real connections</span>
+    <span>✨ Your next story could start today</span>
+    <span>💌 Say hello to someone special</span>
+    <span>🌊 Love feels better by the sea</span>
+    <span>💕 Maybe your person is closer than you think</span>
+    <span>🌴 Island hearts, real connections</span>
+    <span>✨ Your next story could start today</span>
+  </div>
+</div>
+
+<div class="romantic-banner sunset">
+  <div class="romantic-float">💕</div>
+  <div class="romantic-banner-content">
+    <div class="romantic-banner-eyebrow">SUNSET CONNECTIONS</div>
+    <h3>Meet someone who makes ordinary moments feel special.</h3>
+    <p>Your island. Your story. Maybe your person is already on ISLA.</p>
+    <button class="romantic-banner-button" type="button" data-explore="forYou">Explore for you →</button>
+  </div>
+</div>
+
+
+<div class="explore-grid">
+
+
+<div
+ class="explore-card large"
+ data-explore="forYou"
+>
+
+<div class="explore-icon">💕</div>
+
+<h3>For You</h3>
+
+<p>
+Personalized profiles waiting for you.
+Keep swiping and discover someone special.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+
+<div
+ class="explore-card"
+ data-explore="nearby"
+>
+
+<div class="explore-icon">🌴</div>
+
+<h3>Nearby Islands</h3>
+
+<p>
+Discover people around the Maldives.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+
+<div
+ class="explore-card blue"
+ data-explore="new"
+>
+
+<div class="explore-icon">✨</div>
+
+<h3>New Members</h3>
+
+<p>
+Meet people who recently joined ISLA.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+
+<div
+ class="explore-card"
+ data-explore="interests"
+>
+
+<div class="explore-icon">🎯</div>
+
+<h3>Shared Interests</h3>
+
+<p>
+Find people who like the things you like.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+
+<div
+ class="explore-card gold"
+ data-explore="popular"
+>
+
+<div class="explore-icon">🔥</div>
+
+<h3>Popular on ISLA</h3>
+
+<p>
+Profiles getting attention right now.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+
+<div
+ class="explore-card purple"
+ data-explore="premium"
+>
+
+<div class="explore-icon">💎</div>
+
+<h3>Premium Picks</h3>
+
+<p>
+A premium way to discover more people.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+
+<div
+ class="explore-card"
+ data-explore="online"
+>
+
+<div class="explore-icon">🟢</div>
+
+<h3>Online Now</h3>
+
+<p>
+Discover active members on ISLA.
+</p>
+
+<div class="explore-arrow">→</div>
+
+</div>
+
+</div>
+
+
+<div class="romantic-banner ocean small">
+  <div class="romantic-float">🌊</div>
+  <div class="romantic-banner-content">
+    <div class="romantic-banner-eyebrow">MADE FOR TWO</div>
+    <h3>Find your next island connection.</h3>
+    <p>Take a chance, say hello and let the conversation begin.</p>
+  </div>
+</div>
+
+<div
+ id="exploreResults"
+ class="hidden"
+>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     LIKES
+===================================================== -->
+
+<section id="pageLikes" class="tabpage">
+
+<div class="pagehead">
+Likes
+</div>
+
+<div class="content">
+<div id="likesList" class="list"></div>
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     MATCHES
+===================================================== -->
+
+<section id="pageMatches" class="tabpage">
+
+<div class="isla-matches-head">
+  <div>
+    <div class="eyebrow">IT'S A MATCH</div>
+    <h2>Your Matches</h2>
+    <p>People who connected with you are here.</p>
+  </div>
+  <div class="isla-match-heart">♥</div>
+</div>
+
+<div class="content">
+  <div id="matchesList" class="list isla-matches-list"></div>
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     MESSAGES
+===================================================== -->
+
+<section id="pageMessages" class="tabpage">
+
+<div class="isla-messages-head">
+  <div>
+    <div class="eyebrow">YOUR CONNECTIONS</div>
+    <h2>Messages <span id="messagesHeadBadge" class="pagehead-badge"></span></h2>
+    <p>Matches are waiting for you. Start a conversation.</p>
+  </div>
+</div>
+
+<div class="isla-section-title">
+  <strong>Recent matches</strong>
+  <button type="button" id="viewAllMatchesBtn" class="isla-text-btn">View all</button>
+</div>
+
+<div id="recentMatchesStrip" class="recent-matches-strip"></div>
+
+<div class="isla-message-search">
+  <span>⌕</span>
+  <input id="islaMessageSearch" type="search" placeholder="Search matches" autocomplete="off">
+</div>
+
+<div class="isla-section-title messages-title-row">
+  <strong>Messages</strong>
+  <span id="islaMessageCount" class="isla-muted"></span>
+</div>
+
+<div class="content">
+  <div id="chatsList" class="list chatlist"></div>
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
+
+<section id="pageProfile" class="tabpage">
+
+<div class="pagehead">
+Profile
+</div>
+
+<div class="content" id="profileContent"></div>
+
+</section>
+
+
+<!-- =====================================================
+     CHAT
+===================================================== -->
+
+<div id="chat" class="chat">
+
+<div class="chathead">
+
+<button class="icon" id="chatBack">
+‹
+</button>
+
+<img id="chatAvatar" class="avatar" alt="">
+
+<strong id="chatName"></strong>
+
+<button class="chat-menu-btn" id="chatMenuBtn" type="button" aria-label="Chat options" onclick="if(window.openChatMenu)window.openChatMenu()">⋯</button>
+
+</div>
+
+<div id="chatBody" class="chatbody"></div>
+
+<form id="chatForm" class="composer">
+
+<input
+ id="chatInput"
+ placeholder="Type a message..."
+ maxlength="1000"
+ autocomplete="off"
+>
+
+<button type="submit">
+➤
+</button>
+
+</form>
+
+</div>
+
+<!-- Tinder-style chat options -->
+<div id="chatOptions" class="chat-options" aria-hidden="true">
+  <div class="chat-options-sheet" role="dialog" aria-modal="true">
+    <div class="chat-options-title" id="chatOptionsTitle">Conversation options</div>
+    <button type="button" class="chat-option danger" id="deleteConversationBtn">
+      🗑️ Delete conversation
+      <small>Remove this conversation from Messages.</small>
+    </button>
+    <button type="button" class="chat-options-close" id="closeChatOptionsBtn">Cancel</button>
+  </div>
+</div>
+
+
+</main>
+
+
+<!-- =====================================================
+     BOTTOM NAVIGATION
+===================================================== -->
+
+<nav class="bottom">
+
+<button class="tab active" data-page="pageDiscover">
+<b>🔥</b>
+Discover
+</button>
+
+<button class="tab" data-page="pageExplore">
+<b>✦</b>
+Explore
+</button>
+
+<button class="tab" data-page="pageLikes">
+<b>♥</b>
+Likes
+</button>
+
+<button class="tab" data-page="pageMatches">
+<b>★</b>
+Matches
+</button>
+
+<button class="tab" data-page="pageMessages">
+<b>♡</b>
+Messages
+<span id="messagesBadge" class="notification-badge"></span>
+</button>
+
+<button class="tab" data-page="pageProfile">
+<b>◉</b>
+Profile
+</button>
+
+</nav>
+
+</div>
+
+
+<!-- =====================================================
+     AUTH MODAL
+===================================================== -->
+
+<div id="authModal" class="modal">
+
+<div class="sheet">
+
+<button class="close" data-close="authModal">
+×
+</button>
+
+<div class="eyebrow">
+ISLA
+</div>
+
+<h2 id="authTitle">
+Create your account
+</h2>
+
+<form id="authForm" class="form">
+
+<input
+ id="email"
+ type="email"
+ placeholder="Email address"
+ required
+>
+
+<input
+ id="password"
+ type="password"
+ minlength="6"
+ placeholder="Password (6+ characters)"
+ required
+>
+
+<button class="primary">
+Continue
+</button>
+
+</form>
+
+<p id="authMsg"></p>
+
+<button id="forgot" class="secondary">
+Forgot password?
+</button>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     PROFILE MODAL
+===================================================== -->
+
+<div id="profileModal" class="modal">
+
+<div class="sheet">
+
+<button class="close" data-close="profileModal">
+×
+</button>
+
+<div class="eyebrow">
+YOUR PROFILE
+</div>
+
+<h2 id="profileTitle">
+Create your profile
+</h2>
+
+<div class="profile-editor-intro">
+Add your best photos first. Your first photo is your main profile photo.
+You can change the order anytime.
+</div>
+
+<form id="profileForm" class="form">
+
+<label>Photos</label>
+
+<div id="photoGrid" class="profile-photo-editor"></div>
+
+<p class="profile-photo-help">
+Tap ★ on a photo to make it your main photo. Use the arrows to reorder photos.
+You can add up to 9 photos.
+</p>
+
+<input
+ id="photos"
+ type="file"
+ accept="image/*"
+ multiple
+ style="display:none"
+>
+
+<label>Full name</label>
+
+<input
+ id="name"
+ maxlength="80"
+ required
+>
+
+<label>
+Date of birth — 18+ only
+</label>
+
+<input
+ id="dob"
+ type="date"
+ required
+>
+
+<label>Gender</label>
+
+<select id="gender" required>
+
+<option value="">Select</option>
+
+<option>Male</option>
+<option>Female</option>
+<option>Other</option>
+
+</select>
+
+<label>Interested in</label>
+
+<select id="looking">
+
+<option>Everyone</option>
+<option>Men</option>
+<option>Women</option>
+
+</select>
+
+<label>Island</label>
+
+<div style="display:flex;gap:7px">
+
+<input
+ id="island"
+ placeholder="Your island"
+ required
+>
+
+<button
+ type="button"
+ class="secondary"
+ id="locationBtn"
+>
+📍
+</button>
+
+</div>
+
+<small id="locationMsg" style="color:#999"></small>
+
+<label>About you</label>
+
+<textarea
+ id="bio"
+ maxlength="500"
+></textarea>
+
+<label>Interests</label>
+
+<input
+ id="interests"
+ maxlength="300"
+ placeholder="Travel, music, diving..."
+>
+
+<button class="primary">
+Save profile
+</button>
+
+</form>
+
+<p id="profileMsg"></p>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     SETTINGS
+===================================================== -->
+
+<div id="settingsModal" class="modal">
+
+<div class="sheet">
+
+<button class="close" data-close="settingsModal">
+×
+</button>
+
+<div class="eyebrow">
+ISLA
+</div>
+
+<h2>Settings</h2>
+
+<div class="settings-section">
+
+<div class="isla-settings-card">
+  <div>
+    <div class="eyebrow">ACCOUNT</div>
+    <h3>Account controls</h3>
+    <p>Temporarily hide your profile or permanently remove your account.</p>
+  </div>
+</div>
+
+<div class="setting isla-danger-setting">
+  <div>
+    <b>Deactivate Account</b>
+    <small>Your profile will be hidden until you return.</small>
+  </div>
+  <button id="deactivateAccountBtn" class="isla-danger-outline" type="button">Deactivate</button>
+</div>
+
+<div class="setting isla-danger-setting">
+  <div>
+    <b>Delete Account</b>
+    <small>Permanently remove your ISLA profile and sign out.</small>
+  </div>
+  <button id="deleteAccountBtn" class="isla-danger" type="button">Delete</button>
+</div>
+
+<div class="setting">
+
+<div>
+<b>Discovery preferences</b>
+<small>Age, distance and island filters</small>
+</div>
+
+<button id="preferencesBtn">Edit</button>
+
+</div>
+
+<div class="setting">
+
+<div>
+<b>Premium</b>
+<small>Super Likes, Boosts, Rewind and more</small>
+</div>
+
+<button id="premiumBtn">View</button>
+
+</div>
+
+<div class="setting">
+
+<div>
+<b>Safety & privacy</b>
+<small>Block, report and privacy controls</small>
+</div>
+
+<button id="safetyBtn">Open</button>
+
+</div>
+
+<div class="setting">
+
+<div>
+<b>Notifications</b>
+<small id="notificationStatus">
+Enable ISLA message notifications
+</small>
+</div>
+
+<button id="notificationBtn">Enable</button>
+
+</div>
+
+<div class="setting">
+
+<div>
+<b>Help</b>
+<small>ISLA support</small>
+</div>
+
+<button id="helpBtn">Help</button>
+
+</div>
+
+</div>
+
+<button
+ class="secondary"
+ id="logout"
+ style="width:100%"
+>
+Log out
+</button>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     PREFERENCES
+===================================================== -->
+
+<div id="preferencesModal" class="modal">
+
+<div class="sheet">
+
+<button class="close" data-close="preferencesModal">
+×
+</button>
+
+<div class="eyebrow">DISCOVERY</div>
+
+<h2>Preferences</h2>
+
+<form id="preferencesForm" class="form">
+
+<label>
+Age range:
+<span id="ageText">18–60</span>
+</label>
+
+<input
+ id="ageMin"
+ type="range"
+ min="18"
+ max="70"
+ value="18"
+>
+
+<input
+ id="ageMax"
+ type="range"
+ min="18"
+ max="80"
+ value="60"
+>
+
+<label>Maximum distance</label>
+
+<select id="distance">
+
+<option value="5">5 km</option>
+<option value="10">10 km</option>
+<option value="25">25 km</option>
+<option value="50">50 km</option>
+<option value="100">100 km</option>
+<option value="9999">Anywhere in Maldives</option>
+
+</select>
+
+<label>Preferred islands</label>
+
+<div id="islandPills" class="pillrow"></div>
+
+<button class="primary">
+Save preferences
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     PREMIUM
+===================================================== -->
+
+<div id="premiumModal" class="modal">
+
+<div class="sheet">
+
+<button class="close" data-close="premiumModal">
+×
+</button>
+
+<div class="romantic-banner gold small">
+  <div class="romantic-float">✨</div>
+  <div class="romantic-banner-content">
+    <div class="romantic-banner-eyebrow">A LITTLE EXTRA MAGIC</div>
+    <h3>Make your next connection stand out.</h3>
+    <p>More visibility, more chances to connect, and a more memorable ISLA experience.</p>
+  </div>
+</div>
+
+<div class="premium-intro">
+
+<div class="eyebrow">
+ISLA PREMIUM
+</div>
+
+<h2>Upgrade your experience</h2>
+
+<p>
+Get more matches, more visibility and more control over your dating experience.
+</p>
+
+</div>
+
+<div class="premium-benefit">
+✨ <b>Meet more people.</b> Get the tools designed to help you make meaningful connections faster.
+</div>
+
+<div class="plan-grid">
+
+<div class="plan">
+
+<div class="plan-head">
+
+<div>
+
+<h3>ISLA Plus</h3>
+
+<div class="plan-tag">
+More freedom
+</div>
+
+</div>
+
+</div>
+
+<div class="plan-price">
+
+<strong>MVR 199</strong>
+<span>/ month</span>
+
+</div>
+
+<ul class="plan-features">
+
+<li>Unlimited Likes</li>
+<li>Unlimited Rewinds</li>
+<li>Passport across Maldives</li>
+<li>Ad-free experience</li>
+<li>Incognito discovery</li>
+
+</ul>
+
+<button data-plan="plus">
+Get Plus
+</button>
+
+</div>
+
+
+<div class="plan recommended gold">
+
+<div class="plan-head">
+
+<div>
+
+<h3>ISLA Gold</h3>
+
+<div class="plan-tag">
+Our most popular plan
+</div>
+
+</div>
+
+</div>
+
+<div class="plan-price">
+
+<strong>MVR 299</strong>
+<span>/ month</span>
+
+</div>
+
+<ul class="plan-features">
+
+<li>Everything in Plus</li>
+<li>See Who Likes You</li>
+<li>Weekly Super Likes</li>
+<li>1 Boost every month</li>
+<li>More discovery visibility</li>
+
+</ul>
+
+<button data-plan="gold">
+Get Gold
+</button>
+
+</div>
+
+
+<div class="plan platinum">
+
+<div class="plan-head">
+
+<div>
+
+<h3>ISLA Platinum</h3>
+
+<div class="plan-tag">
+VIP dating experience
+</div>
+
+</div>
+
+</div>
+
+<div class="plan-price">
+
+<strong>MVR 399</strong>
+<span>/ month</span>
+
+</div>
+
+<ul class="plan-features">
+
+<li>Everything in Gold</li>
+<li>Priority Likes</li>
+<li>Enhanced discovery</li>
+<li>Maximum visibility</li>
+<li>VIP ISLA experience</li>
+
+</ul>
+
+<button data-plan="platinum">
+Get Platinum
+</button>
+
+</div>
+
+</div>
+
+<div class="premium-note">
+Choose your Premium plan and payment method. Actual bank checkout will be connected after ISLA receives the required merchant gateway credentials.
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     SAFETY
+===================================================== -->
+
+<div id="safetyModal" class="modal">
+
+<div class="sheet">
+
+<button class="close" data-close="safetyModal">
+×
+</button>
+
+<div class="eyebrow">SAFETY</div>
+
+<h2>Stay safe on ISLA</h2>
+
+<div class="settings-section">
+
+<div class="setting">
+
+<div>
+<b>Block someone</b>
+<small>Prevent their profile from appearing</small>
+</div>
+
+<button id="blockInfo">Learn</button>
+
+</div>
+
+<div class="setting">
+
+<div>
+<b>Report a profile</b>
+<small>Tell ISLA about suspicious behaviour</small>
+</div>
+
+<button id="reportInfo">Report</button>
+
+</div>
+
+<div class="setting">
+
+<div>
+<b>Unmatch</b>
+<small>Remove a match and conversation</small>
+</div>
+
+<button>Available in chat</button>
+
+</div>
+
+</div>
+
+<p style="color:#aaa;line-height:1.6">
+Never send money to someone you met online.
+Meet in a public place and report suspicious behaviour.
+</p>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     MATCH
+===================================================== -->
+
+<div id="matchModal" class="match">
+
+<div>
+
+<div class="eyebrow">
+IT'S A MATCH
+</div>
+
+<h1>💕</h1>
+
+<h2 id="matchName">
+You matched!
+</h2>
+
+<p>
+You both liked each other.
+</p>
+
+<button class="primary" id="sendMessage">
+Send a message
+</button>
+
+<button class="secondary" id="keepSwiping">
+Keep swiping
+</button>
+
+</div>
+
+</div>
+
+
+<!-- LUXURY PUBLIC PROFILE MODAL -->
+<div id="publicProfileModal" class="lux-profile-overlay" role="dialog" aria-modal="true">
+ <div class="lux-profile-modal"><button class="lux-close" id="publicProfileClose">×</button><div id="publicProfileContent"></div></div>
+</div>
+<!-- =====================================================
+     NOTIFICATION
+===================================================== -->
+
+<div id="notificationPopup" class="notification-popup">
+
+<div class="notification-popup-inner">
+
+<img
+ id="notificationAvatar"
+ class="notification-popup-avatar"
+ alt=""
+>
+
+<div class="notification-popup-copy">
+
+<div
+ id="notificationTitle"
+ class="notification-popup-title"
+>
+New message
+</div>
+
+<div
+ id="notificationMessage"
+ class="notification-popup-message"
+>
+You received a new message.
+</div>
+
+</div>
+
+<button
+ id="notificationClose"
+ class="notification-popup-close"
+>
+×
+</button>
+
+</div>
+
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL="https://dywvricsofabhkzaljuk.supabase.co";
+
+const SUPABASE_KEY="sb_publishable_Ue1LpB7aGUyIWRi42mZtXQ_qCyxr5xT";
+
+const client=window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+let user=null;
+let me=null;
+let profiles=[];
+let index=0;
+
+const MAX_PROFILE_PHOTOS=9;
+
+let photos=[];
+let editing=false;
+let currentChat=null;
+let messageChannel=null;
+let notificationPopupTimer=null;
+let notificationReady=false;
+let fallbackTimer=null;
+let knownMessageIds=new Set();
+
+let photoIndex=0;
+let currentProfilePhotos=[];
+
+
+/* =========================================================
+   TEMPORARY PHOTO PREVIEW CACHE
+========================================================= */
+
+const previewUrls=new WeakMap();
+
+
+function getPhotoSrc(item){
+
+ if(typeof item==="string"){
+  return item;
+ }
+
+ if(!previewUrls.has(item)){
+
+  previewUrls.set(
+   item,
+   URL.createObjectURL(item)
+  );
+
+ }
+
+ return previewUrls.get(item);
+
+}
+
+
+/* =========================================================
+   ISLANDS
+========================================================= */
+
+const islands=[
+ "Malé",
+ "Hulhumalé",
+ "Addu City",
+ "Fuvahmulah",
+ "Kulhudhuffushi",
+ "Thinadhoo",
+ "Naifaru",
+ "Dhangethi",
+ "Maafushi",
+ "Thulusdhoo",
+ "Ukulhas",
+ "Dhigurah",
+ "Hithadhoo",
+ "Villingili",
+ "Eydhafushi",
+ "Dharavandhoo",
+ "Hanimaadhoo",
+ "Kudahuvadhoo",
+ "Laamu Gan",
+ "Other"
+];
+
+
+const $=id=>document.getElementById(id);
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function modal(id,on=true){
+
+ const el=$(id);
+
+ if(el){
+  el.classList.toggle("active",on);
+ }
+
+}
+
+
+function toast(t){
+
+ const el=$("toast");
+
+ if(!el)return;
+
+ el.textContent=t;
+
+ el.style.display="block";
+
+ clearTimeout(window.__toastTimer);
+
+ window.__toastTimer=setTimeout(()=>{
+  el.style.display="none";
+ },2500);
+
+}
+
+
+function age(d){
+
+ if(!d)return null;
+
+ const x=new Date(d);
+ const n=new Date();
+
+ let a=n.getFullYear()-x.getFullYear();
+
+ if(
+  n.getMonth()<x.getMonth() ||
+  (
+   n.getMonth()===x.getMonth() &&
+   n.getDate()<x.getDate()
+  )
+ ){
+  a--;
+ }
+
+ return a;
+}
+
+
+function esc(s=""){
+
+ return String(s).replace(
+  /[&<>"']/g,
+  c=>({
+   "&":"&amp;",
+   "<":"&lt;",
+   ">":"&gt;",
+   '"':"&quot;",
+   "'":"&#039;"
+  }[c])
+ );
+
+}
+
+
+/* =========================================================
+   NOTIFICATION STORAGE
+========================================================= */
+
+function getUnread(){
+
+ if(!user)return {};
+
+ try{
+
+  return JSON.parse(
+   localStorage.getItem(
+    `isla_unread_${user.id}`
+   )||"{}"
+  );
+
+ }catch(e){
+
+  return {};
+
+ }
+
+}
+
+
+function saveUnread(data){
+
+ if(!user)return;
+
+ localStorage.setItem(
+  `isla_unread_${user.id}`,
+  JSON.stringify(data)
+ );
+
+}
+
+
+function getUnreadCount(matchId){
+
+ const data=getUnread();
+
+ return Number(
+  data[String(matchId)]||0
+ );
+
+}
+
+
+function addUnread(matchId){
+
+ if(!matchId)return;
+
+ const data=getUnread();
+
+ const key=String(matchId);
+
+ data[key]=
+  Number(data[key]||0)+1;
+
+ saveUnread(data);
+
+ updateNotificationBadges();
+
+}
+
+
+function clearUnread(matchId){
+
+ if(!matchId)return;
+
+ const data=getUnread();
+
+ delete data[String(matchId)];
+
+ saveUnread(data);
+
+ localStorage.setItem(
+  `isla_read_${user.id}_${matchId}`,
+  new Date().toISOString()
+ );
+
+ updateNotificationBadges();
+
+}
+
+
+function totalUnread(){
+
+ const data=getUnread();
+
+ return Object
+  .values(data)
+  .reduce(
+   (sum,x)=>sum+Number(x||0),
+   0
+  );
+
+}
+
+
+function updateNotificationBadges(){
+
+ const total=totalUnread();
+
+ const badge=$("messagesBadge");
+
+ const head=$("messagesHeadBadge");
+
+ if(total>0){
+
+  badge.textContent=
+   total>99
+    ? "99+"
+    : total;
+
+  badge.classList.add("show");
+
+  head.textContent=
+   total>99
+    ? "99+"
+    : total;
+
+  head.classList.add("show");
+
+ }else{
+
+  badge.textContent="";
+  badge.classList.remove("show");
+
+  head.textContent="";
+  head.classList.remove("show");
+
+ }
+
+}
+
+
+/* =========================================================
+   BROWSER NOTIFICATIONS
+========================================================= */
+
+function notificationSupported(){
+
+ return (
+  "Notification" in window
+ );
+
+}
+
+
+function updateNotificationUI(){
+
+ const btn=$("notificationBtn");
+ const status=$("notificationStatus");
+
+ if(!btn||!status)return;
+
+ if(!notificationSupported()){
+
+  btn.textContent="Unavailable";
+  btn.disabled=true;
+
+  status.textContent=
+   "Browser notifications are not supported here.";
+
+  return;
+
+ }
+
+ if(Notification.permission==="granted"){
+
+  btn.textContent="Enabled";
+
+  status.textContent=
+   "ISLA message notifications are enabled.";
+
+  notificationReady=true;
+
+  return;
+
+ }
+
+ if(Notification.permission==="denied"){
+
+  btn.textContent="Blocked";
+
+  status.textContent=
+   "Notifications are blocked in your browser settings.";
+
+  return;
+
+ }
+
+ btn.textContent="Enable";
+
+ status.textContent=
+  "Enable ISLA message notifications";
+
+}
+
+
+async function enableNotifications(){
+
+ if(!notificationSupported()){
+
+  toast(
+   "Your browser does not support notifications"
+  );
+
+  return;
+
+ }
+
+ try{
+
+  const permission=
+   await Notification.requestPermission();
+
+  updateNotificationUI();
+
+  if(permission==="granted"){
+
+   notificationReady=true;
+
+   toast("Notifications enabled 🔔");
+
+  }else if(permission==="denied"){
+
+   toast("Notifications were blocked");
+
+  }
+
+ }catch(e){
+
+  console.error(
+   "Notification permission error:",
+   e
+  );
+
+  toast("Could not enable notifications");
+
+ }
+
+}
+
+
+function showBrowserNotification(
+ title,
+ body,
+ icon
+){
+
+ if(
+  !notificationSupported()||
+  Notification.permission!=="granted"
+ ){
+  return;
+ }
+
+ try{
+
+  const n=
+   new Notification(
+    title,
+    {
+     body:body,
+     icon:icon||undefined,
+     badge:icon||undefined,
+     tag:"isla-message"
+    }
+   );
+
+  n.onclick=()=>{
+
+   window.focus();
+
+   if(currentChat){
+
+    openChat(currentChat);
+
+   }else{
+
+    const tab=
+     document.querySelector(
+      '.tab[data-page="pageMessages"]'
+     );
+
+    if(tab)tab.click();
+
+   }
+
+   n.close();
+
+  };
+
+ }catch(e){
+
+  console.error(
+   "Browser notification error:",
+   e
+  );
+
+ }
+
+}
+
+
+$("notificationBtn").onclick=
+ enableNotifications;
+
+
+$("notificationClose").onclick=(e)=>{
+ e.stopPropagation();
+ hideNotificationPopup();
+};
+
+$("notificationPopup").onclick=()=>{
+ hideNotificationPopup();
+
+ const tab=
+  document.querySelector(
+   '.tab[data-page="pageMessages"]'
+  );
+
+ if(tab){
+  tab.click();
+ }
+};
+
+
+function hideNotificationPopup(){
+
+ const p=$("notificationPopup");
+
+ p.classList.remove("show");
+
+ clearTimeout(
+  notificationPopupTimer
+ );
+
+ notificationPopupTimer=
+  setTimeout(()=>{
+   p.style.display="none";
+  },300);
+
+}
+
+
+async function showMessageNotification(message){
+
+ if(!message||!user)return;
+
+ if(message.sender_id===user.id){
+  return;
+ }
+
+ const matchId=
+  Number(message.match_id);
+
+ if(!matchId)return;
+
+ /*
+  Tinder-style behavior:
+  - If the user is already reading this chat, refresh it silently.
+  - Otherwise show ONE compact in-app message notification.
+  - Do not also create an ISLA toast.
+  - If the app is in the background, the browser/Android notification
+    is used instead.
+ */
+
+ if(
+  currentChat?.match_id===matchId &&
+  $("chat").classList.contains("active")
+ ){
+
+  await loadChatMessages();
+
+  return;
+
+ }
+
+ addUnread(matchId);
+
+ let senderName="Someone";
+ let senderPhoto="";
+
+ try{
+
+  const match=
+   await client
+    .from("matches")
+    .select("id,user_one,user_two")
+    .eq("id",matchId)
+    .maybeSingle();
+
+  if(
+   !match.error&&
+   match.data
+  ){
+
+   const senderId=
+    match.data.user_one===message.sender_id
+     ? match.data.user_one
+     : match.data.user_two;
+
+   const p=
+    await client
+     .from("profiles")
+     .select("full_name,photo_url")
+     .eq("id",senderId)
+     .maybeSingle();
+
+   if(!p.error&&p.data){
+
+    senderName=
+     p.data.full_name||
+     "Someone";
+
+    senderPhoto=
+     p.data.photo_url||
+     "";
+
+   }
+
+  }
+
+ }catch(e){
+
+  console.error(
+   "Notification profile lookup:",
+   e
+  );
+
+ }
+
+ const popup=$("notificationPopup");
+
+ $("notificationAvatar").src=
+  senderPhoto||"";
+
+ $("notificationTitle").textContent=
+  senderName;
+
+ $("notificationMessage").textContent=
+  message.message||
+  "You sent a new message.";
+
+ /*
+  One notification at a time.
+  A newer message replaces the previous notification instead
+  of creating multiple popups/toasts around the screen.
+ */
+
+ popup.style.display="flex";
+
+ requestAnimationFrame(()=>{
+  popup.classList.add("show");
+ });
+
+ clearTimeout(
+  notificationPopupTimer
+ );
+
+ notificationPopupTimer=
+  setTimeout(
+   hideNotificationPopup,
+   4500
+  );
+
+ const appVisible=
+  document.visibilityState==="visible";
+
+ if(
+  !appVisible||
+  !document.hasFocus()
+ ){
+
+  showBrowserNotification(
+   `ISLA · ${senderName}`,
+   message.message||
+    "You received a new message.",
+   senderPhoto
+  );
+
+ }
+
+}
+
+/* =========================================================
+   REALTIME
+========================================================= */
+
+async function setupMessageRealtime(){
+
+ if(!user)return;
+
+ if(messageChannel){
+
+  try{
+
+   await client.removeChannel(
+    messageChannel
+   );
+
+  }catch(e){
+
+   console.error(e);
+
+  }
+
+  messageChannel=null;
+
+ }
+
+ messageChannel=
+  client
+   .channel(
+    `isla-messages-${user.id}-${Date.now()}`
+   )
+   .on(
+    "postgres_changes",
+    {
+     event:"INSERT",
+     schema:"public",
+     table:"messages"
+    },
+    async payload=>{
+
+     const message=
+      payload.new;
+
+     if(!message)return;
+
+     if(
+      message.sender_id===user.id
+     ){
+      return;
+     }
+
+     const id=
+      String(message.id);
+
+     if(
+      knownMessageIds.has(id)
+     ){
+      return;
+     }
+
+     knownMessageIds.add(id);
+
+     await showMessageNotification(
+      message
+     );
+
+    }
+   )
+   .subscribe(
+    status=>{
+
+     console.log(
+      "ISLA message realtime:",
+      status
+     );
+
+    }
+   );
+
+}
+
+
+async function fallbackMessageCheck(){
+
+ if(!user)return;
+
+ try{
+
+  const mr=
+   await client
+    .from("matches")
+    .select(
+     "id,user_one,user_two"
+    )
+    .or(
+     `user_one.eq.${user.id},user_two.eq.${user.id}`
+    );
+
+  if(
+   mr.error||
+   !mr.data?.length
+  ){
+   return;
+  }
+
+  const matchIds=
+   mr.data.map(
+    x=>Number(x.id)
+   );
+
+  const r=
+   await client
+    .from("messages")
+    .select(
+     "id,match_id,sender_id,message,created_at"
+    )
+    .in(
+     "match_id",
+     matchIds
+    )
+    .order(
+     "created_at",
+     {
+      ascending:false
+     }
+    )
+    .limit(50);
+
+  if(r.error){
+
+   console.error(
+    "Fallback message check:",
+    r.error
+   );
+
+   return;
+
+  }
+
+  for(
+   const message of
+   (r.data||[]).reverse()
+  ){
+
+   if(
+    message.sender_id===user.id
+   ){
+
+    knownMessageIds.add(
+     String(message.id)
+    );
+
+    continue;
+
+   }
+
+   const id=
+    String(message.id);
+
+   if(
+    knownMessageIds.has(id)
+   ){
+    continue;
+   }
+
+   knownMessageIds.add(id);
+
+   const readKey=
+    `isla_read_${user.id}_${message.match_id}`;
+
+   const readAt=
+    localStorage.getItem(
+     readKey
+    );
+
+   if(
+    !readAt||
+    new Date(message.created_at)>
+     new Date(readAt)
+   ){
+
+    await showMessageNotification(
+     message
+    );
+
+   }
+
+  }
+
+ }catch(e){
+
+  console.error(
+   "Fallback notification check:",
+   e
+  );
+
+ }
+
+}
+
+
+function startFallbackTimer(){
+
+ clearInterval(
+  fallbackTimer
+ );
+
+ fallbackTimer=
+  setInterval(
+   fallbackMessageCheck,
+   10000
+  );
+
+}
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+function openAuth(login=false){
+
+ $("authTitle").textContent=
+  login
+   ? "Welcome back"
+   : "Create your account";
+
+ $("authMsg").textContent="";
+
+ modal("authModal");
+
+}
+
+
+$("landingSignup").onclick=()=>{
+ openAuth(false);
+};
+
+$("landingLogin").onclick=()=>{
+ openAuth(true);
+};
+
+$("landingLogin2").onclick=()=>{
+ openAuth(true);
+};
+
+
+document
+ .querySelectorAll("[data-close]")
+ .forEach(b=>{
+  b.onclick=()=>{
+   modal(b.dataset.close,false);
+  };
+ });
+
+
+$("authForm").onsubmit=async e=>{
+
+ e.preventDefault();
+
+ $("authMsg").textContent="Please wait...";
+
+ const email=
+  $("email").value.trim();
+
+ const password=
+  $("password").value;
+
+ let r;
+
+ if(
+  $("authTitle").textContent.includes("Create")
+ ){
+
+  r=await client.auth.signUp({
+   email,
+   password
+  });
+
+ }else{
+
+  r=await client.auth.signInWithPassword({
+   email,
+   password
+  });
+
+ }
+
+ if(r.error){
+
+  $("authMsg").textContent=
+   r.error.message;
+
+  return;
+
+ }
+
+ if(r.data.session){
+
+  modal("authModal",false);
+
+  await start();
+
+ }else{
+
+  $("authMsg").textContent=
+   "Check your email to confirm your account, then log in.";
+
+ }
+
+};
+
+
+$("forgot").onclick=async()=>{
+
+ const e=
+  $("email").value.trim();
+
+ if(!e){
+
+  toast("Enter your email first");
+
+  return;
+
+ }
+
+ const r=
+  await client.auth.resetPasswordForEmail(
+   e,
+   {
+    redirectTo:location.href
+   }
+  );
+
+ toast(
+  r.error
+   ? r.error.message
+   : "Reset email sent"
+ );
+
+};
+
+
+/* =========================================================
+   PROFILE LOCATION
+========================================================= */
+
+$("dob").onchange=()=>{
+
+ if(age($("dob").value)<18){
+
+  $("profileMsg").textContent=
+   "You must be 18 or older.";
+
+ }else{
+
+  $("profileMsg").textContent="";
+
+ }
+
+};
+
+
+$("locationBtn").onclick=()=>{
+
+ if(!navigator.geolocation){
+
+  toast("Location is not supported");
+
+  return;
+
+ }
+
+ $("locationMsg").textContent=
+  "Finding your island...";
+
+ navigator.geolocation.getCurrentPosition(
+  async pos=>{
+
+   try{
+
+    const r=await fetch(
+     `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&zoom=18&addressdetails=1`
+    );
+
+    const j=await r.json();
+
+    const a=j.address||{};
+
+    $("island").value=
+     a.island||
+     a.village||
+     a.town||
+     a.city||
+     a.suburb||
+     "";
+
+    $("locationMsg").textContent=
+     $("island").value
+      ? "✓ Location detected"
+      : "Couldn't identify island; enter it manually.";
+
+   }catch(e){
+
+    $("locationMsg").textContent=
+     "Could not detect location.";
+
+   }
+
+  },
+  ()=>{
+   $("locationMsg").textContent=
+    "Location permission was denied.";
+  },
+  {
+   enableHighAccuracy:false,
+   timeout:15000,
+   maximumAge:300000
+  }
+ );
+
+};
+
+
+/* =========================================================
+   PHOTO MANAGEMENT
+========================================================= */
+
+function getStoredPhotos(p){
+
+ if(
+  Array.isArray(p?.photo_urls)
+ ){
+
+  return p.photo_urls
+   .filter(Boolean)
+   .slice(0,MAX_PROFILE_PHOTOS);
+
+ }
+
+ if(p?.photo_url){
+
+  return [
+   p.photo_url
+  ];
+
+ }
+
+ return [];
+
+}
+
+
+function removePhoto(i){
+
+ if(
+  i<0||
+  i>=photos.length
+ ){
+  return;
+ }
+
+ const removed=photos[i];
+
+ if(
+  typeof removed!=="string" &&
+  previewUrls.has(removed)
+ ){
+
+  try{
+   URL.revokeObjectURL(
+    previewUrls.get(removed)
+   );
+  }catch(e){}
+
+ }
+
+ photos.splice(i,1);
+
+ renderPhotoGrid();
+
+}
+
+
+function makePrimary(i){
+
+ if(
+  i<0||
+  i>=photos.length||
+  i===0
+ ){
+  return;
+ }
+
+ const item=
+  photos.splice(i,1)[0];
+
+ photos.unshift(item);
+
+ renderPhotoGrid();
+
+ toast("Main photo changed");
+
+}
+
+
+function movePhoto(i,dir){
+
+ const j=i+dir;
+
+ if(
+  i<0||
+  j<0||
+  i>=photos.length||
+  j>=photos.length
+ ){
+  return;
+ }
+
+ [
+  photos[i],
+  photos[j]
+ ]=[
+  photos[j],
+  photos[i]
+ ];
+
+ renderPhotoGrid();
+
+}
+
+
+function triggerPhotoPicker(){
+
+ $("photos").click();
+
+}
+
+
+/* =========================================================
+   SELECT PHOTOS
+========================================================= */
+
+$("photos").onchange=e=>{
+
+ const selected=
+  Array.from(
+   e.target.files||[]
+  );
+
+ if(!selected.length){
+  return;
+ }
+
+ const remaining=
+  MAX_PROFILE_PHOTOS-
+  photos.length;
+
+ if(remaining<=0){
+
+  toast(
+   `You can add up to ${MAX_PROFILE_PHOTOS} photos`
+  );
+
+  e.target.value="";
+
+  return;
+
+ }
+
+ const valid=
+  selected
+   .filter(
+    f=>
+     f.type.startsWith("image/")
+   )
+   .slice(0,remaining);
+
+ photos=[
+  ...photos,
+  ...valid
+ ];
+
+ if(
+  selected.length>remaining
+ ){
+
+  toast(
+   `Only ${MAX_PROFILE_PHOTOS} photos can be used`
+  );
+
+ }
+
+ renderPhotoGrid();
+
+ e.target.value="";
+
+};
+
+
+/* =========================================================
+   RENDER PHOTO EDITOR
+========================================================= */
+
+function renderPhotoGrid(){
+
+ const box=$("photoGrid");
+
+ if(!box)return;
+
+ let html="";
+
+ for(
+  let i=0;
+  i<MAX_PROFILE_PHOTOS;
+  i++
+ ){
+
+  const item=photos[i];
+
+  if(item){
+
+   const src=
+    getPhotoSrc(item);
+
+   html+=`
+
+    <div
+     class="profile-photo-slot"
+    >
+
+     <img
+      src="${esc(src)}"
+      alt="Profile photo ${i+1}"
+     >
+
+     ${
+      i===0
+       ? `
+        <span class="photo-main-badge">
+         MAIN
+        </span>
+       `
+       : ""
+     }
+
+     <button
+      type="button"
+      class="photo-remove"
+      data-remove-photo="${i}"
+      aria-label="Remove photo"
+     >
+      ×
+     </button>
+
+     <div class="photo-tools">
+
+      ${
+       i>0
+        ? `
+         <button
+          type="button"
+          class="photo-tool"
+          data-photo-left="${i}"
+          aria-label="Move photo left"
+         >
+          ‹
+         </button>
+        `
+        : ""
+      }
+
+      ${
+       i>0
+        ? `
+         <button
+          type="button"
+          class="photo-tool main"
+          data-photo-main="${i}"
+          aria-label="Make main photo"
+         >
+          ★
+         </button>
+        `
+        : `
+         <span class="photo-main-text">
+          MAIN PHOTO
+         </span>
+        `
+      }
+
+      ${
+       i<photos.length-1
+        ? `
+         <button
+          type="button"
+          class="photo-tool"
+          data-photo-right="${i}"
+          aria-label="Move photo right"
+         >
+          ›
+         </button>
+        `
+        : ""
+      }
+
+     </div>
+
+    </div>
+
+   `;
+
+  }else{
+
+   html+=`
+
+    <button
+     type="button"
+     class="profile-photo-slot add-photo"
+     data-add-photo
+    >
+
+     <span class="plus">
+      +
+     </span>
+
+     <span class="add-text">
+      Add photo
+     </span>
+
+    </button>
+
+   `;
+
+  }
+
+ }
+
+ box.innerHTML=html;
+
+
+ box
+  .querySelectorAll(
+   "[data-add-photo]"
+  )
+  .forEach(btn=>{
+
+   btn.onclick=
+    triggerPhotoPicker;
+
+  });
+
+
+ box
+  .querySelectorAll(
+   "[data-remove-photo]"
+  )
+  .forEach(btn=>{
+
+   btn.onclick=()=>{
+
+    removePhoto(
+     Number(
+      btn.dataset.removePhoto
+     )
+    );
+
+   };
+
+  });
+
+
+ box
+  .querySelectorAll(
+   "[data-photo-main]"
+  )
+  .forEach(btn=>{
+
+   btn.onclick=()=>{
+
+    makePrimary(
+     Number(
+      btn.dataset.photoMain
+     )
+    );
+
+   };
+
+  });
+
+
+ box
+  .querySelectorAll(
+   "[data-photo-left]"
+  )
+  .forEach(btn=>{
+
+   btn.onclick=()=>{
+
+    movePhoto(
+     Number(
+      btn.dataset.photoLeft
+     ),
+     -1
+    );
+
+   };
+
+  });
+
+
+ box
+  .querySelectorAll(
+   "[data-photo-right]"
+  )
+  .forEach(btn=>{
+
+   btn.onclick=()=>{
+
+    movePhoto(
+     Number(
+      btn.dataset.photoRight
+     ),
+     1
+    );
+
+   };
+
+  });
+
+}
+
+
+/* =========================================================
+   MY PROFILE
+========================================================= */
+
+async function loadMyProfile(){
+
+ if(!user)return null;
+
+ const r=
+  await client
+   .from("profiles")
+   .select("*")
+   .eq("id",user.id)
+   .maybeSingle();
+
+ if(r.error){
+
+  console.error(
+   "Profile error:",
+   r.error
+  );
+
+ }
+
+ me=r.data||null;
+
+ return me;
+
+}
+
+
+/* =========================================================
+   OPEN PROFILE EDITOR
+========================================================= */
+
+async function openProfile(p=null){
+
+ editing=!!p;
+
+ photos=
+  getStoredPhotos(p);
+
+ $("profileTitle").textContent=
+  p
+   ? "Edit your profile"
+   : "Create your profile";
+
+ $("name").value=
+  p?.full_name||"";
+
+ $("dob").value=
+  p?.date_of_birth||"";
+
+ $("gender").value=
+  p?.gender||"";
+
+ $("looking").value=
+  Array.isArray(p?.relationship_goals)
+   ? (p.relationship_goals[0]||"Everyone")
+   : (p?.relationship_goals||p?.looking_for||"Everyone");
+
+ $("island").value=
+  p?.island||"";
+
+ $("bio").value=
+  p?.bio||"";
+
+ $("interests").value=
+  p?.interests||"";
+
+ $("profileMsg").textContent="";
+
+ $("locationMsg").textContent="";
+
+ renderPhotoGrid();
+
+ modal("profileModal");
+
+}
+
+
+/* =========================================================
+   SAVE PROFILE
+========================================================= */
+
+$("profileForm").onsubmit=async e=>{
+
+ e.preventDefault();
+
+ if(
+  !$("dob").value||
+  age($("dob").value)<18
+ ){
+
+  return toast(
+   "ISLA is 18+ only"
+  );
+
+ }
+
+ if(!user){
+
+  return toast(
+   "Please log in again"
+  );
+
+ }
+
+ const b=e.submitter;
+
+ b.disabled=true;
+
+ b.textContent="Saving...";
+
+ try{
+
+  /*
+   * Keep existing Supabase URLs in their current order.
+   * New File objects are uploaded after them.
+   */
+
+  let urls=
+   photos
+    .filter(
+     x=>typeof x==="string"
+    )
+    .slice(0,MAX_PROFILE_PHOTOS);
+
+
+  for(
+   const f of photos.filter(
+    x=>typeof x!=="string"
+   )
+  ){
+
+   if(
+    urls.length>=MAX_PROFILE_PHOTOS
+   ){
+    break;
+   }
+
+   const ext=
+    (
+     f.name.split(".").pop()||
+     "jpg"
+    ).toLowerCase()
+     .replace(
+      /[^a-z0-9]/g,
+      ""
+     )||
+     "jpg";
+
+   const path=
+    `${user.id}/${crypto.randomUUID()}.${ext}`;
+
+   const u=
+    await client
+     .storage
+     .from("profile-photos")
+     .upload(
+      path,
+      f,
+      {
+       upsert:false
+      }
+     );
+
+   if(u.error)throw u.error;
+
+   const publicUrl=
+    client
+     .storage
+     .from("profile-photos")
+     .getPublicUrl(path)
+     .data
+     .publicUrl;
+
+   urls.push(
+    publicUrl
+   );
+
+  }
+
+
+  urls=
+   urls.slice(
+    0,
+    MAX_PROFILE_PHOTOS
+   );
+
+
+  const payload={
+
+   id:user.id,
+
+   full_name:
+    $("name")
+     .value
+     .trim(),
+
+   date_of_birth:
+    $("dob").value,
+
+   gender:
+    $("gender").value,
+
+   relationship_goals:
+    [$("looking").value],
+
+   island:
+    $("island")
+     .value
+     .trim(),
+
+   bio:
+    $("bio")
+     .value
+     .trim(),
+
+   interests:
+    $("interests")
+     .value
+     .trim(),
+
+   photo_url:
+    urls[0]||
+    null,
+
+   photo_urls:
+    urls,
+
+   updated_at:
+    new Date()
+     .toISOString()
+
+  };
+
+
+  const r=
+   await client
+    .from("profiles")
+    .upsert(
+     payload,
+     {
+      onConflict:"id"
+     }
+    );
+
+  if(r.error)throw r.error;
+
+
+  me={
+   ...(me||{}),
+   ...payload
+  };
+
+
+  modal(
+   "profileModal",
+   false
+  );
+
+
+  toast(
+   "Profile saved ❤️"
+  );
+
+
+  renderProfilePage();
+
+
+  /*
+   * Refresh Discover so other users see
+   * the current profile state.
+   */
+
+  if(
+   $("pageDiscover")
+    .classList
+    .contains("active")
+  ){
+
+   await loadDiscover();
+
+  }
+
+
+ }catch(err){
+
+  console.error(err);
+
+  $("profileMsg").textContent=
+   err.message||
+   "Could not save profile";
+
+ }finally{
+
+  b.disabled=false;
+  b.textContent="Save profile";
+
+ }
+
+};
+
+
+/* =========================================================
+   START APP
+========================================================= */
+
+async function start(){
+
+ const s=
+  await client.auth.getSession();
+
+ user=
+  s.data.session?.user||
+  null;
+
+ if(!user){
+
+  $("landing").style.display="block";
+
+  $("app").classList.remove("active");
+
+  clearInterval(
+   fallbackTimer
+  );
+
+  if(messageChannel){
+
+   try{
+
+    await client.removeChannel(
+     messageChannel
+    );
+
+   }catch(e){}
+
+   messageChannel=null;
+
+  }
+
+  return;
+
+ }
+
+ me=await loadMyProfile();
+
+ $("landing").style.display="none";
+
+ $("app").classList.add("active");
+
+ updateNotificationUI();
+
+ updateNotificationBadges();
+
+ if(!me){
+
+  await openProfile();
+
+  return;
+
+ }
+
+ await loadDiscover();
+
+ setupMessageRealtime();
+
+ startFallbackTimer();
+
+ setTimeout(
+  fallbackMessageCheck,
+  1500
+ );
+
+}
+
+
+/* =========================================================
+   DISCOVER
+========================================================= */
+
+async function loadDiscover(){
+
+ const r=
+  await client
+   .from("profiles")
+   .select("*")
+   .neq("id",user.id)
+   .order(
+    "created_at",
+    {
+     ascending:false
+    }
+   );
+
+ if(r.error){
+
+  toast(r.error.message);
+
+  return;
+
+ }
+
+ let liked=[];
+
+ const lr=
+  await client
+   .from("likes")
+   .select("liked_id")
+   .eq("liker_id",user.id);
+
+ if(!lr.error){
+
+  liked=
+   (lr.data||[]).map(
+    x=>x.liked_id
+   );
+
+ }
+
+ profiles=
+  (r.data||[])
+   .filter(
+    p=>!liked.includes(p.id)
+   );
+
+ index=0;
+
+ photoIndex=0;
+
+ currentProfilePhotos=[];
+
+ render();
+
+ renderExploreHome();
+
+}
+
+
+
+/* PUBLIC PROFILE */
+const goalLabels={long_term:"💍 Long-term relationship",serious:"❤️ Serious relationship",casual:"✨ Something casual",friendship:"🤍 Friendship",marriage:"💎 Marriage",everyone:"♡ Open to connections"};
+function profileGoals(p){const v=p?.relationship_goals??p?.looking_for;if(Array.isArray(v))return v.filter(Boolean);if(v)return String(v).split(/[,]+/).map(x=>x.trim()).filter(Boolean);return[]}
+function profilePhotos(p){let a=Array.isArray(p?.photo_urls)?p.photo_urls.filter(Boolean):[];if(!a.length&&p?.photo_url)a=[p.photo_url];return a.slice(0,MAX_PROFILE_PHOTOS)}
+function openPublicProfile(p,matchId=null){if(!p)return;const photos=profilePhotos(p),a=age(p.date_of_birth),goals=profileGoals(p),interests=parseInterests(p.interests),photo=photos[0]||"",name=esc(p.full_name||"ISLA Member");const goalHtml=goals.length?`<div class="lux-chips">${goals.map(g=>`<span class="lux-goal">${esc(goalLabels[g]||g)}</span>`).join("")}</div>`:`<span class="lux-goal">♡ Open to connections</span>`;const interestHtml=interests.length?`<div class="lux-chips">${interests.map(x=>`<span class="lux-chip">${esc(x)}</span>`).join("")}</div>`:`<div class="lux-bio">No interests added yet.</div>`;const gallery=photos.length>1?`<div class="lux-gallery">${photos.slice(1).map(x=>`<img src="${esc(x)}" alt="Profile photo" loading="lazy">`).join("")}</div>`:"";$("publicProfileContent").innerHTML=`<div class="lux-hero">${photo?`<img id="publicHeroPhoto" src="${esc(photo)}" alt="${name}">`:`<div style="height:100%;display:grid;place-items:center;font-size:60px;color:#9b6a78">♡</div>`}<div class="lux-dots">${photos.map((_,i)=>`<span class="${i===0?"active":""}"></span>`).join("")}</div><div class="lux-photo-left" id="publicPhotoLeft"></div><div class="lux-photo-right" id="publicPhotoRight"></div><div class="lux-hero-copy"><div class="lux-eyebrow">ISLA • MALDIVES</div><div class="lux-name">${name}${a!=null?`, ${a}`:""}</div><div class="lux-location">${esc([p.island,p.gender].filter(Boolean).join(" · ")||"Maldives")}</div></div></div>${gallery}<div class="lux-body"><div class="lux-section"><div class="lux-label">Looking for</div>${goalHtml}</div><div class="lux-section"><div class="lux-label">About</div><div class="lux-bio">${esc(p.bio||"A little mystery is beautiful. Tell us more about yourself when you're ready.")}</div></div><div class="lux-section"><div class="lux-label">Interests</div>${interestHtml}</div></div><div class="lux-actions">${matchId?`<button class="primary" id="publicProfileChat">💬 Chat</button>`:`<button class="secondary" id="publicProfileClose2">Close</button>`}</div>`;modal("publicProfileModal",true);let i=0;const hero=$("publicHeroPhoto"),dots=[...document.querySelectorAll("#publicProfileContent .lux-dots span")];const show=n=>{if(!hero||!photos.length)return;i=(n+photos.length)%photos.length;hero.src=photos[i];dots.forEach((d,k)=>d.classList.toggle("active",k===i))};$("publicPhotoLeft")?.addEventListener("click",()=>show(i-1));$("publicPhotoRight")?.addEventListener("click",()=>show(i+1));$("publicProfileChat")?.addEventListener("click",async()=>{modal("publicProfileModal",false);p.match_id=Number(matchId);await openChat(p)});$("publicProfileClose2")?.addEventListener("click",()=>modal("publicProfileModal",false))}
+$("publicProfileClose")?.addEventListener("click",()=>modal("publicProfileModal",false));$("publicProfileModal")?.addEventListener("click",e=>{if(e.target.id==="publicProfileModal")modal("publicProfileModal",false)});
+
+/* =========================================================
+   RENDER DISCOVER PROFILE
+========================================================= */
+
+function render(){
+
+ const empty=$("empty");
+
+ const card=$("swipeCard");
+
+ if(index>=profiles.length){
+
+  card.classList.add("hidden");
+
+  empty.classList.remove("hidden");
+
+  currentProfilePhotos=[];
+
+  photoIndex=0;
+
+  $("photoProgress").innerHTML="";
+
+  return;
+
+ }
+
+ card.classList.remove("hidden");
+
+ empty.classList.add("hidden");
+
+ const p=profiles[index];
+
+ const a=age(p.date_of_birth);
+
+ $("pName").textContent=
+  (p.full_name||"ISLA Member")+
+  (a!=null?" "+a:"");
+
+ $("pLoc").textContent=
+  [p.island,p.gender]
+   .filter(Boolean)
+   .join(" · ");
+
+ $("pBio").textContent=
+  p.bio||"";
+
+ $("pInterests").textContent=
+  p.interests
+   ? "♡ "+p.interests
+   : "";
+
+ const goalList=profileGoals(p);
+ $("pDetails").innerHTML=goalList.slice(0,2).map(g=>`<span class="swipe-detail-pill">${esc(goalLabels[g]||g)}</span>`).join("");
+
+ currentProfilePhotos=
+  Array.isArray(p.photo_urls)
+   ? p.photo_urls.filter(Boolean).slice(0,MAX_PROFILE_PHOTOS)
+   : [];
+
+ if(
+  !currentProfilePhotos.length &&
+  p.photo_url
+ ){
+
+  currentProfilePhotos=[
+   p.photo_url
+  ];
+
+ }
+
+ photoIndex=0;
+
+ renderProfilePhoto();
+
+}
+
+
+/* =========================================================
+   PROFILE PHOTO NAVIGATION
+========================================================= */
+
+function renderProfilePhoto(){
+
+ const img=$("pPhoto");
+
+ const progress=$("photoProgress");
+
+ if(!currentProfilePhotos.length){
+
+  img.src="";
+
+  img.classList.add("hidden");
+
+  progress.innerHTML="";
+
+  return;
+
+ }
+
+ img.classList.remove("hidden");
+
+ const src=
+  currentProfilePhotos[
+   photoIndex
+  ]||currentProfilePhotos[0];
+
+ img.style.opacity="0";
+
+ const preload=new Image();
+
+ preload.onload=()=>{
+
+  img.src=src;
+
+  img.style.opacity="1";
+
+ };
+
+ preload.onerror=()=>{
+
+  img.src=src;
+
+  img.style.opacity="1";
+
+ };
+
+ preload.src=src;
+
+ progress.innerHTML=
+  currentProfilePhotos
+   .map(
+    (_,i)=>`
+     <span
+      class="${
+       i===photoIndex
+        ? "active"
+        : ""
+      }"
+     ></span>
+    `
+   )
+   .join("");
+
+}
+
+
+function nextPhoto(){
+
+ if(
+  currentProfilePhotos.length<=1
+ ){
+  return;
+ }
+
+ photoIndex=
+  (
+   photoIndex+1
+  )%
+  currentProfilePhotos.length;
+
+ renderProfilePhoto();
+
+}
+
+
+function previousPhoto(){
+
+ if(
+  currentProfilePhotos.length<=1
+ ){
+  return;
+ }
+
+ photoIndex=
+  (
+   photoIndex-1+
+   currentProfilePhotos.length
+  )%
+  currentProfilePhotos.length;
+
+ renderProfilePhoto();
+
+}
+
+
+$("photoLeft").onclick=e=>{
+
+ e.stopPropagation();
+
+ previousPhoto();
+
+};
+
+
+$("photoRight").onclick=e=>{
+
+ e.stopPropagation();
+
+ nextPhoto();
+
+};
+
+$("swipeCard").onclick=e=>{if(e.target.closest(".actions")||e.target.closest(".photo-touch-left")||e.target.closest(".photo-touch-right"))return;if(profiles[index])openPublicProfile(profiles[index]);};
+
+
+function next(){
+
+ index++;
+
+ photoIndex=0;
+
+ currentProfilePhotos=[];
+
+ render();
+
+}
+
+
+/* =========================================================
+   LIKE / MATCH
+========================================================= */
+
+async function like(){
+
+ if(index>=profiles.length)return;
+
+ const target=profiles[index];
+
+ $("likeBtn").disabled=true;
+
+ try{
+
+  const r=
+   await client.rpc(
+    "like_profile",
+    {
+     target_user:target.id
+    }
+   );
+
+  if(r.error)throw r.error;
+
+  if(r.data?.matched){
+
+   currentChat={
+    ...target,
+    match_id:Number(r.data.match_id)
+   };
+
+   $("matchName").textContent=
+    `You matched with ${target.full_name||"someone"}!`;
+
+   modal(
+    "matchModal",
+    true
+   );
+
+  }
+
+  next();
+
+ }catch(e){
+
+  console.error(e);
+
+  toast(
+   e.message||
+   "Could not like profile"
+  );
+
+ }finally{
+
+  $("likeBtn").disabled=false;
+
+ }
+
+}
+
+
+$("likeBtn").onclick=like;
+
+$("passBtn").onclick=next;
+
+$("reloadDiscover").onclick=
+ loadDiscover;
+
+
+$("superBtn").onclick=()=>{
+
+ toast(
+  "Super Like is a Premium feature"
+ );
+
+ modal(
+  "premiumModal",
+  true
+ );
+
+};
+
+
+$("boostBtn").onclick=()=>{
+
+ toast(
+  "Boost is a Premium feature"
+ );
+
+ modal(
+  "premiumModal",
+  true
+ );
+
+};
+
+
+$("keepSwiping").onclick=()=>{
+
+ modal(
+  "matchModal",
+  false
+ );
+
+};
+
+
+$("sendMessage").onclick=async()=>{
+
+ modal(
+  "matchModal",
+  false
+ );
+
+ if(currentChat){
+
+  await openChat(currentChat);
+
+ }
+
+};
+
+
+/* =========================================================
+   EXPLORE
+========================================================= */
+
+function renderExploreHome(){
+
+ const box=$("exploreResults");
+
+ if(!box)return;
+
+ box.classList.add("hidden");
+
+}
+
+
+function profilePhoto(p){
+
+ if(
+  Array.isArray(p?.photo_urls)&&
+  p.photo_urls.length
+ ){
+
+  return p.photo_urls[0]||"";
+
+ }
+
+ return p?.photo_url||"";
+
+}
+
+
+function renderExploreResults(
+ title,
+ subtitle,
+ list
+){
+
+ const box=$("exploreResults");
+
+ if(!box)return;
+
+ const safeList=
+  Array.isArray(list)
+   ? list
+   : [];
+
+ box.classList.remove("hidden");
+
+ box.innerHTML=`
+
+  <button
+   class="explore-back"
+   id="exploreBack"
+  >
+   ← Back to Explore
+  </button>
+
+  <div class="explore-results-title">
+   ${esc(title)}
+  </div>
+
+  <div class="explore-results-subtitle">
+   ${esc(subtitle)}
+  </div>
+
+  <div class="explore-members">
+
+   ${
+    safeList.length
+     ? safeList.map(p=>{
+
+        const photo=
+         profilePhoto(p);
+
+        const a=
+         age(p.date_of_birth);
+
+        return `
+
+         <div
+          class="explore-member"
+          data-profile-id="${esc(p.id)}"
+         >
+
+          ${
+           photo
+            ? `
+             <img
+              src="${esc(photo)}"
+              alt=""
+             >
+            `
+            : `
+             <div
+              style="
+               width:100%;
+               height:100%;
+               display:flex;
+               align-items:center;
+               justify-content:center;
+               font-size:45px;
+               background:#202125;
+              "
+             >
+              ◉
+             </div>
+            `
+          }
+
+          <div class="explore-member-info">
+
+           <div class="explore-member-name">
+
+            ${esc(
+             p.full_name||
+             "ISLA Member"
+            )}
+
+            ${
+             a!=null
+              ? ` ${a}`
+              : ""
+            }
+
+           </div>
+
+           <div class="explore-member-loc">
+
+            ${
+             [p.island,p.gender]
+              .filter(Boolean)
+              .map(esc)
+              .join(" · ")||
+             "Maldives"
+            }
+
+           </div>
+
+          </div>
+
+         </div>
+
+        `;
+
+       }).join("")
+     : `
+      <div class="explore-empty">
+
+       <div style="font-size:34px;margin-bottom:10px">
+        🌴
+       </div>
+
+       No profiles found in this category yet.
+       Check back soon as more people join ISLA.
+
+      </div>
+     `
+   }
+
+  </div>
+
+ `;
+
+ $("exploreBack").onclick=()=>{
+  box.classList.add("hidden");
+ };
+
+ box
+  .querySelectorAll(".explore-member")
+  .forEach(card=>{
+
+   card.onclick=()=>{
+
+    const id=
+     card.dataset.profileId;
+
+    const p=
+     profiles.find(
+      x=>x.id===id
+     );
+
+    if(p){
+
+     openExploreProfile(p);
+
+    }
+
+   };
+
+  });
+
+ box.scrollIntoView({
+  behavior:"smooth",
+  block:"start"
+ });
+
+}
+
+
+function openExploreProfile(p){
+
+ const photo=
+  profilePhoto(p);
+
+ const a=
+  age(p.date_of_birth);
+
+ const box=$("exploreResults");
+
+ box.classList.remove("hidden");
+
+ box.innerHTML=`
+
+  <button
+   class="explore-back"
+   id="profileExploreBack"
+  >
+   ← Back to Explore
+  </button>
+
+  <div
+   style="
+    background:#151619;
+    border:1px solid #292a2e;
+    border-radius:20px;
+    overflow:hidden;
+   "
+  >
+
+   <div
+    style="
+     height:430px;
+     background:#202125;
+     position:relative;
+    "
+   >
+
+    ${
+     photo
+      ? `
+       <img
+        src="${esc(photo)}"
+        alt=""
+        style="
+         width:100%;
+         height:100%;
+         object-fit:cover;
+        "
+       >
+      `
+      : `
+       <div
+        style="
+         width:100%;
+         height:100%;
+         display:flex;
+         align-items:center;
+         justify-content:center;
+         font-size:70px;
+        "
+       >
+        ◉
+       </div>
+      `
+    }
+
+    <div
+     style="
+      position:absolute;
+      inset:45% 0 0;
+      background:linear-gradient(
+       transparent,
+       rgba(0,0,0,.95)
+      );
+     "
+    ></div>
+
+    <div
+     style="
+      position:absolute;
+      left:18px;
+      right:18px;
+      bottom:18px;
+     "
+    >
+
+     <div
+      style="
+       font:700 30px Georgia,serif;
+      "
+     >
+      ${esc(
+       p.full_name||
+       "ISLA Member"
+      )}
+
+      ${
+       a!=null
+        ? ` ${a}`
+        : ""
+      }
+
+     </div>
+
+     <div
+      style="
+       margin-top:5px;
+       color:#ddd;
+       font-size:14px;
+      "
+     >
+      ${
+       [p.island,p.gender]
+        .filter(Boolean)
+        .map(esc)
+        .join(" · ")
+      }
+     </div>
+
+    </div>
+
+   </div>
+
+   <div style="padding:18px">
+
+    ${
+     p.bio
+      ? `
+       <p
+        style="
+         color:#ccc;
+         line-height:1.6;
+         margin:0 0 12px;
+        "
+       >
+        ${esc(p.bio)}
+       </p>
+      `
+      : ""
+    }
+
+    ${
+     p.interests
+      ? `
+       <div
+        style="
+         color:#ffd88e;
+         font-size:13px;
+         margin-bottom:17px;
+        "
+       >
+        ♡ ${esc(p.interests)}
+       </div>
+      `
+      : ""
+    }
+
+    <div
+     style="
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:9px;
+     "
+    >
+
+     <button
+      class="secondary"
+      id="explorePass"
+     >
+      ✕ Pass
+     </button>
+
+     <button
+      class="primary"
+      id="exploreLike"
+     >
+      ♥ Like
+     </button>
+
+    </div>
+
+   </div>
+
+  </div>
+
+ `;
+
+ $("profileExploreBack").onclick=()=>{
+  box.classList.add("hidden");
+ };
+
+ $("exploreLike").onclick=async()=>{
+
+  const r=
+   await client.rpc(
+    "like_profile",
+    {
+     target_user:p.id
+    }
+   );
+
+  if(r.error){
+
+   toast(
+    r.error.message||
+    "Could not like profile"
+   );
+
+   return;
+
+  }
+
+  if(r.data?.matched){
+
+   currentChat={
+    ...p,
+    match_id:Number(r.data.match_id)
+   };
+
+   $("matchName").textContent=
+    `You matched with ${p.full_name||"someone"}!`;
+
+   modal(
+    "matchModal",
+    true
+   );
+
+  }else{
+
+   toast("Like sent ❤️");
+
+  }
+
+  profiles=
+   profiles.filter(
+    x=>x.id!==p.id
+   );
+
+  box.classList.add("hidden");
+
+ };
+
+ $("explorePass").onclick=()=>{
+
+  profiles=
+   profiles.filter(
+    x=>x.id!==p.id
+   );
+
+  box.classList.add("hidden");
+
+  toast("Profile passed");
+
+ };
+
+}
+
+
+async function runExplore(type){
+
+ if(!profiles.length){
+
+  await loadDiscover();
+
+ }
+
+ let list=
+  [...profiles];
+
+ let title="Explore";
+ let subtitle="Discover people on ISLA.";
+
+ if(type==="forYou"){
+
+  title="For You";
+  subtitle=
+   "Profiles selected from your available Discover pool.";
+
+  list=
+   profiles.slice(0,12);
+
+ }
+
+ if(type==="nearby"){
+
+  title="Nearby Islands";
+  subtitle=
+   "People from islands represented in your discovery pool.";
+
+  const myIsland=
+   me?.island||
+   "";
+
+  list=
+   profiles
+    .filter(
+     p=>
+      myIsland&&
+      p.island&&
+      p.island.toLowerCase()===
+       myIsland.toLowerCase()
+    );
+
+  if(!list.length){
+
+   list=
+    profiles
+     .filter(p=>p.island)
+     .slice(0,12);
+
+  }
+
+ }
+
+ if(type==="new"){
+
+  title="New Members";
+  subtitle=
+   "Recently joined members on ISLA.";
+
+  list=
+   [...profiles]
+    .sort(
+     (a,b)=>
+      new Date(b.created_at||0)-
+      new Date(a.created_at||0)
+    )
+    .slice(0,12);
+
+ }
+
+ if(type==="interests"){
+
+  title="Shared Interests";
+  subtitle=
+   "People whose interests overlap with yours.";
+
+  const mine=
+   (me?.interests||"")
+    .toLowerCase()
+    .split(/[,\s]+/)
+    .filter(Boolean);
+
+  list=
+   profiles
+    .filter(p=>{
+
+     const theirs=
+      (p.interests||"")
+       .toLowerCase();
+
+     return mine.some(
+      word=>
+       word.length>2&&
+       theirs.includes(word)
+     );
+
+    });
+
+ }
+
+ if(type==="popular"){
+
+  title="Popular on ISLA";
+  subtitle=
+   "Profiles currently available to discover.";
+
+  list=
+   [...profiles]
+    .sort(
+     (a,b)=>
+      new Date(a.created_at||0)-
+      new Date(b.created_at||0)
+    )
+    .slice(0,12);
+
+ }
+
+ if(type==="premium"){
+
+  modal(
+   "premiumModal",
+   true
+  );
+
+  return;
+
+ }
+
+ if(type==="online"){
+
+  title="Online Now";
+  subtitle=
+   "Active status will become available when ISLA adds presence tracking.";
+
+  list=
+   profiles.slice(0,12);
+
+ }
+
+ renderExploreResults(
+  title,
+  subtitle,
+  list
+ );
+
+}
+
+
+document
+ .querySelectorAll("[data-explore]")
+ .forEach(card=>{
+
+  card.onclick=()=>{
+
+   runExplore(
+    card.dataset.explore
+   );
+
+  };
+
+ });
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+document
+ .querySelectorAll(".tab")
+ .forEach(t=>{
+
+  t.onclick=async()=>{
+
+   document
+    .querySelectorAll(".tab")
+    .forEach(x=>
+     x.classList.remove("active")
+    );
+
+   t.classList.add("active");
+
+   document
+    .querySelectorAll(".tabpage")
+    .forEach(x=>
+     x.classList.remove("active")
+    );
+
+   $(t.dataset.page)
+    .classList.add("active");
+
+   if(
+    t.dataset.page==="pageDiscover"
+   ){
+
+    render();
+
+   }
+
+   if(
+    t.dataset.page==="pageExplore"
+   ){
+
+    renderExploreHome();
+
+   }
+
+   if(
+    t.dataset.page==="pageLikes"
+   ){
+
+    await loadLikes();
+
+   }
+
+   if(
+    t.dataset.page==="pageMatches"
+   ){
+
+    await loadMatches();
+
+   }
+
+   if(
+    t.dataset.page==="pageMessages"
+   ){
+
+    await loadChats();
+
+   }
+
+   if(
+    t.dataset.page==="pageProfile"
+   ){
+
+    renderProfilePage();
+
+   }
+
+  };
+
+ });
+
+
+$("topProfile").onclick=()=>{
+
+ renderProfilePage();
+
+ $("pageProfile")
+  .classList.add("active");
+
+ document
+  .querySelectorAll(".tab")
+  .forEach(x=>
+   x.classList.toggle(
+    "active",
+    x.dataset.page==="pageProfile"
+   )
+  );
+
+};
+
+
+$("topSettings").onclick=()=>{
+
+ updateNotificationUI();
+
+ modal(
+  "settingsModal",
+  true
+ );
+
+};
+
+
+$("logout").onclick=async()=>{
+
+ if(messageChannel){
+
+  try{
+
+   await client.removeChannel(
+    messageChannel
+   );
+
+  }catch(e){}
+
+  messageChannel=null;
+
+ }
+
+ clearInterval(
+  fallbackTimer
+ );
+
+ await client.auth.signOut();
+
+ location.reload();
+
+};
+
+
+$("premiumBtn").onclick=()=>{
+
+ modal(
+  "premiumModal",
+  true
+ );
+
+};
+
+
+$("preferencesBtn").onclick=()=>{
+
+ setupIslandPills();
+
+ modal(
+  "preferencesModal",
+  true
+ );
+
+};
+
+
+$("safetyBtn").onclick=()=>{
+
+ modal(
+  "safetyModal",
+  true
+ );
+
+};
+
+
+$("helpBtn").onclick=()=>{
+
+ toast(
+  "ISLA support will be available soon"
+ );
+
+};
+
+
+$("blockInfo").onclick=()=>{
+
+ toast(
+  "Open a profile or chat to block a member"
+ );
+
+};
+
+
+$("reportInfo").onclick=()=>{
+
+ toast(
+  "Report tools are available from member profiles"
+ );
+
+};
+
+
+/* =========================================================
+   PREFERENCES
+========================================================= */
+
+function setupIslandPills(){
+
+ let saved=[];
+
+ try{
+
+  saved=
+   JSON.parse(
+    localStorage.getItem(
+     "isla_islands"
+    )||"[]"
+   );
+
+ }catch(e){
+
+  saved=[];
+
+ }
+
+ $("islandPills").innerHTML=
+  islands.map(x=>`
+
+   <button
+    type="button"
+    class="pill ${
+     saved.includes(x)
+      ? "selected"
+      : ""
+    }"
+    data-island="${esc(x)}"
+   >
+    ${esc(x)}
+   </button>
+
+  `).join("");
+
+ document
+  .querySelectorAll(
+   "#islandPills .pill"
+  )
+  .forEach(b=>{
+
+   b.onclick=()=>{
+
+    b.classList.toggle(
+     "selected"
+    );
+
+   };
+
+  });
+
+}
+
+
+$("ageMin").oninput=
+$("ageMax").oninput=()=>{
+
+ $("ageText").textContent=
+  $("ageMin").value+
+  "–"+
+  $("ageMax").value;
+
+};
+
+
+$("preferencesForm").onsubmit=e=>{
+
+ e.preventDefault();
+
+ localStorage.setItem(
+  "isla_prefs",
+  JSON.stringify({
+   min:$("ageMin").value,
+   max:$("ageMax").value,
+   distance:$("distance").value
+  })
+ );
+
+ localStorage.setItem(
+  "isla_islands",
+  JSON.stringify(
+   [
+    ...document.querySelectorAll(
+     "#islandPills .selected"
+    )
+   ].map(
+    x=>x.dataset.island
+   )
+  )
+ );
+
+ modal(
+  "preferencesModal",
+  false
+ );
+
+ toast(
+  "Preferences saved"
+ );
+
+ loadDiscover();
+
+};
+
+
+/* =========================================================
+   LIKES
+========================================================= */
+
+async function loadLikes(){
+
+ const box=$("likesList");
+
+ box.innerHTML=
+  "<div class='item'>Loading...</div>";
+
+ const r=
+  await client
+   .from("likes")
+   .select(
+    "liked_id,created_at"
+   )
+   .eq(
+    "liked_id",
+    user.id
+   );
+
+ if(r.error){
+
+  box.innerHTML=
+   "<div class='item'>Likes You requires the premium matching view.</div>";
+
+  return;
+
+ }
+
+ box.innerHTML=`
+
+  <div class="item">
+
+   <div>
+
+    <strong>
+     Likes are private until a mutual match.
+    </strong>
+
+    <small>
+     Upgrade to ISLA Gold to see who already liked you.
+    </small>
+
+   </div>
+
+   <button
+    onclick='modal("premiumModal",true)'
+   >
+    Upgrade
+   </button>
+
+  </div>
+
+ `;
+
+}
+
+
+/* =========================================================
+   MATCHES
+========================================================= */
+
+async function loadMatches(){
+
+ const box=$("matchesList");
+
+ box.innerHTML=
+  "<div class='item'>Loading matches...</div>";
+
+ const r=
+  await client
+   .from("matches")
+   .select(
+    "id,user_one,user_two,created_at"
+   )
+   .or(
+    `user_one.eq.${user.id},user_two.eq.${user.id}`
+   )
+   .order(
+    "created_at",
+    {
+     ascending:false
+    }
+   );
+
+ if(r.error){
+
+  box.innerHTML=`
+
+   <div class="item">
+
+    <div>
+
+     <strong>
+      Could not load matches
+     </strong>
+
+     <small>
+      ${esc(r.error.message)}
+     </small>
+
+    </div>
+
+   </div>
+
+  `;
+
+  return;
+
+ }
+
+ if(!r.data?.length){
+
+  box.innerHTML=`
+
+   <div class="item">
+
+    <div>
+
+     <strong>
+      No matches yet
+     </strong>
+
+     <small>
+      Keep discovering people.
+     </small>
+
+    </div>
+
+   </div>
+
+  `;
+
+  return;
+
+ }
+
+ const matchRows=r.data;
+
+ const ids=
+  matchRows.map(
+   m=>
+    m.user_one===user.id
+     ? m.user_two
+     : m.user_one
+  );
+
+ const p=
+  await client
+   .from("profiles")
+   .select("*")
+   .in(
+    "id",
+    ids
+   );
+
+ if(p.error){
+
+  box.innerHTML=`
+
+   <div class="item">
+
+    <div>
+
+     <strong>
+      Could not load profiles
+     </strong>
+
+     <small>
+      ${esc(p.error.message)}
+     </small>
+
+    </div>
+
+   </div>
+
+  `;
+
+  return;
+
+ }
+
+ const byId=
+  new Map(
+   (p.data||[]).map(
+    x=>[x.id,x]
+   )
+  );
+
+ box.innerHTML=
+  matchRows.map(m=>{
+
+   const id=
+    m.user_one===user.id
+     ? m.user_two
+     : m.user_one;
+
+   const x=byId.get(id);
+
+   if(!x)return "";
+
+   return `
+
+    <div class="item">
+
+     <img
+      class="avatar lux-profile-trigger"
+      onclick='event.stopPropagation(); openPublicProfile(${JSON.stringify(x)},${Number(m.id)})'
+      src="${esc(x.photo_url||"")}"
+      alt=""
+     >
+
+     <div class="lux-profile-trigger" onclick='event.stopPropagation(); openPublicProfile(${JSON.stringify(x)},${Number(m.id)})'>
+
+      <strong>
+       ${esc(
+        x.full_name||
+        "ISLA Member"
+       )}
+      </strong>
+
+      <small>
+       ${esc(
+        x.island||
+        "Maldives"
+       )}
+      </small>
+
+     </div>
+
+     <button
+      onclick='openChatById("${esc(x.id)}",${Number(m.id)})'
+     >
+      Chat
+     </button>
+
+    </div>
+
+   `;
+
+  }).join("");
+
+}
+
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+async function loadChats(){
+
+ const box=$("chatsList");
+
+ box.innerHTML=`
+
+  <div class="item">
+
+   <div>
+
+    <strong>
+     Your conversations
+    </strong>
+
+    <small>
+     Loading your matches...
+    </small>
+
+   </div>
+
+  </div>
+
+ `;
+
+ try{
+
+  const r=
+   await client
+    .from("matches")
+    .select(
+     "id,user_one,user_two,created_at"
+    )
+    .or(
+     `user_one.eq.${user.id},user_two.eq.${user.id}`
+    )
+    .order(
+     "created_at",
+     {
+      ascending:false
+     }
+    );
+
+  if(r.error){
+
+   box.innerHTML=`
+
+    <div class="item">
+
+     <div>
+
+      <strong>
+       Could not load conversations
+      </strong>
+
+      <small>
+       ${esc(r.error.message)}
+      </small>
+
+     </div>
+
+    </div>
+
+   `;
+
+   return;
+
+  }
+
+  if(!r.data?.length){
+
+   box.innerHTML=`
+
+    <div class="item">
+
+     <div>
+
+      <strong>
+       No conversations yet
+      </strong>
+
+      <small>
+       Your matches will appear here.
+      </small>
+
+     </div>
+
+    </div>
+
+   `;
+
+   updateNotificationBadges();
+
+   return;
+
+  }
+
+  const matchRows=r.data.filter(m=>!isConversationHidden(m.id));
+
+  const ids=
+   matchRows.map(
+    m=>
+     m.user_one===user.id
+      ? m.user_two
+      : m.user_one
+   );
+
+  const p=
+   await client
+    .from("profiles")
+    .select(
+     "id,full_name,island,photo_url"
+    )
+    .in(
+     "id",
+     ids
+    );
+
+  if(p.error){
+
+   box.innerHTML=`
+
+    <div class="item">
+
+     <div>
+
+      <strong>
+       Could not load conversations
+      </strong>
+
+      <small>
+       ${esc(p.error.message)}
+      </small>
+
+     </div>
+
+    </div>
+
+   `;
+
+   return;
+
+  }
+
+  const byId=
+   new Map(
+    (p.data||[]).map(
+     x=>[x.id,x]
+    )
+   );
+
+  box.innerHTML=
+   matchRows.map(m=>{
+
+    const id=
+     m.user_one===user.id
+      ? m.user_two
+      : m.user_one;
+
+    const x=byId.get(id);
+
+    if(!x)return "";
+
+    const unread=
+     getUnreadCount(m.id);
+
+    return `
+
+     <div
+      class="item isla-conversation-row ${
+       unread>0
+        ? "unread"
+        : ""
+      }"
+      data-match-id="${Number(m.id)}"
+      onclick='openChatById("${esc(x.id)}",${Number(m.id)})'
+     >
+
+      <img
+       class="avatar lux-profile-trigger"
+       onclick='event.stopPropagation(); openPublicProfile(${JSON.stringify(x)},${Number(m.id)})'
+       src="${esc(x.photo_url||"")}"
+       alt=""
+      >
+
+      <div style="min-width:0" class="lux-profile-trigger" onclick='event.stopPropagation(); openPublicProfile(${JSON.stringify(x)},${Number(m.id)})'>
+
+       <strong>
+        ${esc(
+         x.full_name||
+         "ISLA Member"
+        )}
+       </strong>
+
+       <small>
+        ${esc(
+         x.island||
+         "Maldives"
+        )}
+       </small>
+
+      </div>
+
+      ${
+       unread>0
+        ? `
+         <span class="unread-count">
+          ${
+           unread>99
+            ? "99+"
+            : unread
+          }
+         </span>
+        `
+        : ""
+      }
+
+     </div>
+
+    `;
+
+   }).join("");
+
+  updateNotificationBadges();
+
+ }catch(e){
+
+  console.error(e);
+
+  box.innerHTML=`
+
+   <div class="item">
+
+    <div>
+
+     <strong>
+      Could not load conversations
+     </strong>
+
+     <small>
+      ${esc(
+       e.message||
+       "Unknown error"
+      )}
+     </small>
+
+    </div>
+
+   </div>
+
+  `;
+
+ }
+
+}
+
+
+/* =========================================================
+   OPEN CHAT
+========================================================= */
+
+async function openChatById(id,matchId){
+
+ const r=
+  await client
+   .from("profiles")
+   .select("*")
+   .eq("id",id)
+   .maybeSingle();
+
+ if(r.error){
+
+  toast(r.error.message);
+
+  return;
+
+ }
+
+ if(r.data){
+
+  r.data.match_id=
+   Number(matchId);
+
+  await openChat(r.data);
+
+ }
+
+}
+
+
+async function openChat(p){
+
+ if(!p?.match_id){
+
+  toast(
+   "This conversation has no match ID"
+  );
+
+  return;
+
+ }
+
+ currentChat=p;
+
+ clearUnread(
+  p.match_id
+ );
+
+ $("chat").classList.add("active");
+
+ $("chatName").textContent=
+  p.full_name||
+  "ISLA Member";
+
+ $("chatAvatar").src=
+  p.photo_url||
+  "";
+
+ $("chatInput").value="";
+
+ hideNotificationPopup();
+
+ await loadChatMessages();
+
+ setTimeout(()=>{
+
+  $("chatInput").focus();
+
+ },100);
+
+}
+
+
+$("chatBack").onclick=()=>{
+
+ $("chat").classList.remove("active");
+
+ currentChat=null;
+
+ loadChats();
+
+};
+
+
+/* =========================================================
+   LOAD CHAT MESSAGES
+========================================================= */
+
+async function loadChatMessages(){
+
+ const box=$("chatBody");
+
+ box.innerHTML=
+  "<p style='color:#888'>Loading...</p>";
+
+ if(!currentChat?.match_id){
+
+  box.innerHTML=
+   "<p style='color:#888'>This conversation is not available.</p>";
+
+  return;
+
+ }
+
+ const r=
+  await client
+   .from("messages")
+   .select(
+    "id,match_id,sender_id,message,created_at"
+   )
+   .eq(
+    "match_id",
+    currentChat.match_id
+   )
+   .order(
+    "created_at",
+    {
+     ascending:true
+    }
+   );
+
+ if(r.error){
+
+  console.error(
+   "Message loading error:",
+   r.error
+  );
+
+  box.innerHTML=`
+
+   <p style="color:#888">
+    Could not load messages:
+    ${esc(r.error.message)}
+   </p>
+
+  `;
+
+  return;
+
+ }
+
+ box.innerHTML="";
+
+ if(!r.data?.length){
+
+  box.innerHTML=`
+
+   <div style="
+    text-align:center;
+    color:#777;
+    padding:40px 10px;
+   ">
+
+    <div style="
+     font-size:35px;
+     margin-bottom:10px;
+    ">
+     💕
+    </div>
+
+    <div>
+     Say hello!
+    </div>
+
+   </div>
+
+  `;
+
+  return;
+
+ }
+
+ (r.data||[]).forEach(m=>{
+
+  knownMessageIds.add(
+   String(m.id)
+  );
+
+  const d=
+   document.createElement("div");
+
+  d.className=
+   "bubble "+
+   (
+    m.sender_id===user.id
+     ? "mine"
+     : ""
+   );
+
+  d.textContent=
+   m.message||
+   "";
+
+  box.appendChild(d);
+
+ });
+
+ box.scrollTop=
+  box.scrollHeight;
+
+}
+
+
+/* =========================================================
+   SEND MESSAGE
+========================================================= */
+
+$("chatForm").onsubmit=async e=>{
+
+ e.preventDefault();
+
+ const text=
+  $("chatInput").value.trim();
+
+ if(
+  !text||
+  !currentChat?.match_id
+ ){
+
+  return;
+
+ }
+
+ const sendButton=
+  e.submitter;
+
+ sendButton.disabled=true;
+
+ try{
+
+  const r=
+   await client
+    .from("messages")
+    .insert({
+     match_id:
+      currentChat.match_id,
+
+     sender_id:
+      user.id,
+
+     message:
+      text
+    })
+    .select()
+    .single();
+
+  if(r.error){
+
+   console.error(
+    "Send message error:",
+    r.error
+   );
+
+   toast(
+    r.error.message||
+    "Could not send message"
+   );
+
+   return;
+
+  }
+
+  if(r.data?.id){
+
+   knownMessageIds.add(
+    String(r.data.id)
+   );
+
+  }
+
+  $("chatInput").value="";
+
+  await loadChatMessages();
+
+ }finally{
+
+  sendButton.disabled=false;
+
+ }
+
+};
+
+
+/* =========================================================
+   PROFILE PAGE — TINDER STYLE
+========================================================= */
+
+function parseInterests(value){
+
+ if(!value){
+  return [];
+ }
+
+ return String(value)
+  .split(/[,]+/)
+  .map(x=>x.trim())
+  .filter(Boolean)
+  .slice(0,20);
+
+}
+
+
+function renderProfilePage(){
+
+ if(!me){
+
+  $("profileContent").innerHTML=`
+
+   <div class="profile-empty-note">
+    Create your profile to start using ISLA.
+   </div>
+
+  `;
+
+  return;
+
+ }
+
+ const profilePhotos=
+  getStoredPhotos(me);
+
+ const a=
+  age(me.date_of_birth);
+
+ const interestList=
+  parseInterests(
+   me.interests
+  );
+
+
+ let galleryHTML="";
+
+
+ if(profilePhotos.length){
+
+  const display=
+   profilePhotos.slice(0,3);
+
+  galleryHTML=
+   display
+    .map((src,i)=>`
+
+     <div class="profile-page-photo">
+
+      <img
+       src="${esc(src)}"
+       alt="Profile photo ${i+1}"
+      >
+
+      ${
+       i===2 &&
+       profilePhotos.length>3
+        ? `
+         <div
+          style="
+           position:absolute;
+           inset:0;
+           display:flex;
+           align-items:center;
+           justify-content:center;
+           background:rgba(0,0,0,.45);
+           font-size:24px;
+           font-weight:700;
+          "
+         >
+          +${profilePhotos.length-3}
+         </div>
+        `
+        : ""
+      }
+
+     </div>
+
+    `)
+    .join("");
+
+ }else{
+
+  galleryHTML=`
+
+   <div
+    class="profile-page-photo"
+    style="
+     grid-row:1 / 3;
+     grid-column:1 / 3;
+     border-radius:0;
+    "
+   >
+
+    <div class="profile-page-photo-placeholder">
+     ◉
+    </div>
+
+   </div>
+
+  `;
+
+ }
+
+
+ $("profileContent").innerHTML=`
+
+  <div class="profile-page-wrap">
+
+   <div class="profile-page-photos">
+
+    ${galleryHTML}
+
+    ${
+     profilePhotos.length
+      ? `
+       <div class="profile-photo-count">
+        ${profilePhotos.length} photo${profilePhotos.length===1?"":"s"}
+       </div>
+      `
+      : ""
+    }
+
+   </div>
+
+
+   <div class="profile-page-info">
+
+    <div class="profile-page-name-row">
+
+     <div>
+
+      <div class="profile-page-name">
+
+       ${esc(
+        me.full_name||
+        "ISLA Member"
+       )}
+
+       ${
+        a!=null
+         ? `, ${a}`
+         : ""
+       }
+
+      </div>
+
+      <div class="profile-page-meta">
+
+       ${
+        [
+         me.gender,
+         me.island
+        ]
+        .filter(Boolean)
+        .map(esc)
+        .join(" · ")
+       }
+
+      </div>
+
+     </div>
+
+
+     <button
+      class="profile-page-edit"
+      id="editMe"
+      title="Edit profile"
+     >
+      ✎
+     </button>
+
+    </div>
+
+
+    <div class="profile-page-section">
+
+     <div class="profile-page-section-title">
+      About me
+     </div>
+
+     ${
+      me.bio
+       ? `
+        <div class="profile-page-bio">
+         ${esc(me.bio)}
+        </div>
+       `
+       : `
+        <div class="profile-empty-note">
+         Add something about yourself.
+        </div>
+       `
+     }
+
+    </div>
+
+
+    <div class="profile-page-section">
+
+     <div class="profile-page-section-title">
+      Interests
+     </div>
+
+     ${
+      interestList.length
+       ? `
+        <div class="profile-interest-chips">
+
+         ${
+          interestList
+           .map(x=>`
+            <span class="profile-interest-chip">
+             ${esc(x)}
+            </span>
+           `)
+           .join("")
+         }
+
+        </div>
+       `
+       : `
+        <div class="profile-empty-note">
+         Add your interests so people can get to know you.
+        </div>
+       `
+     }
+
+    </div>
+
+
+    <button
+     class="primary profile-edit-full"
+     id="editMeFull"
+    >
+     Edit profile
+    </button>
+
+   </div>
+
+  </div>
+
+ `;
+
+
+ $("editMe").onclick=()=>{
+
+  openProfile(me);
+
+ };
+
+
+ $("editMeFull").onclick=()=>{
+
+  openProfile(me);
+
+ };
+
+}
+
+
+/* =========================================================
+   PREMIUM BUTTONS
+========================================================= */
+
+document
+ .querySelectorAll("[data-plan]")
+ .forEach(b=>{
+
+  b.onclick=()=>{
+
+   const plan=
+    b.dataset.plan;
+
+   const names={
+    plus:"ISLA Plus",
+    gold:"ISLA Gold",
+    platinum:"ISLA Platinum"
+   };
+
+   toast(
+    `${names[plan]||"Premium"} selected`
+   );
+
+   setTimeout(()=>{
+
+    showPremiumCheckout(
+     names[plan]||"ISLA Premium"
+    );
+
+   },300);
+
+  };
+
+ });
+
+
+/* =========================================================
+   PREMIUM CHECKOUT
+========================================================= */
+
+function showPremiumCheckout(plan){
+
+ const sheet=
+  document.querySelector(
+   "#premiumModal .sheet"
+  );
+
+ if(!sheet)return;
+
+ const prices={
+  "ISLA Plus":"MVR 199",
+  "ISLA Gold":"MVR 299",
+  "ISLA Platinum":"MVR 399"
+ };
+
+ const price=
+  prices[plan]||
+  "MVR 199";
+
+ sheet.innerHTML=`
+
+  <button
+   class="close"
+   id="checkoutBack"
+  >
+   ×
+  </button>
+
+  <div class="checkout-message">
+
+   <div class="eyebrow">
+    ISLA PREMIUM
+   </div>
+
+   <div class="checkout-icon">
+    💎
+   </div>
+
+   <h3>
+    ${esc(plan)}
+   </h3>
+
+   <div style="
+    font-size:28px;
+    font-weight:700;
+    margin:10px 0 18px;
+   ">
+    ${price}
+    <span style="
+     font-size:12px;
+     color:#999;
+     font-weight:400;
+    ">
+     / month
+    </span>
+   </div>
+
+   <p>
+    Choose your secure payment method.
+   </p>
+
+   <div style="
+    display:grid;
+    gap:10px;
+    margin-top:18px;
+   ">
+
+    <button
+     class="payment-bank bml"
+     id="bmlPayment"
+    >
+     🏦 Pay with Bank of Maldives
+    </button>
+
+    <button
+     class="payment-bank mib"
+     id="mibPayment"
+    >
+     🏦 Pay with Maldives Islamic Bank
+    </button>
+
+   </div>
+
+   <p style="
+    font-size:11px;
+    color:#777;
+    margin-top:16px;
+   ">
+    Your payment will be processed through the
+    selected bank's secure payment gateway once
+    ISLA's merchant integration is connected.
+   </p>
+
+   <button
+    class="secondary"
+    id="checkoutChoose"
+    style="
+     width:100%;
+     margin-top:8px;
+    "
+   >
+    Choose another plan
+   </button>
+
+  </div>
+
+ `;
+
+ $("checkoutBack").onclick=()=>{
+
+  modal(
+   "premiumModal",
+   false
+  );
+
+ };
+
+ $("checkoutChoose").onclick=()=>{
+
+  restorePremiumPlans();
+
+ };
+
+ $("bmlPayment").onclick=()=>{
+
+  showPaymentGatewayMessage(
+   plan,
+   price,
+   "BML"
+  );
+
+ };
+
+ $("mibPayment").onclick=()=>{
+
+  showPaymentGatewayMessage(
+   plan,
+   price,
+   "MIB"
+  );
+
+ };
+
+}
+
+
+/* =========================================================
+   PAYMENT PROVIDER
+========================================================= */
+
+function showPaymentGatewayMessage(
+ plan,
+ price,
+ provider
+){
+
+ const sheet=
+  document.querySelector(
+   "#premiumModal .sheet"
+  );
+
+ if(!sheet)return;
+
+ const bankName=
+  provider==="BML"
+   ? "Bank of Maldives"
+   : "Maldives Islamic Bank";
+
+ const bankShort=
+  provider==="BML"
+   ? "BML"
+   : "MIB";
+
+ sheet.innerHTML=`
+
+  <button
+   class="close"
+   id="paymentBack"
+  >
+   ×
+  </button>
+
+  <div class="checkout-message">
+
+   <div class="eyebrow">
+    ISLA PREMIUM
+   </div>
+
+   <div class="checkout-icon">
+    🔐
+   </div>
+
+   <h3>
+    ${esc(bankName)}
+   </h3>
+
+   <p style="
+    font-size:18px;
+    color:#fff;
+    font-weight:700;
+   ">
+    ${esc(plan)}
+   </p>
+
+   <p>
+    Amount:
+    <strong style="color:#fff">
+     ${esc(price)}
+    </strong>
+    / month
+   </p>
+
+   <div style="
+    background:#202125;
+    border:1px solid #34353a;
+    border-radius:13px;
+    padding:15px;
+    margin:18px 0;
+    text-align:left;
+   ">
+
+    <div style="
+     color:#7ee787;
+     font-weight:700;
+     margin-bottom:6px;
+    ">
+     🔒 Secure payment
+    </div>
+
+    <div style="
+     color:#999;
+     font-size:12px;
+     line-height:1.6;
+    ">
+     ISLA will use the official
+     ${esc(bankName)} payment gateway.
+     Your card details will not be stored by ISLA.
+    </div>
+
+   </div>
+
+   <button
+    class="primary"
+    id="gatewayContinue"
+    style="
+     width:100%;
+     margin-top:5px;
+    "
+   >
+    Continue with ${esc(bankShort)}
+   </button>
+
+   <button
+    class="secondary"
+    id="gatewayBack"
+    style="
+     width:100%;
+     margin-top:8px;
+    "
+   >
+    Choose another payment method
+   </button>
+
+  </div>
+
+ `;
+
+ $("paymentBack").onclick=()=>{
+
+  modal(
+   "premiumModal",
+   false
+  );
+
+ };
+
+ $("gatewayBack").onclick=()=>{
+
+  showPremiumCheckout(plan);
+
+ };
+
+ $("gatewayContinue").onclick=()=>{
+
+  toast(
+   `${bankName} payment gateway will be connected here 💳`
+  );
+
+ };
+
+}
+
+
+/* =========================================================
+   RESTORE PREMIUM
+========================================================= */
+
+function restorePremiumPlans(){
+
+ const sheet=
+  document.querySelector(
+   "#premiumModal .sheet"
+  );
+
+ if(!sheet)return;
+
+ sheet.innerHTML=`
+
+  <button
+   class="close"
+   data-close="premiumModal"
+  >
+   ×
+  </button>
+
+  <div class="premium-intro">
+
+   <div class="eyebrow">
+    ISLA PREMIUM
+   </div>
+
+   <h2>
+    Upgrade your experience
+   </h2>
+
+   <p>
+    Get more matches, more visibility and more control over your dating experience.
+   </p>
+
+  </div>
+
+  <div class="premium-benefit">
+   ✨ <b>Meet more people.</b>
+   Get the tools designed to help you make meaningful connections faster.
+  </div>
+
+  <div class="plan-grid">
+
+   <div class="plan">
+
+    <div class="plan-head">
+     <div>
+      <h3>ISLA Plus</h3>
+      <div class="plan-tag">More freedom</div>
+     </div>
+    </div>
+
+    <div class="plan-price">
+     <strong>MVR 199</strong>
+     <span>/ month</span>
+    </div>
+
+    <ul class="plan-features">
+     <li>Unlimited Likes</li>
+     <li>Unlimited Rewinds</li>
+     <li>Passport across Maldives</li>
+     <li>Ad-free experience</li>
+     <li>Incognito discovery</li>
+    </ul>
+
+    <button data-plan="plus">
+     Get Plus
+    </button>
+
+   </div>
+
+   <div class="plan recommended gold">
+
+    <div class="plan-head">
+     <div>
+      <h3>ISLA Gold</h3>
+      <div class="plan-tag">Our most popular plan</div>
+     </div>
+    </div>
+
+    <div class="plan-price">
+     <strong>MVR 299</strong>
+     <span>/ month</span>
+    </div>
+
+    <ul class="plan-features">
+     <li>Everything in Plus</li>
+     <li>See Who Likes You</li>
+     <li>Weekly Super Likes</li>
+     <li>1 Boost every month</li>
+     <li>More discovery visibility</li>
+    </ul>
+
+    <button data-plan="gold">
+     Get Gold
+    </button>
+
+   </div>
+
+   <div class="plan platinum">
+
+    <div class="plan-head">
+     <div>
+      <h3>ISLA Platinum</h3>
+      <div class="plan-tag">VIP dating experience</div>
+     </div>
+    </div>
+
+    <div class="plan-price">
+     <strong>MVR 399</strong>
+     <span>/ month</span>
+    </div>
+
+    <ul class="plan-features">
+     <li>Everything in Gold</li>
+     <li>Priority Likes</li>
+     <li>Enhanced discovery</li>
+     <li>Maximum visibility</li>
+     <li>VIP ISLA experience</li>
+    </ul>
+
+    <button data-plan="platinum">
+     Get Platinum
+    </button>
+
+   </div>
+
+  </div>
+
+  <div class="premium-note">
+   Choose your Premium plan and payment method. Actual bank checkout will be connected after ISLA receives the required merchant gateway credentials.
+  </div>
+
+ `;
+
+ sheet
+  .querySelectorAll("[data-plan]")
+  .forEach(b=>{
+
+   b.onclick=()=>{
+
+    const plan=
+     b.dataset.plan;
+
+    const names={
+     plus:"ISLA Plus",
+     gold:"ISLA Gold",
+     platinum:"ISLA Platinum"
+    };
+
+    showPremiumCheckout(
+     names[plan]||"ISLA Premium"
+    );
+
+   };
+
+  });
+
+ const closeButton=
+  sheet.querySelector(
+   "[data-close]"
+  );
+
+ if(closeButton){
+
+  closeButton.onclick=()=>{
+
+   modal(
+    "premiumModal",
+    false
+   );
+
+  };
+
+ }
+
+}
+
+
+/* =========================================================
+   SWIPE
+========================================================= */
+
+(function swipe(){
+
+ const c=$("swipeCard");
+
+ let sx=0;
+ let sy=0;
+ let drag=false;
+
+ c.addEventListener(
+  "pointerdown",
+  e=>{
+
+   if(
+    e.target.closest(".actions") ||
+    e.target.closest(".photo-touch-left") ||
+    e.target.closest(".photo-touch-right")
+   ){
+    return;
+   }
+
+   drag=true;
+
+   sx=e.clientX;
+   sy=e.clientY;
+
+   c.style.transition="none";
+
+   try{
+
+    c.setPointerCapture(
+     e.pointerId
+    );
+
+   }catch(_){}
+
+  }
+ );
+
+ c.addEventListener(
+  "pointermove",
+  e=>{
+
+   if(!drag)return;
+
+   const dx=
+    e.clientX-sx;
+
+   const dy=
+    e.clientY-sy;
+
+   c.style.transform=
+    `translate(${dx}px,${dy*.05}px) rotate(${dx/18}deg)`;
+
+   const s=
+    Math.min(
+     Math.abs(dx)/120,
+     1
+    );
+
+   $("likeBadge").style.opacity=
+    dx>0?s:0;
+
+   $("passBadge").style.opacity=
+    dx<0?s:0;
+
+  }
+ );
+
+ c.addEventListener(
+  "pointerup",
+  async e=>{
+
+   if(!drag)return;
+
+   drag=false;
+
+   const dx=
+    e.clientX-sx;
+
+   const dy=
+    e.clientY-sy;
+
+   if(
+    Math.abs(dx)>110 &&
+    Math.abs(dx)>Math.abs(dy)
+   ){
+
+    c.style.transition=".25s";
+
+    c.style.transform=
+     `translateX(${
+      dx>0
+       ? 700
+       : -700
+     }px) rotate(${
+      dx>0
+       ? 20
+       : -20
+     }deg)`;
+
+    setTimeout(
+     async()=>{
+
+      if(dx>0){
+
+       await like();
+
+      }else{
+
+       next();
+
+      }
+
+      c.style.transition=".2s";
+
+      c.style.transform="";
+
+      $("likeBadge").style.opacity=0;
+
+      $("passBadge").style.opacity=0;
+
+     },
+     220
+    );
+
+   }else{
+
+    c.style.transition=".2s";
+
+    c.style.transform="";
+
+   }
+
+  }
+ );
+
+})();
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+client.auth.onAuthStateChange(
+ ()=>{
+  setTimeout(
+   start,
+   0
+  );
+ }
+);
+
+
+/* =========================================================
+   START
+========================================================= */
+
+start();
+
+</script>
+
+
+<script>
+/* =========================================================
+   ISLA — ROMANTIC RELATIONSHIP INTENTIONS
+   Adds Tinder-style relationship goals without disturbing
+   the existing Supabase profile schema.
+========================================================= */
+(function(){
+  const goals={
+    long_term:["💍","Long-term relationship","Something lasting and meaningful."],
+    serious:["❤️","Serious relationship","Ready for a committed connection."],
+    short_term:["💕","Short-term dating","Open to dating without long-term commitment."],
+    casual:["✨","Something casual","Keeping things relaxed and seeing where it goes."],
+    friends:["🤝","New friends","Meet people and make genuine connections."],
+    figuring_out:["🌙","Still figuring it out","Open-minded and seeing what feels right."]
+  };
+
+  function read(key){
+    try{return JSON.parse(localStorage.getItem(key)||"[]")}catch(e){return []}
+  }
+  function write(key,value){
+    try{localStorage.setItem(key,JSON.stringify(value))}catch(e){}
+  }
+  function clean(v){
+    if(Array.isArray(v)) return [...new Set(v.filter(x=>goals[x]))];
+    return [];
+  }
+  function remoteGoals(p){
+    return clean(p && p.relationship_goals);
+  }
+  function myGoals(){
+    const remote=remoteGoals(window.me);
+    return remote.length ? remote : clean(read("isla_relationship_goals"));
+  }
+  function compatible(a,b){
+    a=new Set(clean(a)); b=new Set(clean(b));
+    for(const x of a) if(b.has(x)) return true;
+    return false;
+  }
+
+  function buildProfileGoals(){
+    const form=document.getElementById("profileForm");
+    if(!form || document.getElementById("islaRelationshipGoals")) return;
+    const about=document.getElementById("bio");
+    if(!about) return;
+
+    const wrap=document.createElement("div");
+    wrap.id="islaRelationshipGoals";
+    wrap.innerHTML=`
+      <label>What are you looking for?</label>
+      <div style="color:#888;font-size:11px;line-height:1.4;margin:-5px 0 5px">
+        Choose one or more. ISLA will use this to prioritize compatible connections.
+      </div>
+      <div class="isla-goals">
+        ${Object.entries(goals).map(([k,g])=>`
+          <label class="isla-goal">
+            <input type="checkbox" value="${k}" data-isla-goal>
+            <span><b>${g[0]} ${g[1]}</b><small>${g[2]}</small></span>
+          </label>
+        `).join("")}
+      </div>`;
+    about.parentNode.parentNode.insertBefore(wrap,about.parentNode);
+  }
+
+  function setProfileGoals(){
+    const selected=new Set(myGoals());
+    document.querySelectorAll("[data-isla-goal]").forEach(x=>x.checked=selected.has(x.value));
+  }
+
+  function selectedGoals(){
+    return [...document.querySelectorAll("[data-isla-goal]:checked")].map(x=>x.value);
+  }
+
+  function buildPreferenceGoals(){
+    const box=document.getElementById("islandPills");
+    if(!box || document.getElementById("islaGoalFilters")) return;
+    const wrap=document.createElement("div");
+    wrap.id="islaGoalFilters";
+    wrap.innerHTML=`
+      <label>Relationship intentions</label>
+      <div class="isla-goal-filters">
+        ${Object.entries(goals).map(([k,g])=>`
+          <button type="button" class="isla-goal-filter" data-isla-filter="${k}">
+            ${g[0]} ${g[1]}
+          </button>`).join("")}
+      </div>
+      <small style="color:#777;line-height:1.4">Select what you want ISLA to prioritize. Leave all unselected to show everyone.</small>`;
+    box.parentNode.insertBefore(wrap,box);
+    const saved=clean(read("isla_relationship_filter"));
+    wrap.querySelectorAll("[data-isla-filter]").forEach(b=>{
+      if(saved.includes(b.dataset.islaFilter)) b.classList.add("active");
+      b.onclick=()=>b.classList.toggle("active");
+    });
+  }
+
+  function saveFilter(){
+    write("isla_relationship_filter",
+      [...document.querySelectorAll("[data-isla-filter].active")].map(x=>x.dataset.islaFilter)
+    );
+  }
+
+  function addProfileChips(){
+    if(!window.me) return;
+    const info=document.querySelector(".profile-page-info");
+    if(!info || info.querySelector(".isla-profile-goals")) return;
+    const gs=myGoals();
+    if(!gs.length) return;
+    const section=document.createElement("div");
+    section.className="profile-page-section isla-profile-goals";
+    section.innerHTML=`
+      <div class="profile-page-section-title">Looking for</div>
+      <div class="isla-goal-chips">
+        ${gs.map(k=>{
+          const g=goals[k];
+          return `<span class="isla-goal-chip ${k==="long_term"||k==="serious"?"gold":""}">${g[0]} ${g[1]}</span>`;
+        }).join("")}
+      </div>`;
+    const about=[...info.querySelectorAll(".profile-page-section")].find(x=>/About me/i.test(x.textContent||""));
+    info.insertBefore(section,about||null);
+  }
+
+  function patchProfileSave(){
+    const form=document.getElementById("profileForm");
+    if(!form || form.dataset.islaGoalsPatched) return;
+    form.dataset.islaGoalsPatched="1";
+    form.addEventListener("submit",async function(){
+      const gs=selectedGoals();
+      write("isla_relationship_goals",gs);
+      if(window.client && window.user){
+        try{
+          await window.client.from("profiles")
+            .update({relationship_goals:gs})
+            .eq("id",window.user.id);
+        }catch(e){}
+      }
+      setTimeout(addProfileChips,300);
+    });
+  }
+
+  function patchDiscover(){
+    if(typeof window.loadDiscover!=="function" || window.loadDiscover.__islaGoals) return;
+    const original=window.loadDiscover;
+    const wrapped=async function(){
+      await original.apply(this,arguments);
+      const filters=clean(read("isla_relationship_filter"));
+      const mine=myGoals();
+      if(Array.isArray(window.profiles) && window.profiles.length){
+        const score=p=>{
+          const pg=remoteGoals(p);
+          if(filters.length) return compatible(filters,pg)?2:(pg.length?0:1);
+          return mine.length && compatible(mine,pg)?1:0;
+        };
+        window.profiles.sort((a,b)=>score(b)-score(a));
+        if(typeof window.render==="function") window.render();
+      }
+    };
+    wrapped.__islaGoals=true;
+    window.loadDiscover=wrapped;
+  }
+
+  function patchOpenProfile(){
+    if(typeof window.openProfile!=="function" || window.openProfile.__islaGoals) return;
+    const original=window.openProfile;
+    const wrapped=async function(){
+      const result=await original.apply(this,arguments);
+      setTimeout(()=>{
+        buildProfileGoals();
+        const p=arguments[0]||window.me||{};
+        const gs=remoteGoals(p).length?remoteGoals(p):clean(read("isla_relationship_goals"));
+        document.querySelectorAll("[data-isla-goal]").forEach(x=>x.checked=gs.includes(x.value));
+      },40);
+      return result;
+    };
+    wrapped.__islaGoals=true;
+    window.openProfile=wrapped;
+  }
+
+  function patchPreferences(){
+    if(typeof window.setupIslandPills==="function" && !window.setupIslandPills.__islaGoals){
+      const original=window.setupIslandPills;
+      const wrapped=function(){
+        const r=original.apply(this,arguments);
+        setTimeout(buildPreferenceGoals,20);
+        return r;
+      };
+      wrapped.__islaGoals=true;
+      window.setupIslandPills=wrapped;
+    }
+    const form=document.getElementById("preferencesForm");
+    if(form && !form.dataset.islaGoalsFilter){
+      form.dataset.islaGoalsFilter="1";
+      form.addEventListener("submit",saveFilter);
+    }
+  }
+
+  function patchProfilePage(){
+    if(typeof window.renderProfilePage==="function" && !window.renderProfilePage.__islaGoals){
+      const original=window.renderProfilePage;
+      const wrapped=function(){
+        const r=original.apply(this,arguments);
+        setTimeout(addProfileChips,20);
+        return r;
+      };
+      wrapped.__islaGoals=true;
+      window.renderProfilePage=wrapped;
+    }
+  }
+
+  function boot(){
+    buildProfileGoals();
+    patchProfileSave();
+    patchOpenProfile();
+    patchDiscover();
+    patchPreferences();
+    patchProfilePage();
+    buildPreferenceGoals();
+    setTimeout(addProfileChips,100);
+  }
+
+  setInterval(boot,700);
+  boot();
+})();
+</script>
+
+<script src="chat.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => console.log("ISLA app mode ready"))
+      .catch(error => console.error("ISLA service worker:", error));
+  });
+}
+
+
+/* =========================================================
+   ISLA CHAT OPTIONS / DELETE CONVERSATION
+========================================================= */
+(function(){
+  const $c=id=>document.getElementById(id);
+  const hiddenKey=()=>(
+    typeof user!=="undefined" && user
+      ? `isla_hidden_conversations_${user.id}`
+      : "isla_hidden_conversations_guest"
+  );
+
+  function getHiddenConversations(){
+    try{
+      const raw=localStorage.getItem(hiddenKey());
+      const arr=JSON.parse(raw||"[]");
+      return Array.isArray(arr) ? arr.map(Number) : [];
+    }catch(e){
+      return [];
+    }
+  }
+
+  window.isConversationHidden=function(matchId){
+    return getHiddenConversations().includes(Number(matchId));
+  };
+
+  function hideConversationLocally(matchId){
+    const ids=getHiddenConversations();
+    const n=Number(matchId);
+    if(!ids.includes(n)){
+      ids.push(n);
+      localStorage.setItem(hiddenKey(),JSON.stringify(ids));
+    }
+  }
+
+  function unhideConversation(matchId){
+    const ids=getHiddenConversations().filter(x=>x!==Number(matchId));
+    localStorage.setItem(hiddenKey(),JSON.stringify(ids));
+  }
+
+  function closeChatOptions(){
+    const sheet=$c("chatOptions");
+    if(!sheet)return;
+    sheet.classList.remove("active");
+    sheet.setAttribute("aria-hidden","true");
+  }
+
+  window.openChatMenu=function(){
+    if(!window.currentChat && typeof currentChat==="undefined") return;
+    const chat=typeof currentChat!=="undefined" ? currentChat : null;
+    const title=$c("chatOptionsTitle");
+    if(title){
+      title.textContent=`Conversation with ${chat?.full_name||"this match"}`;
+    }
+    const sheet=$c("chatOptions");
+    if(sheet){
+      sheet.classList.add("active");
+      sheet.setAttribute("aria-hidden","false");
+    }
+  };
+
+  async function deleteConversation(){
+    const chat=typeof currentChat!=="undefined" ? currentChat : null;
+    if(!chat?.match_id){
+      closeChatOptions();
+      return;
+    }
+
+    const matchId=Number(chat.match_id);
+    const name=chat.full_name||"this person";
+
+    const ok=confirm(
+      `Delete your conversation with ${name}?\n\n`+
+      `The match will stay active, but the conversation will be removed from your Messages.`
+    );
+    if(!ok)return;
+
+    const button=$c("deleteConversationBtn");
+    if(button){
+      button.disabled=true;
+      button.textContent="Deleting…";
+    }
+
+    try{
+      /*
+       * First try to remove the actual messages from Supabase.
+       * This succeeds when the messages table's RLS policy allows
+       * the authenticated user to delete messages belonging to
+       * their own match.
+       */
+      const result=await client
+        .from("messages")
+        .delete()
+        .eq("match_id",matchId);
+
+      if(result.error){
+        console.error("Delete conversation messages:",result.error);
+        /*
+         * Keep a local soft-delete so the conversation disappears
+         * from this user's Messages even when Supabase RLS blocks
+         * physical deletion. We never claim the database rows were
+         * deleted in that case.
+         */
+        hideConversationLocally(matchId);
+        closeChatOptions();
+
+        if(typeof toast==="function"){
+          toast("Conversation removed from your Messages. Supabase blocked permanent message deletion.");
+        }
+
+        const chatEl=$c("chat");
+        if(chatEl)chatEl.classList.remove("active");
+        if(typeof currentChat!=="undefined") currentChat=null;
+        if(typeof loadChats==="function") await loadChats();
+        return;
+      }
+
+      hideConversationLocally(matchId);
+      localStorage.removeItem(`isla_unread_${user.id}_${matchId}`);
+
+      closeChatOptions();
+
+      const chatEl=$c("chat");
+      if(chatEl)chatEl.classList.remove("active");
+      if(typeof currentChat!=="undefined") currentChat=null;
+
+      if(typeof toast==="function") toast("Conversation deleted.");
+
+      if(typeof loadChats==="function") await loadChats();
+
+    }catch(error){
+      console.error("Delete conversation:",error);
+      if(typeof toast==="function"){
+        toast("Could not delete this conversation.");
+      }
+    }finally{
+      if(button){
+        button.disabled=false;
+        button.innerHTML='🗑️ Delete conversation<small>Remove this conversation from Messages.</small>';
+      }
+    }
+  }
+
+  function bindChatOptions(){
+    const close=$c("closeChatOptionsBtn");
+    const deleteBtn=$c("deleteConversationBtn");
+    const overlay=$c("chatOptions");
+
+    if(close && !close.dataset.bound){
+      close.dataset.bound="1";
+      close.addEventListener("click",closeChatOptions);
+    }
+
+    if(deleteBtn && !deleteBtn.dataset.bound){
+      deleteBtn.dataset.bound="1";
+      deleteBtn.addEventListener("click",deleteConversation);
+    }
+
+    if(overlay && !overlay.dataset.bound){
+      overlay.dataset.bound="1";
+      overlay.addEventListener("click",e=>{
+        if(e.target===overlay)closeChatOptions();
+      });
+    }
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",bindChatOptions);
+  }else{
+    bindChatOptions();
+  }
+
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Escape")closeChatOptions();
+  });
+})();
+
+/* =========================================================
+   ISLA COMPLETE UI BEHAVIOR
+========================================================= */
+(function(){
+  const $i = id => document.getElementById(id);
+
+  function goTab(page){
+    const tab=document.querySelector('.tab[data-page="'+page+'"]');
+    if(tab) tab.click();
+    else{
+      document.querySelectorAll('.tabpage').forEach(x=>x.classList.toggle('active',x.id===page));
+      document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.page===page));
+    }
+  }
+
+  function photoFor(p){
+    return p?.photo_url || (Array.isArray(p?.photo_urls) ? p.photo_urls[0] : "") || "";
+  }
+
+  async function getMyMatches(){
+    if(typeof user==='undefined' || !user) return [];
+    const r=await client.from("matches")
+      .select("id,user_one,user_two,created_at")
+      .or(`user_one.eq.${user.id},user_two.eq.${user.id}`)
+      .order("created_at",{ascending:false});
+    if(r.error) throw r.error;
+    if(!r.data?.length) return [];
+    const ids=r.data.map(m=>m.user_one===user.id?m.user_two:m.user_one);
+    const p=await client.from("profiles").select("*").in("id",ids);
+    if(p.error) throw p.error;
+    const byId=new Map((p.data||[]).map(x=>[x.id,x]));
+    return r.data.map(m=>{
+      const id=m.user_one===user.id?m.user_two:m.user_one;
+      return {match:m,profile:byId.get(id)};
+    }).filter(x=>x.profile);
+  }
+
+  async function renderRecentMatches(){
+    const box=$i("recentMatchesStrip");
+    if(!box) return;
+    box.innerHTML='<div class="isla-match-empty">Loading your recent matches…</div>';
+    try{
+      const rows=await getMyMatches();
+      if(!rows.length){
+        box.innerHTML='<div class="isla-match-empty">No matches yet. Keep discovering people 💕</div>';
+        return;
+      }
+      box.innerHTML=rows.slice(0,12).map(({match,profile})=>{
+        const name=esc(profile.full_name||"ISLA Member");
+        const photo=esc(photoFor(profile));
+        return `
+          <div class="isla-match-card" onclick='openChatById("${esc(profile.id)}",${Number(match.id)})'>
+            <img class="isla-match-photo" src="${photo}" alt="">
+            <span class="isla-match-name">${name}</span>
+          </div>`;
+      }).join("");
+    }catch(e){
+      console.error("Recent matches:",e);
+      box.innerHTML='<div class="isla-match-empty">Could not load matches right now.</div>';
+    }
+  }
+
+  function filterMessages(){
+    const q=($i("islaMessageSearch")?.value||"").trim().toLowerCase();
+    const items=document.querySelectorAll("#chatsList .item");
+    let visible=0;
+    items.forEach(item=>{
+      const text=(item.textContent||"").toLowerCase();
+      const show=!q||text.includes(q);
+      item.style.display=show?"":"none";
+      if(show) visible++;
+    });
+    const count=$i("islaMessageCount");
+    if(count) count.textContent=visible ? `${visible} conversation${visible===1?"":"s"}` : "";
+  }
+
+  async function refreshMessageExtras(){
+    await renderRecentMatches();
+    setTimeout(filterMessages,50);
+  }
+
+  function patchLoadChats(){
+    if(typeof window.loadChats!=="function" || window.loadChats.__islaPatched) return;
+    const original=window.loadChats;
+    async function wrapped(){
+      await original.apply(this,arguments);
+      filterMessages();
+      const items=document.querySelectorAll("#chatsList .item");
+      const count=$i("islaMessageCount");
+      if(count && items.length) count.textContent=`${items.length} conversation${items.length===1?"":"s"}`;
+    }
+    wrapped.__islaPatched=true;
+    window.loadChats=wrapped;
+  }
+
+  async function deactivateAccount(){
+    if(typeof user==='undefined' || !user) return;
+    const ok=confirm("Deactivate your ISLA account? Your profile will be hidden until you reactivate it.");
+    if(!ok) return;
+    try{
+      const r=await client.from("profiles").update({is_active:false}).eq("id",user.id);
+      if(r.error){
+        toast("Deactivation needs the profiles.is_active field in Supabase.");
+        console.error("Deactivate account:",r.error);
+        return;
+      }
+      await client.auth.signOut();
+      location.reload();
+    }catch(e){
+      console.error(e);
+      toast("Could not deactivate the account.");
+    }
+  }
+
+  async function deleteAccount(){
+    if(typeof user==='undefined' || !user) return;
+    const first=confirm("Delete your ISLA account? This action cannot be undone.");
+    if(!first) return;
+    const second=confirm("Final confirmation: permanently delete your ISLA profile and sign out?");
+    if(!second) return;
+    try{
+      const r=await client.from("profiles").delete().eq("id",user.id);
+      if(r.error){
+        toast("Profile deletion was blocked by Supabase policies.");
+        console.error("Delete profile:",r.error);
+        return;
+      }
+      localStorage.removeItem(`isla_unread_${user.id}`);
+      await client.auth.signOut();
+      location.reload();
+    }catch(e){
+      console.error(e);
+      toast("Could not delete the account.");
+    }
+  }
+
+  function bind(){
+    patchLoadChats();
+
+    const search=$i("islaMessageSearch");
+    if(search) search.addEventListener("input",filterMessages);
+
+    const all=$i("viewAllMatchesBtn");
+    if(all) all.onclick=()=>goTab("pageMatches");
+
+    const deact=$i("deactivateAccountBtn");
+    if(deact) deact.onclick=deactivateAccount;
+
+    const del=$i("deleteAccountBtn");
+    if(del) del.onclick=deleteAccount;
+
+    const messagesTab=document.querySelector('.tab[data-page="pageMessages"]');
+    if(messagesTab){
+      messagesTab.addEventListener("click",()=>setTimeout(refreshMessageExtras,120));
+    }
+
+    const matchesTab=document.querySelector('.tab[data-page="pageMatches"]');
+    if(matchesTab){
+      matchesTab.addEventListener("click",()=>setTimeout(renderRecentMatches,120));
+    }
+
+    const originalTopSettings=$i("topSettings")?.onclick;
+    if($i("topSettings")){
+      $i("topSettings").onclick=function(){
+        if(typeof originalTopSettings==="function") originalTopSettings.call(this);
+        else modal("settingsModal",true);
+      };
+    }
+
+    // Refresh recent matches after a match is created / discover refreshes.
+    const oldLoadMatches=window.loadMatches;
+    if(typeof oldLoadMatches==="function" && !oldLoadMatches.__islaPatched){
+      async function wrappedMatches(){
+        await oldLoadMatches.apply(this,arguments);
+        await renderRecentMatches();
+      }
+      wrappedMatches.__islaPatched=true;
+      window.loadMatches=wrappedMatches;
+    }
+
+    setTimeout(refreshMessageExtras,600);
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",bind);
+  }else{
+    bind();
+  }
+
+  // Keep the extra UI in sync when the user returns to the app.
+  document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState==="visible") setTimeout(refreshMessageExtras,250);
+  });
+})();
+
+</script>
+
+</body>
+</html>
